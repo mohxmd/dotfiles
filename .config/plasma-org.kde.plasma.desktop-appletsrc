@@ -31,7 +31,7 @@ labelWidth=2
 positions={"1670x939":[],"1745x982":[],"1920x1080":[]}
 
 [Containments][297][Wallpaper][org.kde.image][General]
-Image=/home/mohammedsh/dotfiles/wallpapers/1358524.png
+Image=/home/mohammedsh/dotfiles/wallpapers/1349702.png
 PreviewImage=/home/mohammedsh/dotfiles/wallpapers/1358524.png
 SlidePaths=/usr/share/wallpapers/
 
@@ -66,7 +66,7 @@ DialogWidth=720
 
 [Containments][325][Applets][330][Configuration][General]
 iconSpacing=0
-launchers=preferred://filemanager,applications:org.kde.konsole.desktop,preferred://browser,applications:code.desktop,applications:zen.desktop,applications:systemsettings.desktop
+launchers=preferred://filemanager,applications:org.kde.konsole.desktop,preferred://browser,applications:code.desktop,applications:zen.desktop,applications:systemsettings.desktop,applications:org.kde.kate.desktop
 
 [Containments][325][Applets][331]
 activityId=
@@ -78,7 +78,7 @@ plugin=org.kde.plasma.folder
 wallpaperplugin=
 
 [Containments][325][Applets][331][Configuration]
-PreloadWeight=55
+PreloadWeight=60
 activityId=
 formfactor=0
 immutability=1
@@ -146,7 +146,7 @@ plugin=org.kde.plasma.kickoff
 [Containments][325][Applets][335][Configuration]
 PreloadWeight=100
 popupHeight=512
-popupWidth=689
+popupWidth=707
 
 [Containments][325][Applets][335][Configuration][ConfigDialog]
 DialogHeight=540
@@ -205,7 +205,7 @@ immutability=1
 plugin=org.kde.plasma.systemtray
 
 [Containments][338][Applets][345][Configuration]
-PreloadWeight=55
+PreloadWeight=95
 SystrayContainmentId=346
 
 [Containments][338][Applets][362]
@@ -213,7 +213,7 @@ immutability=1
 plugin=org.kde.plasma.calendar
 
 [Containments][338][Applets][362][Configuration]
-PreloadWeight=70
+PreloadWeight=75
 popupHeight=400
 popupWidth=378
 
@@ -287,7 +287,7 @@ immutability=1
 plugin=org.kde.plasma.volume
 
 [Containments][346][Applets][355][Configuration]
-PreloadWeight=75
+PreloadWeight=100
 
 [Containments][346][Applets][355][Configuration][General]
 migrated=true
@@ -305,28 +305,28 @@ immutability=1
 plugin=org.kde.plasma.battery
 
 [Containments][346][Applets][358][Configuration]
-PreloadWeight=42
+PreloadWeight=0
 
 [Containments][346][Applets][359]
 immutability=1
 plugin=org.kde.plasma.brightness
 
 [Containments][346][Applets][359][Configuration]
-PreloadWeight=47
+PreloadWeight=0
 
 [Containments][346][Applets][360]
 immutability=1
 plugin=org.kde.plasma.bluetooth
 
 [Containments][346][Applets][360][Configuration]
-PreloadWeight=55
+PreloadWeight=44
 
 [Containments][346][Applets][361]
 immutability=1
 plugin=org.kde.plasma.networkmanagement
 
 [Containments][346][Applets][361][Configuration]
-PreloadWeight=95
+PreloadWeight=100
 
 [Containments][346][Applets][368]
 immutability=1
