@@ -43,5 +43,5 @@
   "editor.experimental.preferTreeSitter.typescript": true,
   "reactSnippets.settings.importReactOnTop": false,
   "reactSnippets.settings.prettierEnabled": true,
-  "workbench.colorTheme": "Atom One Darker"
+  "workbench.colorTheme": "One Dark Pro Monokai Darker"
 }
