@@ -78,20 +78,30 @@ alias la='ls -A'
 alias codium='codium --enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime' # VSCodium wayland mode
 
 # Git Aliases
-alias gs='git status'
+alias gi='git init'
+alias gs='git status --short'
 alias ga='git add'
 alias gc='git commit'
 alias gcm='git commit -m'
 alias gp='git push'
-alias gl='git log --oneline --graph --decorate --all'
+alias gpl='git pull'
 alias gd='git diff'
+alias gb='git branch'
+alias gl='git log --oneline --graph --decorate --all'
 alias gco='git checkout'
 alias gcb='git checkout -b'
-alias gb='git branch'
 alias gr='git remote -v'
-alias gpl='git pull'
 alias gfa='git fetch --all'
 alias gsu='git branch --set-upstream-to=origin/main'
+
+# -----------------------------------
+# QT Configuration for Kate Editor UI Scaling
+# -----------------------------------
+# export QT_SCALE_FACTOR=1.3 # Scales entire Qt UI (e.g., Kate sidebar, menus)
+# export QT_FONT_DPI=120 # Adjusts only font DPI for better readability
+
+# unset QT_SCALE_FACTOR
+# unset QT_FONT_DPI
 
 # -----------------------------------
 # Development Environment Setup
