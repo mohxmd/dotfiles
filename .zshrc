@@ -1,3 +1,5 @@
+# Add deno completions to search path
+if [[ ":$FPATH:" != *":/home/mohammedsh/.zsh/completions:"* ]]; then export FPATH="/home/mohammedsh/.zsh/completions:$FPATH"; fi
 # -----------------------------------
 # Powerlevel10k Instant Prompt Setup
 # -----------------------------------
@@ -58,13 +60,13 @@ mcd() {
 
 # Initialize git and GitHub repo
 ginit() {
-    git init
-    git branch -M main
-    gh repo create "$(basename "$PWD")" --public --source=local
-    git add .
-    git commit -m "Initial commit"
-    git push -u origin main
-    echo "Project initialized and pushed to GitHub!"
+  git init
+  git branch -M main
+  gh repo create "$(basename "$PWD")" --public --source=local
+  git add .
+  git commit -m "Initial commit"
+  git push -u origin main
+  echo "Project initialized and pushed to GitHub!"
 }
 
 # -----------------------------------
@@ -73,7 +75,7 @@ ginit() {
 # General Aliases
 alias c='clear'
 alias lsd='ls -d */'
-alias lt='ls -lt'
+# alias lt='ls -lt'
 alias la='ls -A'
 alias codium='codium --enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime' # VSCodium wayland mode
 
@@ -95,17 +97,16 @@ alias gfa='git fetch --all'
 alias gsu='git branch --set-upstream-to=origin/main'
 
 # -----------------------------------
-# QT Configuration for Kate Editor UI Scaling
+# Load all custom
 # -----------------------------------
-# export QT_SCALE_FACTOR=1.3 # Scales entire Qt UI (e.g., Kate sidebar, menus)
-# export QT_FONT_DPI=120 # Adjusts only font DPI for better readability
-
-# unset QT_SCALE_FACTOR
-# unset QT_FONT_DPI
+for script in ~/.config/zsh/scripts/*.zsh; do
+  source "$script"
+done
 
 # -----------------------------------
 # Development Environment Setup
 # -----------------------------------
+
 # GO
 export GOROOT=$HOME/Developer/go
 export PATH=$PATH:$GOROOT/bin
