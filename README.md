@@ -1,54 +1,37 @@
-# My dotfiles
+# Dotfiles
 
-This directory contains the dotfiles for my system
+Minimal dotfiles with profile-based symlinking.
 
-## Requirements
+## Structure
 
-Ensure you have the following installed on your system
+- `./.config` and `./.zshrc`: linkable config files
+- `./assets`: non-link files (wallpapers, fonts, avatars, images, ICC)
 
-### Git
+## Install
 
-```
-pacman -S git
-```
-
-### Stow
-
-```
-pacman -S stow
+```bash
+git clone https://github.com/mhdZhHan/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+./setup.sh --profile auto
 ```
 
-## Neovim Dependencies
+## Profiles
 
-To use the Neovim configuration successfully, install the following:
+- `kde`: links Plasma + Code + VSCodium + nvim + shell
+- `gnome`: links Code + nvim + shell
+- `mac`: links Code + nvim + shell
+- `minimal`: links shell only
 
-### ripgrep
+## Useful options
 
-Ripgrep is required for the Telescope fuzzy live_grep search functionality in Neovim.
-
-```
-pacman -S ripgrep
-```
-
-### unzip
-
-Unzip is required for unzipping archives during lazy installation processes.
-
-```
-pacman -S unzip
+```bash
+./setup.sh --profile gnome --without code
+./setup.sh --profile minimal --with nvim
+./setup.sh --dry-run --profile kde
 ```
 
-## Installation
+## Refresh repo from current machine
 
-First, check out the dotfiles repo in your $HOME directory using git
-
-```
-$ git clone https://github.com/mhdZhHan/dotfiles.git
-$ cd dotfiles
-```
-
-then use GNU stow to create symlinks
-
-```
-$ stow .
+```bash
+./scripts/sync-current-config.sh
 ```

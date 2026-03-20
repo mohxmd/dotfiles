@@ -1,5 +1,5 @@
 # Add deno completions to search path
-if [[ ":$FPATH:" != *":/home/mohammedsh/.zsh/completions:"* ]]; then export FPATH="/home/mohammedsh/.zsh/completions:$FPATH"; fi
+if [[ ":$FPATH:" != *":$HOME/.zsh/completions:"* ]]; then export FPATH="$HOME/.zsh/completions:$FPATH"; fi
 # -----------------------------------
 # Powerlevel10k Instant Prompt Setup
 # -----------------------------------
@@ -96,10 +96,43 @@ alias gr='git remote -v'
 alias gfa='git fetch --all'
 alias gsu='git branch --set-upstream-to=origin/main'
 
+# Docker Aliases (CLI-first, no Docker Desktop needed)
+alias dk='docker'
+alias dki='docker images'
+alias dkps='docker ps'
+alias dkpa='docker ps -a'
+alias dkrm='docker rm'
+alias dkrmi='docker rmi'
+alias dkstart='docker start'
+alias dkstop='docker stop'
+alias dkrestart='docker restart'
+alias dklogs='docker logs -f'
+alias dkexec='docker exec -it'
+alias dkprune='docker system prune'
+
+# Docker Compose aliases (supports both `docker compose` and `docker-compose`)
+if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+  alias dkc='docker compose'
+  alias dkcu='docker compose up -d'
+  alias dkcd='docker compose down'
+  alias dkcr='docker compose restart'
+  alias dkcl='docker compose logs -f'
+  alias dkcps='docker compose ps'
+else
+  alias dkc='docker-compose'
+  alias dkcu='docker-compose up -d'
+  alias dkcd='docker-compose down'
+  alias dkcr='docker-compose restart'
+  alias dkcl='docker-compose logs -f'
+  alias dkcps='docker-compose ps'
+fi
+
+export QT_SCALE_FACTOR=1.3
+
 # -----------------------------------
 # Load all custom
 # -----------------------------------
-for script in ~/.config/zsh/scripts/*.zsh; do
+for script in ~/.config/zsh/scripts/*.zsh(N); do
   source "$script"
 done
 
@@ -108,8 +141,8 @@ done
 # -----------------------------------
 
 # GO
-export GOROOT=$HOME/Developer/go
-export PATH=$PATH:$GOROOT/bin
+# export GOROOT="$HOME/Developer/go"
+# export PATH="$PATH:$GOROOT/bin"
 
 # NVM (Node Version Manager)
 export NVM_DIR="$HOME/.nvm"
@@ -120,5 +153,37 @@ export NVM_DIR="$HOME/.nvm"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
+# Flutter
+export PATH="$HOME/Developer/flutter/bin:$PATH"
+
+# Android SDK
+export ANDROID_HOME="$HOME/Android/Sdk"
+export PATH="$PATH:$ANDROID_HOME/emulator"
+export PATH="$PATH:$ANDROID_HOME/tools"
+export PATH="$PATH:$ANDROID_HOME/tools/bin"
+export PATH="$PATH:$ANDROID_HOME/platform-tools"
+
 # Powerlevel10k Configuration
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Deno
+[ -f "$HOME/.deno/env" ] && . "$HOME/.deno/env"
+
+# Local user env
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
+
+# Turso
+export PATH="$PATH:$HOME/.turso"
+
+# pnpm
+export PNPM_HOME="$HOME/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# opencode
+export PATH="$HOME/.opencode/bin:$PATH"
