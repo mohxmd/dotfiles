@@ -9,8 +9,6 @@ burkeholland.simple-react-snippets
 christian-kohler.path-intellisense
 cweijan.dbclient-jdbc
 cweijan.vscode-postgresql-client2
-dart-code.dart-code
-dart-code.flutter
 denoland.vscode-deno
 dereckdamphouse.atom-just-black
 dsznajder.es7-react-js-snippets
@@ -25,16 +23,13 @@ formulahendry.auto-close-tag
 formulahendry.auto-rename-tag
 fosshaas.fontsize-shortcuts
 github.copilot-chat
-google.geminicodeassist
 graphql.vscode-graphql
 graphql.vscode-graphql-syntax
 humao.rest-client
 inferrinizzard.prettier-sql-vscode
-jinxdash.prettier-rust
 kde.breeze
 mathiasfrohlich.kotlin
-ms-azuretools.vscode-containers
-ms-azuretools.vscode-docker
+matthewpi.caddyfile-support
 nur.just-black
 openai.chatgpt
 rangav.vscode-thunder-client
@@ -49,4 +44,3 @@ unifiedjs.vscode-mdx
 vscode-icons-team.vscode-icons
 waderyan.gitblame
 yoavbls.pretty-ts-errors
-zamerick.vscode-caddyfile-syntax

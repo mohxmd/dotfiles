@@ -132,7 +132,7 @@ export QT_SCALE_FACTOR=1.3
 # -----------------------------------
 # Load all custom
 # -----------------------------------
-for script in ~/.config/zsh/scripts/*.zsh(N); do
+for script in ~/.config/zsh/modules/*.zsh(N); do
   source "$script"
 done
 

@@ -164,7 +164,7 @@ echo "profile: $PROFILE"
 echo "groups: ${ACTIVE_GROUPS[*]}"
 
 should_link core && link_file ".zshrc"
-should_link core && link_file ".config/zsh/scripts/adb-phone.zsh"
+should_link core && link_file ".config/zsh/modules/adb-device.zsh"
 
 should_link nvim && link_file ".config/nvim"
 
