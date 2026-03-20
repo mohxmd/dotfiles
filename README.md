@@ -4,7 +4,7 @@ Minimal dotfiles with profile-based symlinking.
 
 ## Structure
 
-- `./.config` and `./.zshrc`: linkable config files
+- `./.config`, `./.local`, and `./.zshrc`: linkable config files
 - `./assets`: non-link files (wallpapers, fonts, avatars, images, ICC)
 
 ## Install

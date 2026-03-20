@@ -176,5 +176,6 @@ should_link vscodium && link_file ".config/VSCodium/User/settings.json"
 should_link vscodium && link_file ".config/VSCodium/User/keybindings.json"
 
 should_link plasma && link_file ".config/plasma-org.kde.plasma.desktop-appletsrc"
+should_link plasma && link_file ".local/share/plasma/plasmoids"
 
 echo "setup complete"
