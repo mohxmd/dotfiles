@@ -311,7 +311,7 @@ vallpaper6={"deskNo":0\\,"timeslots":{"00:00":{"slotmarker":"00:00"\\,"backgroun
 command=dolphin
 
 [Containments][382][Wallpaper][org.kde.image][General]
-Image=file:///usr/share/wallpapers/MilkyWay/
+Image=/home/mohammedsh/dotfiles/assets/wallpapers/1388416.png
 SlidePaths=/usr/share/wallpapers/
 
 [Containments][382][Wallpaper][org.kde.potd][General]
@@ -329,6 +329,9 @@ lastScreen=1
 location=0
 plugin=org.kde.plasma.folder
 wallpaperplugin=org.kde.image
+
+[Containments][383][Wallpaper][org.kde.image][General]
+Image=/home/mohammedsh/dotfiles/assets/wallpapers/1388416.png
 
 [ScreenMapping]
 itemsOnDisabledScreens=1,8869d3b2-e2b9-47c4-9f93-e2d44be8b5be,1,desktop:/new-project
