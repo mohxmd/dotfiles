@@ -1,0 +1,35 @@
+{
+  "bun test file": {
+    "prefix": "btdt",
+    "body": [
+      "import { describe, test, expect } from 'bun:test'",
+      "import type { TestCase } from '@/types/testcase'",
+      "",
+      "const cases: TestCase<${1:InputType}, ${2:WantType}>[] = [",
+      "  {",
+      "    name: '${3:should do something}',",
+      "    input: ${4:inputValue},",
+      "    want: ${5:expectedValue}",
+      "  },",
+      "  // more cases...",
+      "]",
+      "",
+      "describe('${6:SuiteName}', () => {",
+      "  for (const c of cases) {",
+      "    test(c.name, () => {",
+      "      const got = ${7:fnToTest}(c.input)",
+      "",
+      "      if (c.wantError) {",
+      "        expect(() => got).toThrow(c.wantError)",
+      "        return",
+      "      }",
+      "",
+      "      expect(got).toEqual(c.want)",
+      "    })",
+      "  }",
+      "})",
+      ""
+    ],
+    "description": "Bun test file with TestCase support"
+  }
+}
