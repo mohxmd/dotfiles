@@ -1,64 +1,14 @@
-# Add deno completions to search path
-if [[ ":$FPATH:" != *":$HOME/.zsh/completions:"* ]]; then export FPATH="$HOME/.zsh/completions:$FPATH"; fi
 # -----------------------------------
-# Powerlevel10k Instant Prompt Setup
+# Helper Functions
 # -----------------------------------
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+add_to_path() {
+  [[ -d "$1" ]] && export PATH="$1:$PATH"
+}
 
-# ----------------------
-# Oh My Zsh Configuration
-# ----------------------
-export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="powerlevel10k/powerlevel10k"
-
-# Plugins
-plugins=(
-  git
-  zsh-autosuggestions
-  zsh-syntax-highlighting
-  # fast-syntax-highlighting
-  # zsh-autocomplete
-)
-source $ZSH/oh-my-zsh.sh
-
-# -----------------------------------
-# Shell Performance Optimizations
-# -----------------------------------
-# History Configuration
-HISTFILE="$HOME/.zsh_history"
-HISTSIZE=5000
-SAVEHIST=5000
-
-# History Options
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_IGNORE_SPACE
-unsetopt inc_append_history
-
-# Autocomplete and Completion
-export COMPLETION_WAIT=0.5
-export KEYTIMEOUT=10
-
-# Completion Styles
-zstyle ':completion:*' menu select
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
-
-# Performance Tweaks
-ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(bracketed-paste)
-unsetopt BEEP
-FAST_HIGHLIGHTING_DELAY=0
-DISABLE_UPDATE_PROMPT=true
-
-# -----------------------------------
-# Custom Functions
-# -----------------------------------
-# Make directory and enter it
 mcd() {
   mkdir -p "$1" && cd "$1"
 }
 
-# Initialize git and GitHub repo
 ginit() {
   git init
   git branch -M main
@@ -70,17 +20,93 @@ ginit() {
 }
 
 # -----------------------------------
-# Alias Configurations
+# Shell Options
 # -----------------------------------
-# General Aliases
-alias c='clear'
-alias lsd='ls -d */'
-# alias lt='ls -lt'
-alias la='ls -A'
-alias codium='codium --enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime' # VSCodium wayland mode
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 
-# Git Aliases
-alias gi='git init'
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=5000
+SAVEHIST=5000
+
+setopt AUTO_CD
+setopt INTERACTIVE_COMMENTS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+unsetopt inc_append_history
+unsetopt BEEP
+
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+export COMPLETION_WAIT=0.1
+export KEYTIMEOUT=10
+
+# -----------------------------------
+# Oh My Zsh (plugins & framework)
+# -----------------------------------
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME=""
+
+plugins=(
+  git
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+)
+
+source $ZSH/oh-my-zsh.sh
+
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(bracketed-paste)
+DISABLE_UPDATE_PROMPT=true
+
+# -----------------------------------
+# Starship (prompt)
+# -----------------------------------
+eval "$(starship init zsh)"
+
+# -----------------------------------
+# PATH
+# -----------------------------------
+if [[ ":$FPATH:" != *":$HOME/.zsh/completions:"* ]]; then
+  export FPATH="$HOME/.zsh/completions:$FPATH"
+fi
+
+export ANDROID_HOME="$HOME/Android/Sdk"
+
+add_to_path "$HOME/.local/bin"
+add_to_path "$HOME/.opencode/bin"
+add_to_path "$HOME/.turso"
+add_to_path "$HOME/.bun/bin"
+add_to_path "$HOME/Developer/flutter/bin"
+add_to_path "$ANDROID_HOME/platform-tools"
+add_to_path "$ANDROID_HOME/tools/bin"
+add_to_path "$ANDROID_HOME/tools"
+add_to_path "$ANDROID_HOME/emulator"
+
+# NVM
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# PNPM
+export PNPM_HOME="$HOME/.local/share/pnpm"
+add_to_path "$PNPM_HOME"
+
+# Bun
+add_to_path "$HOME/.bun/bin"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# Deno
+[ -f "$HOME/.deno/env" ] && . "$HOME/.deno/env"
+
+# -----------------------------------
+# Aliases
+# -----------------------------------
+alias c='clear'
+alias la='ls -A'
+alias lsd='ls -d */'
+alias codium='codium --enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime'
+
+# Git
 alias gs='git status --short'
 alias ga='git add'
 alias gc='git commit'
@@ -92,25 +118,26 @@ alias gb='git branch'
 alias gl='git log --oneline --graph --decorate --all'
 alias gco='git checkout'
 alias gcb='git checkout -b'
-alias gr='git remote -v'
+alias gst='git stash'
+alias gstp='git stash pop'
 alias gfa='git fetch --all'
-alias gsu='git branch --set-upstream-to=origin/main'
+alias gr='git remote -v'
+alias gm='git merge'
+alias grb='git rebase'
 
-# Docker Aliases (CLI-first, no Docker Desktop needed)
+# Docker
 alias dk='docker'
 alias dki='docker images'
 alias dkps='docker ps'
 alias dkpa='docker ps -a'
 alias dkrm='docker rm'
 alias dkrmi='docker rmi'
-alias dkstart='docker start'
 alias dkstop='docker stop'
-alias dkrestart='docker restart'
 alias dklogs='docker logs -f'
 alias dkexec='docker exec -it'
-alias dkprune='docker system prune'
+alias dkprune='docker system prune -af'
 
-# Docker Compose aliases (supports both `docker compose` and `docker-compose`)
+# Docker Compose
 if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
   alias dkc='docker compose'
   alias dkcu='docker compose up -d'
@@ -118,6 +145,7 @@ if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; 
   alias dkcr='docker compose restart'
   alias dkcl='docker compose logs -f'
   alias dkcps='docker compose ps'
+  alias dkcb='docker compose build'
 else
   alias dkc='docker-compose'
   alias dkcu='docker-compose up -d'
@@ -125,65 +153,14 @@ else
   alias dkcr='docker-compose restart'
   alias dkcl='docker-compose logs -f'
   alias dkcps='docker-compose ps'
+  alias dkcb='docker-compose build'
 fi
 
-export QT_SCALE_FACTOR=1.3
-
 # -----------------------------------
-# Load all custom
+# Custom Modules
 # -----------------------------------
 for script in ~/.config/zsh/modules/*.zsh(N); do
   source "$script"
 done
 
-# -----------------------------------
-# Development Environment Setup
-# -----------------------------------
-
-# GO
-# export GOROOT="$HOME/Developer/go"
-# export PATH="$PATH:$GOROOT/bin"
-
-# NVM (Node Version Manager)
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-# Bun (JavaScript bundler)
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
-# Flutter
-export PATH="$HOME/Developer/flutter/bin:$PATH"
-
-# Android SDK
-export ANDROID_HOME="$HOME/Android/Sdk"
-export PATH="$PATH:$ANDROID_HOME/emulator"
-export PATH="$PATH:$ANDROID_HOME/tools"
-export PATH="$PATH:$ANDROID_HOME/tools/bin"
-export PATH="$PATH:$ANDROID_HOME/platform-tools"
-
-# Powerlevel10k Configuration
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-# Deno
-[ -f "$HOME/.deno/env" ] && . "$HOME/.deno/env"
-
-# Local user env
-[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
-
-# Turso
-export PATH="$PATH:$HOME/.turso"
-
-# pnpm
-export PNPM_HOME="$HOME/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-
-# bun completions
-[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
-
-# opencode
-export PATH="$HOME/.opencode/bin:$PATH"
+export QT_SCALE_FACTOR=1.3
