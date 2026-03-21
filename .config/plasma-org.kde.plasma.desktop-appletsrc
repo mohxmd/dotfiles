@@ -38,7 +38,7 @@ DialogWidth=720
 
 [Containments][325][Applets][330][Configuration][General]
 iconSpacing=0
-launchers=preferred://browser,applications:code.desktop,preferred://filemanager,applications:org.kde.konsole.desktop,applications:firefox.desktop,applications:zen.desktop,applications:kate-scale.desktop,file:///usr/share/applications/discord.desktop,applications:org.kde.plasma-systemmonitor.desktop,applications:systemsettings.desktop,applications:org.kde.ktorrent.desktop,applications:antigravity.desktop
+launchers=preferred://browser,applications:code.desktop,preferred://filemanager,applications:firefox.desktop,applications:org.kde.konsole.desktop,applications:zen.desktop,applications:kate-scale.desktop,file:///usr/share/applications/discord.desktop,applications:org.kde.plasma-systemmonitor.desktop,applications:systemsettings.desktop,applications:org.kde.ktorrent.desktop,applications:antigravity.desktop
 
 [Containments][325][Applets][332]
 activityId=
@@ -299,9 +299,9 @@ DialogHeight=642
 DialogWidth=956
 
 [Containments][382][General]
-changedPositions={"desktop:/art-era":["1745x982","0","3"],"desktop:/bun-load-balancer":["1745x982","1","2"],"desktop:/ferrodroid-lab":["1745x982","1","1"],"desktop:/oryft":["1745x982","0","1"],"desktop:/rent-alert":["1745x982","0","0"],"desktop:/saas-auth":["1745x982","0","2"],"desktop:/still-fuckingggggg.ts":["1745x982","0","14"]}
+changedPositions={"desktop:/art-era":["1745x982","1","2"],"desktop:/bun-load-balancer":["1745x982","1","1"],"desktop:/company":["1745x982","2","8"],"desktop:/ferrodroid-lab":["1745x982","1","0"],"desktop:/oryft":["1745x982","0","1"],"desktop:/rent-alert":["1745x982","0","0"],"desktop:/saas-auth":["1745x982","0","2"],"desktop:/still-fuckingggggg.ts":["1745x982","0","14"]}
 lastResolution=1745x982
-positions={"1745x982":["2","16","desktop:/art-era","0","3","desktop:/oryft","0","1","desktop:/ferrodroid-lab","1","1","desktop:/still-fuckingggggg.ts","0","14","desktop:/io-types-bin","1","15","desktop:/docker-notes.md","0","15","desktop:/rent-alert","0","0","desktop:/saas-auth","0","2","desktop:/bun-load-balancer","1","2"]}
+positions={"1745x982":["3","16","desktop:/oryft","0","1","desktop:/bun-load-balancer","1","1","desktop:/io-types-bin","1","15","desktop:/docker-notes.md","0","15","desktop:/still-fuckingggggg.ts","0","14","desktop:/saas-auth","0","2","desktop:/ferrodroid-lab","1","0","desktop:/rent-alert","0","0","desktop:/art-era","1","2","desktop:/company","2","8"]}
 sortMode=-1
 
 [Containments][382][Wallpaper][at.lehklu.plasma.vallpaper6][Settings]
@@ -311,7 +311,7 @@ vallpaper6={"deskNo":0\\,"timeslots":{"00:00":{"slotmarker":"00:00"\\,"backgroun
 command=dolphin
 
 [Containments][382][Wallpaper][org.kde.image][General]
-Image=/home/mohammedsh/dotfiles/assets/wallpapers/1388416.png
+Image=/home/mohammedsh/dotfiles/assets/wallpapers/1405580.png
 SlidePaths=/usr/share/wallpapers/
 
 [Containments][382][Wallpaper][org.kde.potd][General]
@@ -331,8 +331,8 @@ plugin=org.kde.plasma.folder
 wallpaperplugin=org.kde.image
 
 [Containments][383][Wallpaper][org.kde.image][General]
-Image=/home/mohammedsh/dotfiles/assets/wallpapers/1388416.png
+Image=/home/mohammedsh/dotfiles/assets/wallpapers/1405580.png
 
 [ScreenMapping]
 itemsOnDisabledScreens=1,8869d3b2-e2b9-47c4-9f93-e2d44be8b5be,1,desktop:/new-project
-screenMapping=desktop:/axum-demo,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/art-era,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:🍁,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/ferrodroid-lab,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/still-fuckingggggg.ts,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/docker-notes.md,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/io-types-bin,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/need-in-inkspire.txt,0,c43aa4cd-554d-43e8-a704-0a102701ae6c,desktop:/rent-alert,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/oryft,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/bun-load-balancer,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/saas-auth,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,file:///home/mohammedsh/Desktop/🍁,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab
+screenMapping=desktop:/rent-alert,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/still-fuckingggggg.ts,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/axum-demo,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:🍁,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/docker-notes.md,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/ferrodroid-lab,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/company,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/bun-load-balancer,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/oryft,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/art-era,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/need-in-inkspire.txt,0,c43aa4cd-554d-43e8-a704-0a102701ae6c,file:///home/mohammedsh/Desktop/🍁,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/io-types-bin,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/saas-auth,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab
