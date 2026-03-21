@@ -16,6 +16,11 @@ if [[ -d "$HOME/.local/share/plasma/plasmoids" && ! -L "$HOME/.local/share/plasm
   cp -r "$HOME/.local/share/plasma/plasmoids" "$DOTFILES_DIR/.local/share/plasma/"
 fi
 
+if [[ -d "$HOME/.local/share/color-schemes" && ! -L "$HOME/.local/share/color-schemes" ]]; then
+  rm -rf "$DOTFILES_DIR/.local/share/color-schemes"
+  cp -r "$HOME/.local/share/color-schemes" "$DOTFILES_DIR/.local/share/"
+fi
+
 if [[ -f "$HOME/.config/zsh/modules/adb-device.zsh" ]]; then
   cp -f "$HOME/.config/zsh/modules/adb-device.zsh" "$DOTFILES_DIR/.config/zsh/modules/adb-device.zsh" 2>/dev/null || true
 elif [[ -f "$HOME/.config/zsh/scripts/adb-phone.zsh" ]]; then

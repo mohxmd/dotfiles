@@ -6,6 +6,7 @@
 ADB_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/adb-device"
 ADB_LAST_ENDPOINT_FILE="$ADB_CACHE_DIR/last-endpoint"
 ADB_DEFAULT_PORT="5555"
+ADB_TIMEOUT_SECS="8"
 
 _adb_ok() {
   if ! command -v adb >/dev/null 2>&1; then
@@ -39,7 +40,33 @@ _adb_load_endpoint() {
 
 _adb_connect_endpoint() {
   local endpoint="$1"
-  adb connect "$endpoint" 2>/dev/null | grep -Eq "connected to|already connected to"
+  local out
+  if command -v timeout >/dev/null 2>&1; then
+    out="$(timeout "$ADB_TIMEOUT_SECS" adb connect "$endpoint" 2>&1)" || return 1
+  elif command -v gtimeout >/dev/null 2>&1; then
+    out="$(gtimeout "$ADB_TIMEOUT_SECS" adb connect "$endpoint" 2>&1)" || return 1
+  else
+    out="$(adb connect "$endpoint" 2>&1)" || return 1
+  fi
+
+  print -r -- "$out" | grep -Eq "connected to|already connected to"
+}
+
+_adb_tls_serial() {
+  adb devices | awk 'NR>1 && $1 ~ /^adb-.*_adb-tls-connect\._tcp$/ && $2=="device" {print $1; exit}'
+}
+
+_adb_wait_for_tls() {
+  local i tls
+  for i in {1..6}; do
+    tls="$(_adb_tls_serial)"
+    if [[ -n "$tls" ]]; then
+      print -r -- "$tls"
+      return 0
+    fi
+    sleep 1
+  done
+  return 1
 }
 
 adb-fix() {
@@ -55,6 +82,8 @@ adb-status() {
   adb devices
   local last="$(_adb_load_endpoint)"
   [[ -n "$last" ]] && echo "last wireless endpoint: $last"
+  local tls="$(_adb_tls_serial)"
+  [[ -n "$tls" ]] && echo "wireless tls device: $tls"
 }
 
 # Use with USB connected at least once.
@@ -72,10 +101,20 @@ adb-wifi() {
     return 1
   fi
 
-  adb -s "$dev" tcpip "$port" >/dev/null || {
+  echo "USB device: $dev"
+  echo "Enabling TCP/IP on port $port..."
+
+  if command -v timeout >/dev/null 2>&1; then
+    timeout "$ADB_TIMEOUT_SECS" adb -s "$dev" tcpip "$port" >/dev/null
+  elif command -v gtimeout >/dev/null 2>&1; then
+    gtimeout "$ADB_TIMEOUT_SECS" adb -s "$dev" tcpip "$port" >/dev/null
+  else
+    adb -s "$dev" tcpip "$port" >/dev/null
+  fi
+  if [[ $? -ne 0 ]]; then
     echo "Failed to enable tcpip mode on device $dev"
     return 1
-  }
+  fi
 
   sleep 1
 
@@ -86,9 +125,20 @@ adb-wifi() {
   fi
 
   endpoint="$ip:$port"
+  echo "Connecting to $endpoint..."
   if _adb_connect_endpoint "$endpoint"; then
     _adb_save_endpoint "$endpoint"
     echo "Connected: $endpoint"
+    echo "Tip: next time run: adb-reconnect"
+    return 0
+  fi
+
+  # Newer Android wireless debugging may connect via TLS/mDNS serial instead of ip:port.
+  local tls
+  tls="$(_adb_wait_for_tls)"
+  if [[ -n "$tls" ]]; then
+    _adb_save_endpoint "tls:$tls"
+    echo "Connected via wireless TLS/mDNS: $tls"
     echo "Tip: next time run: adb-reconnect"
     return 0
   fi
@@ -107,6 +157,21 @@ adb-reconnect() {
 
   if [[ -z "$endpoint" ]]; then
     echo "No saved endpoint. First run: adb-wifi (with USB connected)."
+    return 1
+  fi
+
+  # If wireless TLS is already connected, we're done.
+  local tls
+  tls="$(_adb_tls_serial)"
+  if [[ -n "$tls" ]]; then
+    echo "Connected via wireless TLS/mDNS: $tls"
+    return 0
+  fi
+
+  # Saved TLS marker from previous successful adb-wifi run.
+  if [[ "$endpoint" == tls:* ]]; then
+    echo "Saved endpoint is TLS/mDNS mode."
+    echo "Open phone Wireless debugging and keep same network, then retry adb-reconnect."
     return 1
   fi
 
