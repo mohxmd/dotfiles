@@ -92,3 +92,9 @@ Java notes:
 # override when needed:
 JAVA_DEFAULT_ENV=java-24-openjdk ./run java
 ```
+
+## Credits
+
+- ICC profiles in `assets/icc/` are sourced from:
+  https://github.com/ien646/gamma-icc
+- See `assets/icc/LICENSE` and `assets/icc/README.md` for attribution and licensing.
