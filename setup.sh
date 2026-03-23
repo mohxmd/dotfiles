@@ -170,6 +170,7 @@ should_link core && link_file ".local/bin/fix-hdmi-audio"
 should_link core && link_file ".local/bin/search"
 should_link core && link_file ".local/bin/image-request"
 should_link core && link_file ".local/bin/video-to-ascii"
+should_link core && link_file ".local/bin/cloudflared-init"
 
 should_link nvim && link_file ".config/nvim"
 

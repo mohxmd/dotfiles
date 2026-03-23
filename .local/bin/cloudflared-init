@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CONFIG_DIR="$ROOT_DIR/cloudflared/configs"
+# Initialize Cloudflare Tunnel config in this dotfiles repo.
+# Usage: cloudflared-init <tunnel-name> <hostname> [service-url]
+
+script_path="$(readlink -f "${BASH_SOURCE[0]}")"
+repo_root="$(cd "$(dirname "$script_path")/../.." && pwd)"
+config_dir="$repo_root/cloudflared/configs"
 
 usage() {
   cat <<'EOF'
 Usage:
-  ./run cloudflared-init <tunnel-name> <hostname> [service-url]
+  cloudflared-init <tunnel-name> <hostname> [service-url]
 
 Example:
-  ./run cloudflared-init my-tunnel api.example.com http://localhost:8080
+  cloudflared-init my-tunnel api.example.com http://localhost:8080
 EOF
 }
 
@@ -40,7 +44,7 @@ if [[ ! -f "$origincert" ]]; then
   exit 1
 fi
 
-mkdir -p "$CONFIG_DIR"
+mkdir -p "$config_dir"
 
 if cloudflared tunnel info "$tunnel_name" >/dev/null 2>&1; then
   echo "[cloudflared-init] Tunnel exists: $tunnel_name"
@@ -74,7 +78,7 @@ if [[ ! -f "$credentials_file" ]]; then
   echo "Tunnel might have been created on another machine." >&2
 fi
 
-config_path="$CONFIG_DIR/$tunnel_name.yml"
+config_path="$config_dir/$tunnel_name.yml"
 cat > "$config_path" <<EOF
 tunnel: $tunnel_id
 credentials-file: $credentials_file
@@ -88,5 +92,6 @@ EOF
 echo "[cloudflared-init] Wrote config: $config_path"
 echo "[cloudflared-init] Test locally:"
 echo "  cloudflared --config $config_path tunnel run"
+echo "  cloudflared tunnel run $tunnel_name"
 echo "[cloudflared-init] Install service:"
 echo "  CLOUDFLARED_CONFIG=$config_path ./run cloudflared"

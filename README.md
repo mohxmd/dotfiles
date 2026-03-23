@@ -30,6 +30,7 @@ cd ~/dotfiles
 - `.local/bin/search`
 - `.local/bin/image-request`
 - `.local/bin/video-to-ascii`
+- `.local/bin/cloudflared-init`
 
 ## Useful options
 
@@ -54,7 +55,7 @@ cd ~/dotfiles
 ./run dns-cloudflare
 ./run bluetooth
 ./run cloudflared
-./run cloudflared-init <tunnel-name> <hostname> [service-url]
+cloudflared-init <tunnel-name> <hostname> [service-url]
 ./run docker
 ./run java
 ./run postgres
@@ -80,7 +81,7 @@ ENABLE_DNS_CLOUDFLARE=1 ENABLE_BLUETOOTH=1 ./arch-bootstrap
 Cloudflared multi-project templates:
 
 ```bash
-./run cloudflared-init my-tunnel api.example.com http://localhost:8080
+cloudflared-init my-tunnel api.example.com http://localhost:8080
 CLOUDFLARED_CONFIG=./cloudflared/configs/my-tunnel.yml ./run cloudflared
 ```
 
