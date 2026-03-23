@@ -10,7 +10,7 @@ Minimal dotfiles with profile-based symlinking.
 ## Install
 
 ```bash
-git clone https://github.com/mhdZhHan/dotfiles.git ~/dotfiles
+git clone https://github.com/mohxmd/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ./setup.sh --profile auto
 ```
@@ -55,7 +55,6 @@ cd ~/dotfiles
 ./run dns-cloudflare
 ./run bluetooth
 ./run cloudflared
-cloudflared-init <tunnel-name> <hostname> [service-url]
 ./run docker
 ./run java
 ./run postgres
