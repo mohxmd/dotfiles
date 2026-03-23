@@ -1,0 +1,4 @@
+# Cloudflared local secrets/state
+cloudflared/*.pem
+cloudflared/*.json
+cloudflared/config.yml
