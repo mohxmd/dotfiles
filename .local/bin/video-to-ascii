@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -lt 1 || $# -gt 3 ]]; then
+  echo "Usage: $0 <video_file> [output_dir] [fps]" >&2
+  exit 1
+fi
+
+video_file="$1"
+output_dir="${2:-ascii}"
+fps="${3:-10}"
+
+if [[ ! -f "$video_file" ]]; then
+  echo "Video file not found: $video_file" >&2
+  exit 1
+fi
+
+if ! command -v ffmpeg >/dev/null 2>&1; then
+  echo "ffmpeg is required." >&2
+  exit 1
+fi
+
+if ! command -v jp2a >/dev/null 2>&1; then
+  echo "jp2a is required." >&2
+  exit 1
+fi
+
+if ! [[ "$fps" =~ ^[0-9]+$ ]] || [[ "$fps" -le 0 ]]; then
+  echo "fps must be a positive integer." >&2
+  exit 1
+fi
+
+mkdir -p "$output_dir/imgs" "$output_dir/frames"
+
+ffmpeg -hide_banner -loglevel error -i "$video_file" -vf "fps=$fps" "$output_dir/imgs/frame_%04d.png"
+
+for img in "$output_dir"/imgs/*.png; do
+  [[ -e "$img" ]] || continue
+  base="$(basename "$img" .png)"
+  jp2a --width=120 --color --output="$output_dir/frames/$base" "$img"
+done
+
+echo "ASCII frames saved to: $output_dir/frames"

@@ -1,0 +1,208 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Optional overrides:
+#   HDMI_CARD_NAME="alsa_card.pci-0000_c1_00.1" fix-hdmi-audio
+#   HDMI_LABEL="HDMI1" fix-hdmi-audio
+#   HDMI_PROFILE_INDEX=1 fix-hdmi-audio
+card_name="${HDMI_CARD_NAME:-}"
+preferred_hdmi_label="${1:-${HDMI_LABEL:-HDMI}}"
+forced_profile_index="${HDMI_PROFILE_INDEX:-}"
+
+if ! command -v wpctl >/dev/null 2>&1; then
+  echo "wpctl not found; install wireplumber tools." >&2
+  exit 1
+fi
+
+if ! command -v pw-dump >/dev/null 2>&1; then
+  echo "pw-dump not found; install pipewire." >&2
+  exit 1
+fi
+
+python_bin=""
+if command -v python3 >/dev/null 2>&1; then
+  python_bin="python3"
+elif command -v python >/dev/null 2>&1; then
+  python_bin="python"
+else
+  echo "python3/python not found; required for JSON parsing." >&2
+  exit 1
+fi
+
+initial_dump=$(mktemp)
+post_dump=$(mktemp)
+trap 'rm -f "$initial_dump" "$post_dump"' EXIT
+pw-dump > "$initial_dump"
+
+if ! card_info=$("$python_bin" - "$initial_dump" "$card_name" "$preferred_hdmi_label" <<'PY'
+import json
+import sys
+
+dump_file = sys.argv[1]
+forced_name = sys.argv[2]
+preferred = (sys.argv[3] or "").lower()
+
+with open(dump_file) as f:
+    data = json.load(f)
+
+devices = []
+for obj in data:
+    if not isinstance(obj, dict):
+        continue
+    if obj.get("type") != "PipeWire:Interface:Device":
+        continue
+    props = obj.get("info", {}).get("props", {})
+    params = obj.get("info", {}).get("params", {})
+    routes = params.get("EnumRoute", []) or []
+    profiles = params.get("EnumProfile", []) or []
+    devices.append({
+        "id": obj.get("id"),
+        "props": props,
+        "routes": routes,
+        "profiles": profiles,
+    })
+
+def hdmi_score(dev):
+    score = 0
+    text = " ".join(str(v) for v in dev["props"].values()).lower()
+    if "alsa" in text:
+        score += 1
+    for r in dev["routes"]:
+        d = str(r.get("description", "")).lower()
+        a = str(r.get("available", "")).lower()
+        if "hdmi" in d or "displayport" in d or "dp" in d:
+            score += 3
+            if a == "yes":
+                score += 2
+            if preferred and preferred in d:
+                score += 3
+    return score
+
+selected = None
+
+if forced_name:
+    for dev in devices:
+        name = str(dev["props"].get("device.name", ""))
+        nick = str(dev["props"].get("device.nick", ""))
+        if forced_name in name or forced_name in nick:
+            selected = dev
+            break
+
+if selected is None:
+    ranked = sorted(
+        (dev for dev in devices if dev.get("id") is not None),
+        key=hdmi_score,
+        reverse=True,
+    )
+    if ranked and hdmi_score(ranked[0]) > 0:
+        selected = ranked[0]
+
+if selected is None:
+    sys.exit(2)
+
+profile_idx = None
+for p in selected["profiles"]:
+    desc = str(p.get("description", "")).lower()
+    name = str(p.get("name", "")).lower()
+    avail = str(p.get("available", "")).lower()
+    if ("hdmi" in desc or "hdmi" in name) and avail in ("yes", "unknown", ""):
+        profile_idx = p.get("index")
+        break
+
+card_id = selected["id"]
+print(f"{card_id}\t{'' if profile_idx is None else profile_idx}")
+PY
+); then
+  echo "Could not detect an HDMI-capable audio card." >&2
+  exit 1
+fi
+
+card_id="$(awk '{print $1}' <<<"$card_info")"
+auto_profile_index="$(awk '{print $2}' <<<"$card_info")"
+
+if [[ -n "$forced_profile_index" ]]; then
+  wpctl set-profile "$card_id" "$forced_profile_index" || true
+elif [[ -n "${auto_profile_index:-}" ]]; then
+  wpctl set-profile "$card_id" "$auto_profile_index" || true
+fi
+
+pw-dump > "$post_dump"
+
+if ! sink_id=$("$python_bin" - "$card_id" "$preferred_hdmi_label" "$post_dump" <<'PY'
+import json
+import sys
+
+card_id = int(sys.argv[1])
+preferred = (sys.argv[2] or "").lower()
+
+with open(sys.argv[3]) as f:
+    data = json.load(f)
+
+sinks = []
+for obj in data:
+    if isinstance(obj, dict) and obj.get('type') == 'PipeWire:Interface:Node':
+        props = obj.get('info', {}).get('props', {})
+        if props.get('media.class') == 'Audio/Sink' and props.get('device.id') == card_id:
+            sinks.append((obj.get('id'), props.get('node.name', ''), props.get('node.description', '')))
+
+preferred_id = None
+for sink in sinks:
+    node_name = (sink[1] or "").lower()
+    node_desc = (sink[2] or "").lower()
+    if preferred in node_name or preferred in node_desc:
+        preferred_id = sink[0]
+        break
+
+if preferred_id is None and sinks:
+    preferred_id = sinks[0][0]
+
+if preferred_id is None:
+    sys.exit(2)
+
+print(preferred_id)
+PY
+); then
+  echo "No HDMI sinks found after profile change." >&2
+  exit 1
+fi
+
+if [[ -z "${sink_id:-}" ]]; then
+  echo "No HDMI sinks found after profile change." >&2
+  exit 1
+fi
+
+wpctl set-default "$sink_id"
+
+route_index=$("$python_bin" - "$card_id" "$preferred_hdmi_label" "$post_dump" <<'PY'
+import json
+import sys
+
+card_id = int(sys.argv[1])
+preferred = (sys.argv[2] or "").lower()
+
+with open(sys.argv[3]) as f:
+    data = json.load(f)
+
+route_index = None
+for obj in data:
+    if isinstance(obj, dict) and obj.get('type') == 'PipeWire:Interface:Device' and obj.get('id') == card_id:
+        params = obj.get('info', {}).get('params', {})
+        for route in params.get('EnumRoute', []):
+            if route.get('available') == 'yes' and preferred in str(route.get('description', '')).lower():
+                route_index = route.get('index')
+                break
+        break
+
+if route_index is not None:
+    print(route_index)
+PY
+)
+
+if [[ -n "${route_index:-}" ]]; then
+  wpctl set-route "$card_id" "$route_index" || true
+fi
+
+wpctl status | awk -v id="$sink_id" '
+  $1 ~ /^[0-9]+\.$/ {current=$1; sub("\.", "", current)}
+  current == id {print "Default HDMI sink set:", $0}
+'

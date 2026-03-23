@@ -166,6 +166,10 @@ echo "groups: ${ACTIVE_GROUPS[*]}"
 should_link core && link_file ".zshrc"
 should_link core && link_file ".config/starship.toml"
 should_link core && link_file ".config/zsh/modules/adb-device.zsh"
+should_link core && link_file ".local/bin/fix-hdmi-audio"
+should_link core && link_file ".local/bin/search"
+should_link core && link_file ".local/bin/image-request"
+should_link core && link_file ".local/bin/video-to-ascii"
 
 should_link nvim && link_file ".config/nvim"
 

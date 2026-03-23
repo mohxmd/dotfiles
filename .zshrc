@@ -125,6 +125,13 @@ alias gr='git remote -v'
 alias gm='git merge'
 alias grb='git rebase'
 
+# Turso
+alias t='turso'
+alias tdb='turso db'
+alias tls='turso db list'
+alias tsh='turso db shell'
+alias twho='turso auth whoami'
+
 # Docker
 alias dk='docker'
 alias dki='docker images'

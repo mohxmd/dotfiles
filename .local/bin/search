@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+search_engine="${SEARCH_ENGINE:-https://google.com/search?q=}"
+
+if [[ $# -gt 0 ]]; then
+  query="$*"
+else
+  if command -v rofi >/dev/null 2>&1; then
+    query="$(rofi -dmenu -p "Search")"
+  else
+    read -r -p "Search: " query
+  fi
+fi
+
+[[ -z "${query:-}" ]] && exit 0
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "jq is required for URL encoding." >&2
+  exit 1
+fi
+
+encoded_query="$(jq -rn --arg q "$query" '$q|@uri')"
+url="${search_engine}${encoded_query}"
+
+if [[ -n "${BROWSER:-}" ]] && command -v "${BROWSER%% *}" >/dev/null 2>&1; then
+  # shellcheck disable=SC2086
+  $BROWSER "$url" >/dev/null 2>&1 &
+elif command -v xdg-open >/dev/null 2>&1; then
+  xdg-open "$url" >/dev/null 2>&1 &
+else
+  echo "No browser launcher found. Install xdg-open or set BROWSER." >&2
+  exit 1
+fi

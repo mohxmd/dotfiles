@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+[[ -f "$HOME/.env" ]] && source "$HOME/.env"
+
+if ! command -v curl >/dev/null 2>&1; then
+  echo "curl is required." >&2
+  exit 1
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "jq is required." >&2
+  exit 1
+fi
+
+if [[ -z "${OPENAI_API_KEY:-}" ]]; then
+  echo "OPENAI_API_KEY is not set." >&2
+  exit 1
+fi
+
+if [[ $# -gt 0 ]]; then
+  prompt="$*"
+elif command -v rofi >/dev/null 2>&1; then
+  prompt="$(rofi -dmenu -p "Image prompt")"
+else
+  read -r -p "Image prompt: " prompt
+fi
+
+[[ -z "${prompt:-}" ]] && exit 0
+
+tmp_json="$(mktemp)"
+tmp_img="/tmp/img.png"
+trap 'rm -f "$tmp_json"' EXIT
+
+curl -sS -o "$tmp_json" https://api.openai.com/v1/images/generations \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "$(jq -nc --arg p "$prompt" '{model:"gpt-image-1",prompt:$p,size:"1024x1024"}')"
+
+if jq -e '.error' "$tmp_json" >/dev/null 2>&1; then
+  jq -r '.error.message // "Image request failed."' "$tmp_json" >&2
+  exit 1
+fi
+
+b64="$(jq -r '.data[0].b64_json // empty' "$tmp_json")"
+url="$(jq -r '.data[0].url // empty' "$tmp_json")"
+
+if [[ -n "$b64" ]]; then
+  echo "$b64" | base64 -d > "$tmp_img"
+elif [[ -n "$url" ]]; then
+  curl -sS -o "$tmp_img" "$url"
+else
+  echo "No image payload in response." >&2
+  exit 1
+fi
+
+if command -v ascii-image-converter >/dev/null 2>&1; then
+  ascii-image-converter -W 120 --color "$tmp_img"
+else
+  echo "Image saved: $tmp_img"
+fi
