@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
+command -v pacman >/dev/null 2>&1 || { echo "pacman is required." >&2; exit 1; }
+command -v curl >/dev/null 2>&1 || { echo "curl is required." >&2; exit 1; }
+
+echo "[zsh] Installing zsh"
+sudo pacman -S --needed zsh
+
+zsh_path="$(command -v zsh)"
+current_shell="${SHELL:-}"
+
+if [[ "$current_shell" != "$zsh_path" ]]; then
+  echo "[zsh] Setting default shell to $zsh_path"
+  chsh -s "$zsh_path"
+fi
+
+if [[ -d "$HOME/.oh-my-zsh" ]]; then
+  echo "[zsh] oh-my-zsh already installed"
+  exit 0
+fi
+
+echo "[zsh] Installing oh-my-zsh (unattended)"
+RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c \
+  "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"

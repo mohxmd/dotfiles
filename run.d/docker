@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
+command -v pacman >/dev/null 2>&1 || { echo "pacman is required." >&2; exit 1; }
+
+echo "[docker] Installing docker and compose tooling"
+sudo pacman -S --needed docker docker-compose docker-buildx
+
+echo "[docker] Enabling daemon"
+sudo systemctl enable --now docker.service
+
+if getent group docker >/dev/null 2>&1; then
+  if id -nG "$USER" | tr ' ' '\n' | grep -qx docker; then
+    echo "[docker] User is already in docker group"
+  else
+    echo "[docker] Adding user to docker group (re-login required)"
+    sudo usermod -aG docker "$USER"
+  fi
+fi
+
+docker --version || true
+docker compose version || true

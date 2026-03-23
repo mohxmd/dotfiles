@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Safe default:
+# Configure Cloudflare DNS on NetworkManager connections.
+# This avoids forcing /etc/resolv.conf immutable, which can break VPN/captive portal flows.
+#
+# Usage:
+#   ./run dns-cloudflare
+#   ./run dns-cloudflare --legacy-resolvconf
+#   ./run dns-cloudflare --legacy-resolvconf --lock
+
+mode="nm"
+lock_resolv_conf="false"
+
+for arg in "$@"; do
+  case "$arg" in
+    --legacy-resolvconf) mode="legacy" ;;
+    --lock) lock_resolv_conf="true" ;;
+    *)
+      echo "Unknown option: $arg" >&2
+      exit 1
+      ;;
+  esac
+done
+
+command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
+
+dns_v4="1.1.1.1 1.0.0.1"
+dns_v6="2606:4700:4700::1111 2606:4700:4700::1001"
+
+if [[ "$mode" == "legacy" ]]; then
+  echo "[dns-cloudflare] Applying legacy resolv.conf mode"
+  sudo mkdir -p /etc/NetworkManager/conf.d
+  sudo tee /etc/NetworkManager/conf.d/dns.conf >/dev/null <<'EOF'
+[main]
+dns=none
+EOF
+
+  sudo tee /etc/resolv.conf >/dev/null <<EOF
+nameserver 1.1.1.1
+nameserver 1.0.0.1
+nameserver 2606:4700:4700::1111
+nameserver 2606:4700:4700::1001
+EOF
+
+  if [[ "$lock_resolv_conf" == "true" ]]; then
+    if command -v chattr >/dev/null 2>&1; then
+      sudo chattr +i /etc/resolv.conf
+      echo "[dns-cloudflare] /etc/resolv.conf locked (immutable)"
+    else
+      echo "[dns-cloudflare] chattr not found; skipped lock"
+    fi
+  fi
+
+  sudo systemctl restart NetworkManager.service
+  echo "[dns-cloudflare] Done (legacy mode)"
+  exit 0
+fi
+
+command -v nmcli >/dev/null 2>&1 || {
+  echo "nmcli not found. Install NetworkManager or use --legacy-resolvconf." >&2
+  exit 1
+}
+
+echo "[dns-cloudflare] Configuring NetworkManager connection DNS"
+mapfile -t connections < <(nmcli -t -f NAME connection show | sed '/^$/d')
+
+if [[ ${#connections[@]} -eq 0 ]]; then
+  echo "No NetworkManager connections found." >&2
+  exit 1
+fi
+
+for c in "${connections[@]}"; do
+  sudo nmcli connection modify "$c" \
+    ipv4.ignore-auto-dns yes \
+    ipv4.dns "$dns_v4" \
+    ipv6.ignore-auto-dns yes \
+    ipv6.dns "$dns_v6"
+done
+
+echo "[dns-cloudflare] Reapplying active connections"
+mapfile -t active_connections < <(nmcli -t -f NAME connection show --active | sed '/^$/d')
+for c in "${active_connections[@]:-}"; do
+  sudo nmcli connection up "$c" >/dev/null || true
+done
+
+echo "[dns-cloudflare] Done"
+echo "[dns-cloudflare] Verify with:"
+echo "  resolvectl status | rg 'DNS Servers|Current DNS Server'"

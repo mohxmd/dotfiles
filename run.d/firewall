@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
+command -v pacman >/dev/null 2>&1 || { echo "pacman is required." >&2; exit 1; }
+
+echo "[firewall] Installing ufw"
+sudo pacman -S --needed ufw
+
+echo "[firewall] Enabling service"
+sudo systemctl enable --now ufw.service
+
+echo "[firewall] Applying defaults and rules"
+sudo ufw default deny incoming   # Block all incoming traffic by default
+sudo ufw default allow outgoing  # Allow all outgoing traffic
+sudo ufw limit 22/tcp            # Limit SSH attempts to prevent brute force
+sudo ufw allow 80/tcp            # Allow HTTP traffic
+sudo ufw allow 443/tcp           # Allow HTTPS traffic
+sudo ufw allow 8081/tcp          # Expo / React Native Metro bundler
+sudo ufw --force enable          # Enable the firewall
+
+echo "[firewall] Status"
+sudo ufw status verbose

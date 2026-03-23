@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CONFIG_DIR="$ROOT_DIR/cloudflared/configs"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  ./run cloudflared-init <tunnel-name> <hostname> [service-url]
+
+Example:
+  ./run cloudflared-init my-tunnel api.example.com http://localhost:8080
+EOF
+}
+
+if [[ $# -lt 2 || $# -gt 3 ]]; then
+  usage
+  exit 1
+fi
+
+tunnel_name="$1"
+hostname="$2"
+service_url="${3:-http://localhost:3000}"
+
+command -v cloudflared >/dev/null 2>&1 || {
+  echo "cloudflared not found. Run: ./run cloudflared" >&2
+  exit 1
+}
+
+command -v jq >/dev/null 2>&1 || {
+  echo "jq is required." >&2
+  exit 1
+}
+
+origincert="${TUNNEL_ORIGIN_CERT:-$HOME/.cloudflared/cert.pem}"
+if [[ ! -f "$origincert" ]]; then
+  echo "Missing origin cert: $origincert" >&2
+  echo "Run once: cloudflared tunnel login" >&2
+  exit 1
+fi
+
+mkdir -p "$CONFIG_DIR"
+
+if cloudflared tunnel info "$tunnel_name" >/dev/null 2>&1; then
+  echo "[cloudflared-init] Tunnel exists: $tunnel_name"
+else
+  echo "[cloudflared-init] Creating tunnel: $tunnel_name"
+  cloudflared tunnel create "$tunnel_name"
+fi
+
+tunnel_id="$(
+  cloudflared tunnel list -o json --name "$tunnel_name" \
+    | jq -r '
+      if type=="array" then (.[0].id // .[0].ID // empty)
+      elif type=="object" then (.tunnels[0].id // .result[0].id // empty)
+      else empty
+      end
+    '
+)"
+
+if [[ -z "$tunnel_id" ]]; then
+  echo "Could not determine tunnel ID for: $tunnel_name" >&2
+  echo "Check: cloudflared tunnel list -o json --name $tunnel_name" >&2
+  exit 1
+fi
+
+echo "[cloudflared-init] Routing DNS: $hostname -> tunnel $tunnel_name"
+cloudflared tunnel route dns "$tunnel_name" "$hostname"
+
+credentials_file="$HOME/.cloudflared/$tunnel_id.json"
+if [[ ! -f "$credentials_file" ]]; then
+  echo "Warning: credentials file not found yet: $credentials_file" >&2
+  echo "Tunnel might have been created on another machine." >&2
+fi
+
+config_path="$CONFIG_DIR/$tunnel_name.yml"
+cat > "$config_path" <<EOF
+tunnel: $tunnel_id
+credentials-file: $credentials_file
+
+ingress:
+  - hostname: $hostname
+    service: $service_url
+  - service: http_status:404
+EOF
+
+echo "[cloudflared-init] Wrote config: $config_path"
+echo "[cloudflared-init] Test locally:"
+echo "  cloudflared --config $config_path tunnel run"
+echo "[cloudflared-init] Install service:"
+echo "  CLOUDFLARED_CONFIG=$config_path ./run cloudflared"

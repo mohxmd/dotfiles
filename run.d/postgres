@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
+command -v pacman >/dev/null 2>&1 || { echo "pacman is required." >&2; exit 1; }
+
+echo "[postgres] Installing PostgreSQL client tooling"
+sudo pacman -S --needed pgcli postgresql-libs
+
+pgcli --version || true

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
+command -v pacman >/dev/null 2>&1 || { echo "pacman is required." >&2; exit 1; }
+
+echo "[bluetooth] Installing Bluetooth stack"
+sudo pacman -S --needed bluez bluez-utils
+
+echo "[bluetooth] Enabling bluetooth service"
+sudo systemctl enable --now bluetooth.service
+sudo systemctl status --no-pager bluetooth.service || true

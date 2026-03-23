@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RUNNER="$ROOT_DIR/run"
+PROFILE="${1:-auto}"
+ENABLE_BLUETOOTH="${ENABLE_BLUETOOTH:-0}"
+ENABLE_DNS_CLOUDFLARE="${ENABLE_DNS_CLOUDFLARE:-0}"
+
+"$RUNNER" dev
+"$RUNNER" firewall
+"$RUNNER" cloudflared
+"$RUNNER" docker
+"$RUNNER" java
+"$RUNNER" zsh
+"$RUNNER" dotfiles "$PROFILE"
+
+if [[ "$ENABLE_DNS_CLOUDFLARE" == "1" ]]; then
+  "$RUNNER" dns-cloudflare
+fi
+
+if [[ "$ENABLE_BLUETOOTH" == "1" ]]; then
+  "$RUNNER" bluetooth
+fi

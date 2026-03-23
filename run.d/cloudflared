@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
+command -v pacman >/dev/null 2>&1 || { echo "pacman is required." >&2; exit 1; }
+
+echo "[cloudflared] Installing package"
+sudo pacman -S --needed cloudflared
+
+config_file="${CLOUDFLARED_CONFIG:-$HOME/.cloudflared/config.yml}"
+
+if [[ ! -f "$config_file" ]]; then
+  cat <<EOF
+[cloudflared] Config not found: $config_file
+Next steps:
+  1) cloudflared tunnel login
+  2) ./run cloudflared-init <tunnel-name> <hostname> [service-url]
+  3) rerun with generated config:
+     CLOUDFLARED_CONFIG=./cloudflared/configs/<tunnel-name>.yml ./run cloudflared
+EOF
+  exit 0
+fi
+
+echo "[cloudflared] Installing system service with config: $config_file"
+sudo cloudflared --config "$config_file" service install
+sudo systemctl enable --now cloudflared.service
+sudo systemctl status --no-pager cloudflared.service || true

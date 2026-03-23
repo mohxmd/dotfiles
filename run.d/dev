@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+require_cmd() {
+  command -v "$1" >/dev/null 2>&1 || {
+    echo "Missing required command: $1" >&2
+    exit 1
+  }
+}
+
+require_cmd sudo
+require_cmd pacman
+
+echo "[dev] Full system upgrade"
+sudo pacman -Syu
+
+echo "[dev] Base developer packages"
+sudo pacman -S --needed git base-devel linux-headers ntfs-3g exfatprogs power-profiles-daemon
+
+echo "[dev] Ensure power profile daemon is enabled"
+sudo systemctl enable --now power-profiles-daemon.service
+
+git_name="${GIT_USER_NAME:-}"
+git_email="${GIT_USER_EMAIL:-}"
+
+if [[ -z "$git_name" ]]; then
+  git_name="$(git config --global user.name || true)"
+fi
+if [[ -z "$git_email" ]]; then
+  git_email="$(git config --global user.email || true)"
+fi
+
+if [[ -n "$git_name" ]]; then
+  git config --global user.name "$git_name"
+else
+  echo "[dev] Skipping git user.name (set GIT_USER_NAME to automate)."
+fi
+
+if [[ -n "$git_email" ]]; then
+  git config --global user.email "$git_email"
+else
+  echo "[dev] Skipping git user.email (set GIT_USER_EMAIL to automate)."
+fi
+
+if command -v yay >/dev/null 2>&1; then
+  echo "[dev] yay already installed"
+  yay --version | head -n 1
+  exit 0
+fi
+
+echo "[dev] Installing yay from AUR"
+tmp_dir="$(mktemp -d)"
+trap 'rm -rf "$tmp_dir"' EXIT
+
+git clone https://aur.archlinux.org/yay.git "$tmp_dir/yay"
+(
+  cd "$tmp_dir/yay"
+  makepkg -si --noconfirm
+)
+
+echo "[dev] yay installed"

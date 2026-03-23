@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
+command -v pacman >/dev/null 2>&1 || { echo "pacman is required." >&2; exit 1; }
+
+echo "[rust] Installing rustup"
+sudo pacman -S --needed rustup
+
+if ! rustup toolchain list | grep -q "^stable"; then
+  echo "[rust] Initializing stable toolchain"
+  rustup default stable
+fi
+
+echo "[rust] Versions"
+rustc --version || true
+cargo --version || true
+rustup --version || true

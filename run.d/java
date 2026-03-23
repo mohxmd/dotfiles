@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
+command -v pacman >/dev/null 2>&1 || { echo "pacman is required." >&2; exit 1; }
+command -v archlinux-java >/dev/null 2>&1 || { echo "archlinux-java is required." >&2; exit 1; }
+
+echo "[java] Installing latest OpenJDK and JDK 17"
+sudo pacman -S --needed jdk-openjdk jdk17-openjdk
+
+echo "[java] Available environments:"
+archlinux-java status || true
+
+# Default to JDK 17 for React Native / Android compatibility.
+default_env="${JAVA_DEFAULT_ENV:-java-17-openjdk}"
+
+if archlinux-java status | grep -q "$default_env"; then
+  echo "[java] Setting default Java environment: $default_env"
+  sudo archlinux-java set "$default_env"
+else
+  echo "[java] Requested default env not found: $default_env"
+  echo "[java] Keeping current default."
+fi
+
+echo "[java] Final Java environment status:"
+archlinux-java status || true
+java --version || true
+javac --version || true
