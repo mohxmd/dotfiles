@@ -203,6 +203,6 @@ if [[ -n "${route_index:-}" ]]; then
 fi
 
 wpctl status | awk -v id="$sink_id" '
-  $1 ~ /^[0-9]+\.$/ {current=$1; sub("\.", "", current)}
+  $1 ~ /^[0-9]+\.$/ {current=$1; sub(/\./, "", current)}
   current == id {print "Default HDMI sink set:", $0}
 '

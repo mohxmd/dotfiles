@@ -1,13 +1,16 @@
 {
   "cSpell.words": [
+    "alsa",
     "archlinux",
     "bluez",
     "chattr",
     "Cloudflared",
+    "displayport",
     "DUPS",
     "FPATH",
     "ginit",
     "gstp",
+    "isinstance",
     "javac",
     "KEYTIMEOUT",
     "nmcli",
@@ -15,6 +18,7 @@
     "opencode",
     "origincert",
     "pgcli",
+    "pipewire",
     "resolv",
     "resolvconf",
     "resolvectl",
@@ -22,6 +26,8 @@
     "rustc",
     "rustup",
     "SAVEHIST",
-    "twho"
+    "twho",
+    "wireplumber",
+    "wpctl"
   ]
 }
