@@ -14,13 +14,13 @@ Keep non-secret tunnel configs in git, and keep secrets on each machine.
 ## Quick Start
 
 ```bash
-cloudflared-init <tunnel-name> <hostname> [service-url]
+cfd-init <tunnel-name> <hostname> [service-url]
 ```
 
 Example:
 
 ```bash
-cloudflared-init my-tunnel api.example.com http://localhost:8080
+cfd-init my-tunnel api.example.com http://localhost:8080
 ```
 
 Then:

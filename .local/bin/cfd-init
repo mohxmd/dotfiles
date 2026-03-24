@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Initialize Cloudflare Tunnel config in this dotfiles repo.
-# Usage: cloudflared-init <tunnel-name> <hostname> [service-url]
+# Usage: cfd-init <tunnel-name> <hostname> [service-url]
 
 script_path="$(readlink -f "${BASH_SOURCE[0]}")"
 repo_root="$(cd "$(dirname "$script_path")/../.." && pwd)"
@@ -11,10 +11,10 @@ config_dir="$repo_root/cloudflared/configs"
 usage() {
   cat <<'EOF'
 Usage:
-  cloudflared-init <tunnel-name> <hostname> [service-url]
+  cfd-init <tunnel-name> <hostname> [service-url]
 
 Example:
-  cloudflared-init my-tunnel api.example.com http://localhost:8080
+  cfd-init my-tunnel api.example.com http://localhost:8080
 EOF
 }
 
@@ -47,9 +47,9 @@ fi
 mkdir -p "$config_dir"
 
 if cloudflared tunnel info "$tunnel_name" >/dev/null 2>&1; then
-  echo "[cloudflared-init] Tunnel exists: $tunnel_name"
+  echo "[cfd-init] Tunnel exists: $tunnel_name"
 else
-  echo "[cloudflared-init] Creating tunnel: $tunnel_name"
+  echo "[cfd-init] Creating tunnel: $tunnel_name"
   cloudflared tunnel create "$tunnel_name"
 fi
 
@@ -69,7 +69,7 @@ if [[ -z "$tunnel_id" ]]; then
   exit 1
 fi
 
-echo "[cloudflared-init] Routing DNS: $hostname -> tunnel $tunnel_name"
+echo "[cfd-init] Routing DNS: $hostname -> tunnel $tunnel_name"
 cloudflared tunnel route dns "$tunnel_name" "$hostname"
 
 credentials_file="$HOME/.cloudflared/$tunnel_id.json"
@@ -89,9 +89,9 @@ ingress:
   - service: http_status:404
 EOF
 
-echo "[cloudflared-init] Wrote config: $config_path"
-echo "[cloudflared-init] Test locally:"
+echo "[cfd-init] Wrote config: $config_path"
+echo "[cfd-init] Test locally:"
 echo "  cloudflared --config $config_path tunnel run"
 echo "  cloudflared tunnel run $tunnel_name"
-echo "[cloudflared-init] Install service:"
+echo "[cfd-init] Install service:"
 echo "  CLOUDFLARED_CONFIG=$config_path ./run cloudflared"

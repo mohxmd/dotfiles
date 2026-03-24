@@ -75,6 +75,7 @@
     "postgis",
     "presign",
     "Pressable",
+    "println",
     "revolva",
     "runserver",
     "Sakura",
@@ -100,7 +101,7 @@
     "varchar",
     "vaul",
     "Wishlisted",
-    "Zoomable",
+    "Zoomable"
   ],
   "[sql]": {
     "editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode",
