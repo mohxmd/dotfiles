@@ -1,18 +1,29 @@
 return {
   {
-    "sainnhe/gruvbox-material",
+    "folke/tokyonight.nvim",
     lazy = false,
     priority = 1000,
     config = function()
-      vim.g.gruvbox_material_background = "hard"
-      vim.g.gruvbox_material_enable_italic = 1
-      vim.g.gruvbox_material_better_performance = 1
+      -- vim.cmd.colorscheme("tokyonight-night")
+      -- fallback configuration
     end,
   },
   {
-    "LazyVim/LazyVim",
-    opts = {
-      colorscheme = "gruvbox-material",
-    },
-  },
+    "rose-pine/neovim",
+    name = "rose-pine",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      require("rose-pine").setup({
+        variant = "moon",
+        disable_background = true,
+        styles = {
+          bold = true,
+          italic = true,
+          transparency = true,
+        },
+      })
+      vim.cmd.colorscheme("rose-pine-moon")
+    end
+  }
 }

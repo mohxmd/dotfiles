@@ -1,26 +1,38 @@
-# Neovim (LazyVim)
+# Neovim (Custom Setup)
 
-## Start
+Modern, modular, and fast Neovim configuration built with `lazy.nvim`.
 
-```bash
-nvim
-```
+## Quick Start
 
-## File Tree (Right Sidebar)
+1. Open Neovim: `nvim`
+2. Sync plugins: `:Lazy sync`
+3. Install LSPs: `:Mason` (Automatic for core languages)
+4. Authenticate AI: `:SupermavenUseFree`
 
-- Toggle sidebar: `<leader>e`
-- Reveal current file: `<leader>fe`
-- If needed: `:Neotree toggle right`
+## Core Shortcuts
 
-## Basic
+### File Navigation
+- `<leader>pv`: Open Netrw (File Explorer)
+- `<leader>pf`: Find files (Telescope)
+- `<C-p>`: Git files (Telescope)
+- `<leader>ps`: Live Grep (Telescope)
 
-- Save: `:w`
-- Quit: `:q`
-- Save + quit: `:wq`
+### LSP & Editing
+- `gd`: Go to definition
+- `K`: Hover documentation
+- `<leader>vca`: Code actions
+- `<leader>f`: Format current file (Conform)
+- `<leader>s`: Search and replace word under cursor
+- `J` / `K` (Visual Mode): Move selected lines up/down
 
-## Plugins / LSP
+### Git & Utilities
+- `<leader>gs`: Git Status (Fugitive)
+- `<leader>u`: Toggle UndoTree
+- `<leader>zz`: Toggle Zen Mode
+- `<C-f>`: Tmux Sessionizer
 
-- Sync plugins: `:Lazy sync`
-- Update plugins: `:Lazy update`
-- Check health: `:checkhealth`
-- Manage LSP tools: `:Mason`
+## File Structure
+
+- `lua/config/`: Neovim options, core keymaps, and autocmds.
+- `lua/plugins/`: Individual plugin specifications (LSP, CMP, Treesitter, etc.).
+- `init.lua`: Main entry point.

@@ -14,26 +14,15 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Make sure to load options, keymaps, and autocmds before lazy
+require("config.options")
+require("config.keymaps")
+require("config.autocmds")
+
 require("lazy").setup({
   spec = {
-    { "LazyVim/LazyVim", import = "lazyvim.plugins" },
     { import = "plugins" },
   },
-  defaults = {
-    lazy = false,
-    version = false,
-  },
-  install = { colorscheme = { "tokyonight", "habamax" } },
   checker = { enabled = true, notify = false },
-  performance = {
-    rtp = {
-      disabled_plugins = {
-        "gzip",
-        "tarPlugin",
-        "tohtml",
-        "tutor",
-        "zipPlugin",
-      },
-    },
-  },
+  change_detection = { notify = false },
 })
