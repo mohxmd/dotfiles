@@ -1,0 +1,57 @@
+[main]
+smart_completion = True
+wider_completion_menu = False
+multi_line = False
+multi_line_mode = psql
+destructive_warning = drop, shutdown, delete, truncate, alter, update, unconditional_update
+destructive_warning_restarts_connection = False
+destructive_statements_require_transaction = False
+expand = False
+auto_expand = True
+auto_retry_closed_connection = True
+keyword_casing = auto
+
+# Log and history paths (shifted out of dotfiles repository)
+log_file = ~/.local/state/pgcli/log
+history_file = ~/.local/state/pgcli/history
+
+log_level = INFO
+asterisk_column_order = table_order
+qualify_columns = if_more_than_one_table
+search_path_filter = False
+timing = True
+show_bottom_toolbar = True
+table_format = psql
+syntax_style = default
+vi = False
+on_error = STOP
+row_limit = 1000
+enable_pager = True
+use_local_timezone = True
+
+[colors]
+completion-menu.completion.current = 'bg:#ffffff #000000'
+completion-menu.completion = 'bg:#008888 #ffffff'
+completion-menu.meta.completion.current = 'bg:#44aaaa #000000'
+completion-menu.meta.completion = 'bg:#448888 #ffffff'
+completion-menu.multi-column-meta = 'bg:#aaffff #000000'
+scrollbar.arrow = 'bg:#003333'
+scrollbar = 'bg:#00aaaa'
+selected = '#ffffff bg:#6666aa'
+search = '#ffffff bg:#4444aa'
+search.current = '#ffffff bg:#44aa44'
+bottom-toolbar = 'bg:#222222 #aaaaaa'
+bottom-toolbar.off = 'bg:#222222 #888888'
+bottom-toolbar.on = 'bg:#222222 #ffffff'
+search-toolbar = 'noinherit bold'
+search-toolbar.text = 'nobold'
+system-toolbar = 'noinherit bold'
+arg-toolbar = 'noinherit bold'
+arg-toolbar.text = 'nobold'
+bottom-toolbar.transaction.valid = 'bg:#222222 #00ff5f bold'
+bottom-toolbar.transaction.failed = 'bg:#222222 #ff005f bold'
+
+output.header = "#00ff5f bold"
+output.odd-row = ""
+output.even-row = ""
+output.null = "#808080"

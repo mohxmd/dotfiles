@@ -157,7 +157,7 @@
     "https://json-schema.org/": true,
     "https://biomejs.dev": true,
   },
-  "workbench.colorTheme": "Atom Just Black",
+  "workbench.colorTheme": "One Dark Pro Monokai Darker",
   "window.customTitleBarVisibility": "never",
   "window.titleBarStyle": "native",
   "geminicodeassist.project": "possible-pact-fshbt",
