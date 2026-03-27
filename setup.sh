@@ -171,6 +171,7 @@ should_link core && link_file ".local/bin/search"
 should_link core && link_file ".local/bin/image-request"
 should_link core && link_file ".local/bin/video-to-ascii"
 should_link core && link_file ".local/bin/cfd-init"
+should_link core && link_file ".config/pgcli/config"
 
 should_link nvim && link_file ".config/nvim"
 
@@ -184,5 +185,7 @@ should_link vscodium && link_file ".config/VSCodium/User/keybindings.json"
 should_link plasma && link_file ".config/plasma-org.kde.plasma.desktop-appletsrc"
 should_link plasma && link_file ".local/share/plasma/plasmoids"
 should_link plasma && link_file ".local/share/color-schemes"
+should_link plasma && link_file ".local/share/konsole"
+should_link plasma && link_file ".local/share/org.kde.syntax-highlighting/themes"
 
 echo "setup complete"

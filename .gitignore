@@ -2,3 +2,6 @@
 cloudflared/*.pem
 cloudflared/*.json
 cloudflared/config.yml
+
+# pgcli runtime data (machine-specific)
+.config/pgcli/history

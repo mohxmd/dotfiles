@@ -31,6 +31,14 @@ cd ~/dotfiles
 - `.local/bin/image-request`
 - `.local/bin/video-to-ascii`
 - `.local/bin/cfd-init`
+- `.config/pgcli/config` (pgcli config)
+
+`plasma` (KDE specific setup) includes:
+- `.config/plasma-org.kde.plasma.desktop-appletsrc` (Plasma config)
+- `.local/share/plasma/plasmoids` (Plasma widgets)
+- `.local/share/color-schemes` (Global themes including BuraqDark & BuraqLight)
+- `.local/share/konsole` (Konsole profiles)
+- `.local/share/org.kde.syntax-highlighting/themes` (Kate themes)
 
 ## Useful options
 
