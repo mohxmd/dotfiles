@@ -117,8 +117,8 @@ ForegroundPositive=60,190,110
 ForegroundVisited=160,110,200
 
 [General]
-ColorScheme=DeepNightBlue
-Name=Deep Night Blue
+ColorScheme=BuraqBreeze
+Name=Buraq Breeze
 
 [KDE]
 contrast=4

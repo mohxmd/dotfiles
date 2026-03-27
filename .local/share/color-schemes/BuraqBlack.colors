@@ -117,8 +117,8 @@ ForegroundPositive=113,247,159
 ForegroundVisited=124,83,207
 
 [General]
-ColorScheme=EryonPureDark
-Name=Eryon Pure Dark
+ColorScheme=BuraqBlack
+Name=Buraq Black
 
 [KDE]
 contrast=4
