@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# Task: deno
+# Purpose: Install Deno from the Arch repositories.
+# Requires: Arch Linux, sudo, and pacman.
+# WSL: Supported.
+
+set -euo pipefail
+
+command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
+command -v pacman >/dev/null 2>&1 || { echo "pacman is required." >&2; exit 1; }
+
+if command -v deno >/dev/null 2>&1; then
+  echo "[deno] Deno already installed"
+  deno --version | head -n 1
+  exit 0
+fi
+
+echo "[deno] Installing Deno from Arch repositories"
+sudo pacman -S --needed deno
+
+export PATH="$HOME/.deno/bin:$PATH"
+if ! command -v deno >/dev/null 2>&1; then
+  echo "Deno was not found after installation." >&2
+  exit 1
+fi
+
+deno --version | head -n 1

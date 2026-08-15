@@ -48,6 +48,12 @@ esac
 
 task="$1"
 shift || true
+
+if [[ "$task" == -* || "$task" == */* || "$task" == *..* ]]; then
+  echo "Invalid task name: $task" >&2
+  exit 1
+fi
+
 task_path="$TASK_DIR/$task"
 
 if [[ ! -x "$task_path" ]]; then

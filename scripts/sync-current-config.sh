@@ -2,8 +2,9 @@
 
 # Sync utility: copy selected live user configuration into this repository.
 # Usage: ./scripts/sync-current-config.sh
-# Warning: writes into the repository and uses rsync --delete for selected
-# directories; review git diff afterward.
+# Warning: writes into the repository; review git diff afterward.
+# Existing repository files are never deleted by this script. Remove stale
+# files manually after confirming that the live configuration is complete.
 # Scope: Plasma, Konsole, pgcli, Zsh modules, and VS Code configuration.
 
 set -euo pipefail
@@ -18,18 +19,21 @@ mkdir -p "$DOTFILES_DIR/.config/zsh/modules" \
          "$DOTFILES_DIR/.local/share/konsole" \
          "$DOTFILES_DIR/.local/share/org.kde.syntax-highlighting/themes"
 
-cp -f "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc" "$DOTFILES_DIR/.config/plasma-org.kde.plasma.desktop-appletsrc" 2>/dev/null || true
-rm -f "$DOTFILES_DIR/.config/old-plasma-org.kde.plasma.desktop-appletsrc"
+if [[ -f "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc" ]]; then
+  cp -f "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc" \
+    "$DOTFILES_DIR/.config/plasma-org.kde.plasma.desktop-appletsrc"
+fi
 
 if [[ -d "$HOME/.local/share/plasma/plasmoids" && ! -L "$HOME/.local/share/plasma/plasmoids" ]]; then
-  rm -rf "$DOTFILES_DIR/.local/share/plasma/plasmoids"
-  cp -r "$HOME/.local/share/plasma/plasmoids" "$DOTFILES_DIR/.local/share/plasma/"
+  mkdir -p "$DOTFILES_DIR/.local/share/plasma/plasmoids"
+  cp -a "$HOME/.local/share/plasma/plasmoids/." \
+    "$DOTFILES_DIR/.local/share/plasma/plasmoids/"
 fi
 
 if [[ -d "$HOME/.local/share/color-schemes" && ! -L "$HOME/.local/share/color-schemes" ]]; then
   mkdir -p "$DOTFILES_DIR/.local/share/color-schemes"
   if command -v rsync >/dev/null 2>&1; then
-    rsync -a --delete --copy-links \
+    rsync -a --copy-links \
       "$HOME/.local/share/color-schemes/" \
       "$DOTFILES_DIR/.local/share/color-schemes/"
   else
@@ -40,7 +44,7 @@ fi
 
 if [[ -d "$HOME/.local/share/konsole" && ! -L "$HOME/.local/share/konsole" ]]; then
   if command -v rsync >/dev/null 2>&1; then
-    rsync -a --delete --copy-links \
+    rsync -a --copy-links \
       "$HOME/.local/share/konsole/" \
       "$DOTFILES_DIR/.local/share/konsole/"
   else
@@ -51,7 +55,7 @@ fi
 
 if [[ -d "$HOME/.local/share/org.kde.syntax-highlighting/themes" && ! -L "$HOME/.local/share/org.kde.syntax-highlighting/themes" ]]; then
   if command -v rsync >/dev/null 2>&1; then
-    rsync -a --delete --copy-links \
+    rsync -a --copy-links \
       "$HOME/.local/share/org.kde.syntax-highlighting/themes/" \
       "$DOTFILES_DIR/.local/share/org.kde.syntax-highlighting/themes/"
   else
@@ -61,30 +65,37 @@ if [[ -d "$HOME/.local/share/org.kde.syntax-highlighting/themes" && ! -L "$HOME/
 fi
 
 if [[ -f "$HOME/.config/pgcli/config" ]]; then
-  cp -f "$HOME/.config/pgcli/config" "$DOTFILES_DIR/.config/pgcli/config" 2>/dev/null || true
+  cp -f "$HOME/.config/pgcli/config" "$DOTFILES_DIR/.config/pgcli/config"
 fi
 
 if [[ -f "$HOME/.config/zsh/modules/adb-device.zsh" ]]; then
-  cp -f "$HOME/.config/zsh/modules/adb-device.zsh" "$DOTFILES_DIR/.config/zsh/modules/adb-device.zsh" 2>/dev/null || true
+  cp -f "$HOME/.config/zsh/modules/adb-device.zsh" \
+    "$DOTFILES_DIR/.config/zsh/modules/adb-device.zsh"
 elif [[ -f "$HOME/.config/zsh/scripts/adb-phone.zsh" ]]; then
-  cp -f "$HOME/.config/zsh/scripts/adb-phone.zsh" "$DOTFILES_DIR/.config/zsh/modules/adb-device.zsh" 2>/dev/null || true
+  cp -f "$HOME/.config/zsh/scripts/adb-phone.zsh" \
+    "$DOTFILES_DIR/.config/zsh/modules/adb-device.zsh"
 fi
 
 if [[ -f "$HOME/.config/Code/User/settings.json" ]]; then
-  cp -f "$HOME/.config/Code/User/settings.json" "$DOTFILES_DIR/.config/Code/User/settings.json" 2>/dev/null || true
+  cp -f "$HOME/.config/Code/User/settings.json" \
+    "$DOTFILES_DIR/.config/Code/User/settings.json"
 fi
 if [[ -f "$HOME/.config/Code/User/keybindings.json" ]]; then
-  cp -f "$HOME/.config/Code/User/keybindings.json" "$DOTFILES_DIR/.config/Code/User/keybindings.json" 2>/dev/null || true
+  cp -f "$HOME/.config/Code/User/keybindings.json" \
+    "$DOTFILES_DIR/.config/Code/User/keybindings.json"
 fi
 if [[ -f "$HOME/.config/Code/User/snippets/typescript.json" ]]; then
-  cp -f "$HOME/.config/Code/User/snippets/typescript.json" "$DOTFILES_DIR/.config/Code/User/snippets/typescript.json" 2>/dev/null || true
+  cp -f "$HOME/.config/Code/User/snippets/typescript.json" \
+    "$DOTFILES_DIR/.config/Code/User/snippets/typescript.json"
 fi
 
 if [[ -f "$HOME/.config/VSCodium/User/settings.json" ]]; then
-  cp -f "$HOME/.config/VSCodium/User/settings.json" "$DOTFILES_DIR/.config/VSCodium/User/settings.json" 2>/dev/null || true
+  cp -f "$HOME/.config/VSCodium/User/settings.json" \
+    "$DOTFILES_DIR/.config/VSCodium/User/settings.json"
 fi
 if [[ -f "$HOME/.config/VSCodium/User/keybindings.json" ]]; then
-  cp -f "$HOME/.config/VSCodium/User/keybindings.json" "$DOTFILES_DIR/.config/VSCodium/User/keybindings.json" 2>/dev/null || true
+  cp -f "$HOME/.config/VSCodium/User/keybindings.json" \
+    "$DOTFILES_DIR/.config/VSCodium/User/keybindings.json"
 fi
 
 echo "synced current config into dotfiles repo"

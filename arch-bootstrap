@@ -19,6 +19,7 @@ fi
 "$RUNNER" docker
 "$RUNNER" java
 "$RUNNER" zsh
+"$RUNNER" vaultlet
 "$RUNNER" dotfiles "$PROFILE"
 
 if [[ "$ENABLE_DNS_CLOUDFLARE" == "1" ]]; then

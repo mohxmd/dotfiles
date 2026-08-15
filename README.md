@@ -1,6 +1,6 @@
 # Dotfiles
 
-Minimal dotfiles with profile-based symlinking.
+Personal Linux dotfiles with profile-based symlinking and a lightweight WSL profile.
 
 ## Structure
 
@@ -55,6 +55,37 @@ cd ~/dotfiles
 ./scripts/sync-current-config.sh
 ```
 
+The `ginit` Zsh helper creates private GitHub repositories by default. Use
+`GITHUB_VISIBILITY=public ginit` only when a repository is intentionally public.
+
+## Local secrets with Vaultlet
+
+Vaultlet stores encrypted secrets outside this repository. The vault file and
+Vaultlet configuration are intentionally never linked or synced by the
+dotfiles setup.
+
+Install it on Arch Linux or Arch WSL:
+
+```bash
+./run vaultlet
+vaultlet init
+vaultlet set github_token
+vaultlet set openai_api_key
+```
+
+Retrieve a value only when needed:
+
+```bash
+vaultget github_token
+vaultlet get openai_api_key --copy
+ghv repo view
+```
+
+Secrets are not exported automatically. `ginit` uses `github_token` only for
+the `gh` command, and `image-request` reads `openai_api_key` only when it runs.
+Keep each WSL distribution's vault inside its Linux filesystem, not under
+`/mnt/c`.
+
 ## Arch Run Tasks
 
 ```bash
@@ -69,7 +100,9 @@ cd ~/dotfiles
 ./run postgres
 ./run rust
 ./run bun
+./run deno
 ./run nvm-node
+./run vaultlet
 ./run zsh
 ./run dotfiles auto
 ```

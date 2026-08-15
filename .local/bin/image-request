@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-[[ -f "$HOME/.env" ]] && source "$HOME/.env"
-
 if ! command -v curl >/dev/null 2>&1; then
   echo "curl is required." >&2
   exit 1
@@ -13,8 +11,13 @@ if ! command -v jq >/dev/null 2>&1; then
   exit 1
 fi
 
+if [[ -z "${OPENAI_API_KEY:-}" ]] && command -v vaultlet >/dev/null 2>&1; then
+  OPENAI_API_KEY="$(vaultlet get openai_api_key --raw 2>/dev/null || true)"
+fi
+
 if [[ -z "${OPENAI_API_KEY:-}" ]]; then
-  echo "OPENAI_API_KEY is not set." >&2
+  echo "OPENAI_API_KEY is not set and Vaultlet has no openai_api_key secret." >&2
+  echo "Store it with: vaultlet set openai_api_key" >&2
   exit 1
 fi
 
@@ -29,7 +32,7 @@ fi
 [[ -z "${prompt:-}" ]] && exit 0
 
 tmp_json="$(mktemp)"
-tmp_img="/tmp/img.png"
+tmp_img="$(mktemp "${TMPDIR:-/tmp}/img.XXXXXX.png")"
 trap 'rm -f "$tmp_json"' EXIT
 
 curl -sS -o "$tmp_json" https://api.openai.com/v1/images/generations \

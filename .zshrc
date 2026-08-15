@@ -9,13 +9,46 @@ mcd() {
   mkdir -p "$1" && cd "$1"
 }
 
+vaultget() {
+  if [[ $# -ne 1 ]]; then
+    echo "Usage: vaultget <secret-name>" >&2
+    return 2
+  fi
+  command -v vaultlet >/dev/null 2>&1 || {
+    echo "vaultlet is not installed. Run: ./run vaultlet" >&2
+    return 1
+  }
+  vaultlet get "$1" --raw
+}
+
+ghv() {
+  command -v vaultlet >/dev/null 2>&1 || {
+    echo "vaultlet is not installed. Run: ./run vaultlet" >&2
+    return 1
+  }
+
+  local token
+  token="$(vaultlet get github_token --raw)" || return 1
+  [[ -n "$token" ]] || {
+    echo "Vaultlet secret is empty: github_token" >&2
+    return 1
+  }
+
+  GH_TOKEN="$token" gh "$@"
+}
+
 ginit() {
+  local visibility="${GITHUB_VISIBILITY:-private}"
+  if [[ "$visibility" != "private" && "$visibility" != "public" && "$visibility" != "internal" ]]; then
+    echo "GITHUB_VISIBILITY must be private, public, or internal." >&2
+    return 1
+  fi
+
   git init
   git branch -M main
-  gh repo create "$(basename "$PWD")" --public --source=local
   git add .
   git commit -m "Initial commit"
-  git push -u origin main
+  ghv repo create "$(basename "$PWD")" "--$visibility" --source=local --push
   echo "Project initialized and pushed to GitHub!"
 }
 
@@ -61,10 +94,10 @@ plugins=(
 [[ -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]] && plugins+=(zsh-autosuggestions)
 [[ -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]] && plugins+=(zsh-syntax-highlighting)
 
+DISABLE_UPDATE_PROMPT=true
 [[ -r "$ZSH/oh-my-zsh.sh" ]] && source "$ZSH/oh-my-zsh.sh"
 
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(bracketed-paste)
-DISABLE_UPDATE_PROMPT=true
 
 # -----------------------------------
 # Starship (prompt)
@@ -85,6 +118,7 @@ export ANDROID_HOME="$HOME/Android/Sdk"
 add_to_path "$HOME/.local/bin"
 add_to_path "$HOME/.opencode/bin"
 add_to_path "$HOME/.turso"
+add_to_path "$HOME/.deno/bin"
 add_to_path "$HOME/.bun/bin"
 add_to_path "$HOME/Developer/flutter/bin"
 add_to_path "$ANDROID_HOME/platform-tools"
@@ -94,8 +128,17 @@ add_to_path "$ANDROID_HOME/emulator"
 
 # NVM
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+  # shellcheck disable=SC1090
+  source "$NVM_DIR/nvm.sh"
+elif [[ -s /usr/share/nvm/init-nvm.sh ]]; then
+  # shellcheck disable=SC1091
+  source /usr/share/nvm/init-nvm.sh
+elif [[ -s /usr/share/nvm/nvm.sh ]]; then
+  # shellcheck disable=SC1091
+  source /usr/share/nvm/nvm.sh
+fi
+[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
 
 # PNPM
 export PNPM_HOME="$HOME/.local/share/pnpm"

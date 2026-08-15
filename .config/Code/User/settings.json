@@ -110,7 +110,6 @@
     "editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode",
   },
   "[markdown]": {
-    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
     "diffEditor.ignoreTrimWhitespace": true,
   },
   "git.blame.statusBarItem.enabled": false,
@@ -143,7 +142,7 @@
   "workbench.editor.empty.hint": "hidden",
   "chat.agent.enabled": false,
   "workbench.secondarySideBar.defaultVisibility": "hidden",
-  "security.workspace.trust.untrustedFiles": "open",
+  "security.workspace.trust.untrustedFiles": "prompt",
   "github.copilot.nextEditSuggestions.enabled": false,
   "redhat.telemetry.enabled": true,
   "svelte.enable-ts-plugin": true,

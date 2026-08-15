@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+# Task: vaultlet
+# Purpose: Install the pinned Vaultlet CLI with restricted Deno permissions.
+# Requires: Arch Linux and network access for JSR.
+# WSL: Supported; keep the vault inside the Linux filesystem.
+
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+if command -v vaultlet >/dev/null 2>&1; then
+  echo "[vaultlet] Vaultlet already installed"
+  vaultlet --help >/dev/null
+  exit 0
+fi
+
+"$ROOT_DIR/run" deno
+
+export PATH="$HOME/.deno/bin:$PATH"
+vaultlet_version="${VAULTLET_VERSION:-0.1.0}"
+config_dir="$HOME/.config/vaultlet"
+data_dir="$HOME/.local/share/vaultlet"
+mkdir -p "$config_dir" "$data_dir"
+chmod 700 "$config_dir" "$data_dir"
+
+echo "[vaultlet] Installing @mohxmd/vaultlet@$vaultlet_version"
+deno install \
+  --global \
+  --force \
+  --name vaultlet \
+  --allow-env=HOME,USERPROFILE \
+  --allow-read="$config_dir,$data_dir" \
+  --allow-write="$config_dir,$data_dir" \
+  --allow-run=pbcopy,clip,clip.exe,wl-copy,xclip \
+  "jsr:@mohxmd/vaultlet@$vaultlet_version"
+
+if ! command -v vaultlet >/dev/null 2>&1; then
+  echo "Vaultlet installed at $HOME/.deno/bin/vaultlet." >&2
+  echo "Add $HOME/.deno/bin to PATH, then reopen your shell." >&2
+  exit 1
+fi
+
+echo "[vaultlet] Installed: $(command -v vaultlet)"

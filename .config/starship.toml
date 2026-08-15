@@ -1,3 +1,4 @@
+"$schema" = "https://starship.rs/config-schema.json"
 add_newline = false
 format = """$directory$character"""
 palette = "catppuccin_mocha"
@@ -5,14 +6,14 @@ right_format = """$all"""
 command_timeout = 1000
 
 [character]
-vicmd_symbol = "[N] >>>"
+vimcmd_symbol = "[N] >>>"
 success_symbol = '[➜](bold green)'
 
 [directory.substitutions]
 '~/tests/starship-custom' = 'work-project'
 
 [git_branch]
-format =  '[$symbol$branch(:$remote_branch)]($style)'
+format = '[$symbol$branch(:$remote_branch)]($style)'
 
 [aws]
 format = '[$symbol(profile: "$profile" )(\(region: $region\) )]($style)'

@@ -5,8 +5,17 @@ cloudflared/*.pem
 cloudflared/*.json
 cloudflared/config.yml
 
+# Local secret material
+.env
+.env.*
+!.env.example
+**/vault.enc
+.config/vaultlet/config.toml
+.local/share/vaultlet/
+
 # pgcli runtime data (machine-specific)
 .config/pgcli/history
+.local/state/pgcli/history
 
 # Misc
 *.tgz

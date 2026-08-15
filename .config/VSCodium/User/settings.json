@@ -29,7 +29,5 @@
     "editor.fontFamily": "OperatorMonoSSmLig Nerd Font,'Droid Sans Mono', 'monospace', monospace",
     "cSpell.userWords": [
         "cuid"
-    ],
-    "go.goroot": "/home/mohammedsh/Developer/go",
-    "go.gopath": "/home/mohammedsh/Developer/go"
+    ]
 }

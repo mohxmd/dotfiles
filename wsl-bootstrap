@@ -59,6 +59,9 @@ fi
 echo "[wsl] Installing and configuring Zsh"
 "$ROOT_DIR/run" zsh
 
+echo "[wsl] Installing Vaultlet"
+"$ROOT_DIR/run" vaultlet
+
 echo "[wsl] Applying WSL profile"
 "$ROOT_DIR/setup.sh" --profile wsl
 

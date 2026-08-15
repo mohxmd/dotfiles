@@ -48,18 +48,26 @@ has_group() {
   return 1
 }
 
-link_file() {
-  local rel="$1"
-  local src="$DOTFILES_DIR/$rel"
-  local dst="$HOME_DIR/$rel"
+same_target() {
+  local dst="$1"
+  local src="$2"
+
+  [[ -L "$dst" ]] || return 1
+  [[ "$(readlink -f "$dst" 2>/dev/null || true)" == "$(readlink -f "$src" 2>/dev/null || true)" ]]
+}
+
+link_file_to() {
+  local src="$1"
+  local dst="$2"
+  local label="${3:-$dst}"
 
   if [[ ! -e "$src" ]]; then
-    echo "skip (missing source): $rel"
+    echo "skip (missing source): $label"
     return
   fi
 
   if [[ "$DRY_RUN" == true ]]; then
-    if [[ -L "$dst" && "$(readlink -f "$dst" 2>/dev/null || true)" == "$src" ]]; then
+    if same_target "$dst" "$src"; then
       echo "already linked: $dst -> $src"
       return
     fi
@@ -77,7 +85,7 @@ link_file() {
   mkdir -p "$(dirname "$dst")"
 
   if [[ -L "$dst" ]]; then
-    if [[ "$(readlink -f "$dst" 2>/dev/null || true)" == "$src" ]]; then
+    if same_target "$dst" "$src"; then
       echo "already linked: $dst -> $src"
       return
     fi
@@ -95,6 +103,11 @@ link_file() {
 
   ln -s "$src" "$dst"
   echo "linked: $dst -> $src"
+}
+
+link_file() {
+  local rel="$1"
+  link_file_to "$DOTFILES_DIR/$rel" "$HOME_DIR/$rel" "$rel"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -133,7 +146,7 @@ done
 
 if [[ "$USE_STOW" == true ]]; then
   echo "--stow-all is disabled to avoid linking non-dotfile assets/ into \$HOME." >&2
-  echo "Use profile-based setup instead: ./setup.sh --profile <kde|gnome|mac|minimal>" >&2
+  echo "Use profile-based setup instead: ./setup.sh --profile <kde|gnome|mac|minimal|wsl>" >&2
   exit 1
 fi
 
@@ -141,7 +154,9 @@ if [[ "$PROFILE" == "auto" ]]; then
   case "$(uname -s)" in
     Darwin) PROFILE="mac" ;;
     Linux)
-      if [[ "${XDG_CURRENT_DESKTOP:-}" == *KDE* ]]; then
+      if [[ "$(uname -r)" == *microsoft-standard* || "$(uname -r)" == *WSL2* ]]; then
+        PROFILE="wsl"
+      elif [[ "${XDG_CURRENT_DESKTOP:-}" == *KDE* ]]; then
         PROFILE="kde"
       else
         PROFILE="gnome"
@@ -174,9 +189,16 @@ case "$PROFILE" in
     ;;
 esac
 
+VALID_GROUPS=(core nvim code vscodium plasma)
+
 # Apply --with overrides
 for g in "${WITH_GROUPS[@]:-}"; do
   [[ -z "$g" ]] && continue
+  if ! has_group "$g" "${VALID_GROUPS[@]}"; then
+    echo "Unknown group for --with: $g" >&2
+    usage
+    exit 1
+  fi
   if ! has_group "$g" "${ACTIVE_GROUPS[@]}"; then
     ACTIVE_GROUPS+=("$g")
   fi
@@ -191,6 +213,14 @@ if [[ ${#WITHOUT_GROUPS[@]} -gt 0 ]]; then
     fi
   done
   ACTIVE_GROUPS=("${FILTERED[@]}")
+  for g in "${WITHOUT_GROUPS[@]}"; do
+    [[ -z "$g" ]] && continue
+    if ! has_group "$g" "${VALID_GROUPS[@]}"; then
+      echo "Unknown group for --without: $g" >&2
+      usage
+      exit 1
+    fi
+  done
 fi
 
 should_link() {
@@ -204,7 +234,9 @@ echo "groups: ${ACTIVE_GROUPS[*]}"
 should_link core && link_file ".zshrc"
 should_link core && link_file ".config/starship.toml"
 should_link core && link_file ".config/zsh/modules/adb-device.zsh"
-should_link core && link_file ".local/bin/fix-hdmi-audio"
+if should_link core && [[ "$PROFILE" != "wsl" && "$PROFILE" != "mac" ]]; then
+  link_file ".local/bin/fix-hdmi-audio"
+fi
 should_link core && link_file ".local/bin/search"
 should_link core && link_file ".local/bin/image-request"
 should_link core && link_file ".local/bin/video-to-ascii"
@@ -228,16 +260,11 @@ should_link plasma && link_file ".local/share/color-schemes"
 should_link plasma && link_file ".local/share/konsole"
 should_link plasma && link_file ".local/share/org.kde.syntax-highlighting/themes"
 
-# Firefox: link user.js for Global Menu support
-if [[ -d "$HOME_DIR/.mozilla/firefox" && -f "$DOTFILES_DIR/.config/firefox/user.js" ]]; then
+# Firefox: link user.js for KDE Global Menu support
+if [[ "$PROFILE" == "kde" && -d "$HOME_DIR/.mozilla/firefox" && -f "$DOTFILES_DIR/.config/firefox/user.js" ]]; then
   for profile in "$HOME_DIR/.mozilla/firefox/"*.default-release "$HOME_DIR/.mozilla/firefox/"*.Profile*; do
     if [[ -d "$profile" ]]; then
-      if [[ "$DRY_RUN" == true ]]; then
-        echo "ln -sfn $DOTFILES_DIR/.config/firefox/user.js $profile/user.js"
-      else
-        ln -sfn "$DOTFILES_DIR/.config/firefox/user.js" "$profile/user.js"
-        echo "linked: $profile/user.js -> $DOTFILES_DIR/.config/firefox/user.js"
-      fi
+      link_file_to "$DOTFILES_DIR/.config/firefox/user.js" "$profile/user.js"
     fi
   done
 fi
