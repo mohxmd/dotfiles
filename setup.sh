@@ -58,6 +58,7 @@ link_file() {
   fi
 
   mkdir -p "$(dirname "$dst")"
+  rm -rf "$dst"
   ln -sfn "$src" "$dst"
   echo "linked: $dst -> $src"
 }
@@ -178,6 +179,8 @@ should_link nvim && link_file ".config/nvim"
 should_link code && link_file ".config/Code/User/settings.json"
 should_link code && link_file ".config/Code/User/keybindings.json"
 should_link code && link_file ".config/Code/User/snippets/typescript.json"
+should_link code && link_file ".local/share/applications/code.desktop"
+should_link code && link_file ".local/share/applications/antigravity-ide.desktop"
 
 should_link vscodium && link_file ".config/VSCodium/User/settings.json"
 should_link vscodium && link_file ".config/VSCodium/User/keybindings.json"

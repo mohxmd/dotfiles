@@ -1,20 +1,20 @@
 [Desktop Entry]
-Name=Visual Studio Code
-Comment=Code Editing. Redefined.
+Name=Antigravity IDE
+Comment=Experience liftoff
 GenericName=Text Editor
 # NOTE: '--ozone-platform=x11' enables DBus Menu export for KDE Plasma Global Menu (Top Panel).
 # To switch back to native Wayland mode in the future, change to '--ozone-platform=wayland'.
-Exec=/usr/bin/code --ozone-platform=x11 %F
-Icon=vscode
+Exec=/usr/bin/antigravity-ide --ozone-platform=x11 %F
+Icon=antigravity-ide
 Type=Application
 StartupNotify=false
-StartupWMClass=Code
+StartupWMClass=antigravity-ide
 Categories=TextEditor;Development;IDE;
-MimeType=text/plain;inode/directory;application/x-code-workspace;
+MimeType=application/x-antigravity-ide-workspace;
 Actions=new-empty-window;
 Keywords=vscode;
 
 [Desktop Action new-empty-window]
 Name=New Empty Window
-Exec=/usr/bin/code --ozone-platform=x11 --new-window %F
-Icon=vscode
+Exec=/usr/bin/antigravity-ide --ozone-platform=x11 --new-window %F
+Icon=antigravity-ide
