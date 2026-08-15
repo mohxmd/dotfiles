@@ -1,6 +1,7 @@
 return {
   {
     "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
@@ -19,74 +20,75 @@ return {
         cmp_lsp.default_capabilities()
       )
 
-      require("mason-lspconfig").setup({
-        ensure_installed = {
-          "lua_ls",
-          "rust_analyzer",
-          "gopls",
-          "vtsls",
-          "tailwindcss",
-          "zls",
-          "jdtls",
-          "bashls"
-        },
-        handlers = {
-          -- Default handler
-          function(server_name)
-            require("lspconfig")[server_name].setup({
-              capabilities = capabilities,
-            })
-          end,
+      local servers = {
+        "lua_ls",
+        "rust_analyzer",
+        "gopls",
+        "vtsls",
+        "tailwindcss",
+        "zls",
+        "jdtls",
+        "bashls",
+      }
 
-          ["zls"] = function()
-            local lspconfig = require("lspconfig")
-            lspconfig.zls.setup({
-              root_dir = lspconfig.util.root_pattern(".git", "build.zig", "zls.json"),
-              settings = {
-                zls = {
-                  enable_inlay_hints = true,
-                  enable_snippets = true,
-                  warn_style = true,
-                },
-              },
-            })
-            vim.g.zig_fmt_parse_errors = 0
-            vim.g.zig_fmt_autosave = 0
-          end,
+      -- Neovim 0.11+ uses the native LSP configuration API. The old
+      -- require("lspconfig").<server>.setup() API is deprecated.
+      for _, server in ipairs(servers) do
+        vim.lsp.config(server, { capabilities = capabilities })
+      end
 
-          ["lua_ls"] = function()
-            local lspconfig = require("lspconfig")
-            lspconfig.lua_ls.setup({
-              capabilities = capabilities,
-              settings = {
-                Lua = {
-                  runtime = { version = "LuaJIT" },
-                  diagnostics = { globals = { "vim" } },
-                  workspace = {
-                    library = vim.api.nvim_get_runtime_file("", true),
-                    checkThirdParty = false,
-                  },
-                  format = {
-                    enable = true,
-                    defaultConfig = { indent_style = "space", indent_size = "2" },
-                  },
-                },
-              },
-            })
-          end,
-
-          ["tailwindcss"] = function()
-            local lspconfig = require("lspconfig")
-            lspconfig.tailwindcss.setup({
-              capabilities = capabilities,
-              filetypes = {
-                "html", "css", "scss", "javascript", "javascriptreact",
-                "typescript", "typescriptreact", "vue", "svelte", "heex"
-              },
-            })
-          end,
+      vim.lsp.config("zls", {
+        settings = {
+          zls = {
+            enable_inlay_hints = true,
+            enable_snippets = true,
+            warn_style = true,
+          },
         },
       })
+      vim.g.zig_fmt_parse_errors = 0
+      vim.g.zig_fmt_autosave = 0
+
+      vim.lsp.config("lua_ls", {
+        settings = {
+          Lua = {
+            runtime = { version = "LuaJIT" },
+            diagnostics = { globals = { "vim" } },
+            workspace = {
+              library = vim.api.nvim_get_runtime_file("", true),
+              checkThirdParty = false,
+            },
+            format = {
+              enable = true,
+              defaultConfig = { indent_style = "space", indent_size = "2" },
+            },
+          },
+        },
+      })
+
+      vim.lsp.config("tailwindcss", {
+        filetypes = {
+          "html",
+          "css",
+          "scss",
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact",
+          "vue",
+          "svelte",
+          "heex",
+        },
+      })
+
+      require("mason-lspconfig").setup({
+        ensure_installed = servers,
+        automatic_enable = false,
+      })
+
+      for _, server in ipairs(servers) do
+        vim.lsp.enable(server)
+      end
 
       vim.diagnostic.config({
         float = {
