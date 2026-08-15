@@ -19,6 +19,7 @@ cloudflared/config.yml
 
 # Misc
 *.tgz
+assets/wallpapers/live/*.mp4
 .cache
 tmp
 temp
