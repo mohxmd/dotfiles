@@ -256,23 +256,6 @@ plugin=org.kde.plasma.catwalk
 popupHeight=400
 popupWidth=560
 
-[Containments][338][Applets][390]
-immutability=1
-plugin=com.github.antroids.application-title-bar
-
-[Containments][338][Applets][390][Configuration][Appearance]
-overrideElementsMaximized=true
-widgetButtonsAuroraeTheme=Graphite-dark
-windowTitleFontBold=false
-windowTitleMarginsRight=0
-windowTitleSource=AppName
-windowTitleSourceMaximized=AppName
-windowTitleUndefined=Plasma
-
-[Containments][338][Applets][390][Configuration][ConfigDialog]
-DialogHeight=630
-DialogWidth=810
-
 [Containments][338][Applets][391]
 immutability=1
 plugin=org.latgardi.darwinmenu
@@ -281,7 +264,7 @@ plugin=org.latgardi.darwinmenu
 global=Meta+Alt+Esc
 
 [Containments][338][General]
-AppletOrder=391;390;339;343;373;365;345;364;362;367;363
+AppletOrder=391;339;343;373;365;345;364;362;367;363
 
 [Containments][382]
 ItemGeometries-1745x982=
@@ -316,7 +299,7 @@ VideoUrls=[{"filename":"file:///home/mohammedsh/dotfiles/assets/wallpapers/live/
 command=dolphin
 
 [Containments][382][Wallpaper][org.kde.image][General]
-Image=file:///usr/share/wallpapers/Horos/
+Image=file:///home/mohammedsh/dotfiles/assets/wallpapers/wallpaperflare.com_wallpaper (2).jpg
 SlidePaths=/usr/share/wallpapers/
 
 [Containments][382][Wallpaper][org.kde.potd][General]
