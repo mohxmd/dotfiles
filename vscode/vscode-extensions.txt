@@ -56,5 +56,4 @@ unifiedjs.vscode-mdx
 vitest.explorer
 voidzero.vite-plus-extension-pack
 vscode-icons-team.vscode-icons
-waderyan.gitblame
 yoavbls.pretty-ts-errors

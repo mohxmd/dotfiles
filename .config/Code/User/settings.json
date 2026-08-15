@@ -112,7 +112,6 @@
   "[markdown]": {
     "diffEditor.ignoreTrimWhitespace": true,
   },
-  "git.blame.statusBarItem.enabled": false,
   "github.copilot.enable": {
     "*": false,
     "plaintext": false,
