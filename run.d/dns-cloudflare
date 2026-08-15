@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+# Task: dns-cloudflare
+# Purpose: Configure Cloudflare DNS through NetworkManager or resolv.conf.
+# Requires: sudo, NetworkManager for default mode, systemd for legacy mode.
+# WSL: Avoid; WSL manages DNS through Windows and its WSL configuration.
+
 set -euo pipefail
 
 # Safe default:

@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+# Task: dev
+# Purpose: Upgrade Arch, install bare-metal developer packages, and install yay.
+# Requires: Arch Linux, sudo, pacman, systemd.
+# WSL: Do not use; run ../wsl-bootstrap instead.
+
 set -euo pipefail
 
 require_cmd() {

@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+# Task: firewall
+# Purpose: Install UFW and apply the host firewall rules.
+# Requires: Arch Linux, sudo, pacman, systemd.
+# WSL: Unsupported as a default; configure Windows Firewall instead.
+
 set -euo pipefail
 
 command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }

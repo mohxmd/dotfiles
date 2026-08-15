@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+
+# Entry point: dispatch an executable task from run.d/.
+# Usage: ./run <task> [args...] or ./run --list.
+# Requires: Bash and an executable run.d task.
+
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

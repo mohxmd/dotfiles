@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+# Task: bluetooth
+# Purpose: Install and enable the BlueZ Bluetooth service.
+# Requires: Arch Linux, sudo, pacman, systemd.
+# WSL: Unsupported; use Windows Bluetooth integration.
+
 set -euo pipefail
 
 command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }

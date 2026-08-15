@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+# Task: cloudflared
+# Purpose: Install Cloudflare Tunnel and optionally enable its service.
+# Requires: Arch Linux, sudo, pacman, systemd for service mode.
+# WSL: Optional; systemd must be enabled and WSL must stay running.
+
 set -euo pipefail
 
 command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }

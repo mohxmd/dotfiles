@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+# Task: java
+# Purpose: Install OpenJDK versions and select the default Java environment.
+# Requires: Arch Linux, sudo, pacman, archlinux-java.
+# WSL: Supported.
+
 set -euo pipefail
 
 command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }

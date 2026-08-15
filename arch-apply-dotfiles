@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+# Entry point: apply a dotfiles profile.
+# Usage: ./arch-apply-dotfiles [profile]
+# Profiles: auto, kde, gnome, mac, minimal, wsl.
+# Requires: Bash and a writable home directory.
+
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

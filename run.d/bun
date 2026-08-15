@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+# Task: bun
+# Purpose: Install Bun in the user's home directory.
+# Requires: curl and unzip.
+# WSL: Supported.
+
 set -euo pipefail
 
 command -v curl >/dev/null 2>&1 || { echo "curl is required." >&2; exit 1; }

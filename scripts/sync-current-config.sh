@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+
+# Sync utility: copy selected live user configuration into this repository.
+# Usage: ./scripts/sync-current-config.sh
+# Warning: writes into the repository and uses rsync --delete for selected
+# directories; review git diff afterward.
+# Scope: Plasma, Konsole, pgcli, Zsh modules, and VS Code configuration.
+
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

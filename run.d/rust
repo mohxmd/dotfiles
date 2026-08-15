@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+# Task: rust
+# Purpose: Install rustup and initialize the stable Rust toolchain.
+# Requires: Arch Linux, sudo, pacman.
+# WSL: Supported.
+
 set -euo pipefail
 
 command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }

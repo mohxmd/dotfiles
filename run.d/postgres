@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+# Task: postgres
+# Purpose: Install PostgreSQL client tools and pgcli.
+# Requires: Arch Linux, sudo, pacman.
+# WSL: Supported; this installs clients, not a PostgreSQL server.
+
 set -euo pipefail
 
 command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
