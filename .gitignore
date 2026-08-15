@@ -1,3 +1,5 @@
+node_modules
+
 # Cloudflared local secrets/state
 cloudflared/*.pem
 cloudflared/*.json
@@ -5,3 +7,10 @@ cloudflared/config.yml
 
 # pgcli runtime data (machine-specific)
 .config/pgcli/history
+
+# Misc
+*.tgz
+.cache
+tmp
+temp
+.bun-tmp
