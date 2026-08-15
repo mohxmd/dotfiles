@@ -191,4 +191,18 @@ should_link plasma && link_file ".local/share/color-schemes"
 should_link plasma && link_file ".local/share/konsole"
 should_link plasma && link_file ".local/share/org.kde.syntax-highlighting/themes"
 
+# Firefox: link user.js for Global Menu support
+if [[ -d "$HOME_DIR/.mozilla/firefox" && -f "$DOTFILES_DIR/.config/firefox/user.js" ]]; then
+  for profile in "$HOME_DIR/.mozilla/firefox/"*.default-release "$HOME_DIR/.mozilla/firefox/"*.Profile*; do
+    if [[ -d "$profile" ]]; then
+      if [[ "$DRY_RUN" == true ]]; then
+        echo "ln -sfn $DOTFILES_DIR/.config/firefox/user.js $profile/user.js"
+      else
+        ln -sfn "$DOTFILES_DIR/.config/firefox/user.js" "$profile/user.js"
+        echo "linked: $profile/user.js -> $DOTFILES_DIR/.config/firefox/user.js"
+      fi
+    fi
+  done
+fi
+
 echo "setup complete"
