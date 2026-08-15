@@ -22,8 +22,14 @@ ginit() {
 # -----------------------------------
 # Shell Options
 # -----------------------------------
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+if [[ -z "${LANG:-}" ]]; then
+  if locale -a 2>/dev/null | grep -qi '^en_US\.utf-8$'; then
+    export LANG=en_US.UTF-8
+  else
+    export LANG=C.UTF-8
+  fi
+fi
+export LC_ALL="${LC_ALL:-$LANG}"
 
 HISTFILE="$HOME/.zsh_history"
 HISTSIZE=5000
@@ -45,15 +51,17 @@ export KEYTIMEOUT=10
 # Oh My Zsh (plugins & framework)
 # -----------------------------------
 export ZSH="$HOME/.oh-my-zsh"
+ZSH_CUSTOM="${ZSH_CUSTOM:-$ZSH/custom}"
 ZSH_THEME=""
 
 plugins=(
   git
-  zsh-autosuggestions
-  zsh-syntax-highlighting
 )
 
-source $ZSH/oh-my-zsh.sh
+[[ -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]] && plugins+=(zsh-autosuggestions)
+[[ -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]] && plugins+=(zsh-syntax-highlighting)
+
+[[ -r "$ZSH/oh-my-zsh.sh" ]] && source "$ZSH/oh-my-zsh.sh"
 
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(bracketed-paste)
 DISABLE_UPDATE_PROMPT=true
@@ -61,7 +69,9 @@ DISABLE_UPDATE_PROMPT=true
 # -----------------------------------
 # Starship (prompt)
 # -----------------------------------
-eval "$(starship init zsh)"
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init zsh)"
+fi
 
 # -----------------------------------
 # PATH
