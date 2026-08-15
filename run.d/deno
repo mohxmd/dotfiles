@@ -1,25 +1,39 @@
 #!/usr/bin/env bash
 
 # Task: deno
-# Purpose: Install Deno from the Arch repositories.
-# Requires: Arch Linux, sudo, and pacman.
+# Purpose: Install the latest Deno release with Deno's official installer.
+# Requires: curl, and unzip or 7z.
 # WSL: Supported.
 
 set -euo pipefail
 
-command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
-command -v pacman >/dev/null 2>&1 || { echo "pacman is required." >&2; exit 1; }
+command -v curl >/dev/null 2>&1 || { echo "curl is required." >&2; exit 1; }
+if ! command -v unzip >/dev/null 2>&1 && ! command -v 7z >/dev/null 2>&1; then
+  echo "Either unzip or 7z is required." >&2
+  exit 1
+fi
 
-if command -v deno >/dev/null 2>&1; then
-  echo "[deno] Deno already installed"
-  deno --version | head -n 1
+deno_install="${DENO_INSTALL:-$HOME/.deno}"
+deno_bin="$deno_install/bin/deno"
+
+if [ -x "$deno_bin" ]; then
+  echo "[deno] Official Deno installation already present"
+  "$deno_bin" --version | head -n 1
   exit 0
 fi
 
-echo "[deno] Installing Deno from Arch repositories"
-sudo pacman -S --needed deno
+if command -v deno >/dev/null 2>&1; then
+  echo "[deno] Existing Deno found at $(command -v deno); installing the official user-local copy"
+fi
 
-export PATH="$HOME/.deno/bin:$PATH"
+installer_script="$(mktemp)"
+trap 'rm -f "$installer_script"' EXIT
+
+echo "[deno] Installing the latest Deno release to $deno_bin"
+curl -fsSL https://deno.land/install.sh -o "$installer_script"
+DENO_INSTALL="$deno_install" sh "$installer_script" --yes --no-modify-path
+
+export PATH="$deno_install/bin:$PATH"
 if ! command -v deno >/dev/null 2>&1; then
   echo "Deno was not found after installation." >&2
   exit 1
