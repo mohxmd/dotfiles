@@ -1,24 +1,24 @@
 [Appearance]
 ColorScheme=BuraqDark
 Font=MesloLGS NF,14,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
-AntiAlias=true                    # Smoother font rendering
-Opacity=0.85                      # Frosted glass background
-Blur=true                         # Background blur
+AntiAlias=true
+Opacity=0.85
+Blur=true
 
 [General]
 Command=/usr/bin/zsh
 Name=Buraq
 Parent=FALLBACK/
-Environment=TERM=xterm-256color   # Fixes bugs in terminal apps
+Environment=TERM=xterm-256color
 
 [Scrolling]
-HistoryMode=2                     # Unlimited scrollback
-ScrollFullPage=false              # Smooth trackpad scrolling
+HistoryMode=2
+ScrollFullPage=false
 
 [Interaction Options]
-AutoCopySelectedText=true         # Copy text on highlight
-CopyTextAsHTML=false              # Clean pasting into rich text editors
+AutoCopySelectedText=true
+CopyTextAsHTML=false
 
 [Cursor]
-BlinkingCursorEnabled=true        # Modern blinking cursor
-CursorShape=1                     # Sleek I-Beam cursor
+BlinkingCursorEnabled=true
+CursorShape=1

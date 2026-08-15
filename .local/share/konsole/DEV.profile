@@ -5,9 +5,7 @@ ColorScheme=RedOnBlack
 Name=DEV
 Parent=FALLBACK/
 TerminalColumns=500
-
-[Keyboard]
-KeyBindings=macos
+Environment=TERM=xterm-256color
 
 [Scrolling]
 HistoryMode=2
