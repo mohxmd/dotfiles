@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+# Installer: safely link selected configuration files into the user's home.
+# Usage: ./setup.sh --profile <profile> [options].
+# Profiles: auto, kde, gnome, mac, minimal, wsl.
+# Safety: existing real files are moved to a timestamped backup first.
+
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -14,7 +20,7 @@ usage() {
 Usage: ./setup.sh [options]
 
 Options:
-  --profile <kde|gnome|mac|minimal|auto>  Choose link profile (default: auto)
+  --profile <kde|gnome|mac|minimal|wsl|auto>  Choose link profile (default: auto)
   --with <group1,group2>                  Force include groups
   --without <group1,group2>               Exclude groups
   --stow-all                               Disabled (kept for compatibility)
@@ -53,13 +59,41 @@ link_file() {
   fi
 
   if [[ "$DRY_RUN" == true ]]; then
-    echo "ln -sfn $src $dst"
+    if [[ -L "$dst" && "$(readlink -f "$dst" 2>/dev/null || true)" == "$src" ]]; then
+      echo "already linked: $dst -> $src"
+      return
+    fi
+    if [[ -e "$dst" || -L "$dst" ]]; then
+      if [[ -L "$dst" ]]; then
+        echo "rm $dst"
+      else
+        echo "mv $dst $dst.pre-dotfiles-<timestamp>"
+      fi
+    fi
+    echo "ln -s $src $dst"
     return
   fi
 
   mkdir -p "$(dirname "$dst")"
-  rm -rf "$dst"
-  ln -sfn "$src" "$dst"
+
+  if [[ -L "$dst" ]]; then
+    if [[ "$(readlink -f "$dst" 2>/dev/null || true)" == "$src" ]]; then
+      echo "already linked: $dst -> $src"
+      return
+    fi
+    rm "$dst"
+  elif [[ -e "$dst" ]]; then
+    backup="$dst.pre-dotfiles-$(date +%Y%m%d%H%M%S)"
+    suffix=0
+    while [[ -e "$backup" || -L "$backup" ]]; do
+      suffix=$((suffix + 1))
+      backup="$dst.pre-dotfiles-$(date +%Y%m%d%H%M%S)-$suffix"
+    done
+    mv "$dst" "$backup"
+    echo "backed up: $dst -> $backup"
+  fi
+
+  ln -s "$src" "$dst"
   echo "linked: $dst -> $src"
 }
 
@@ -129,6 +163,9 @@ case "$PROFILE" in
     ;;
   minimal)
     ACTIVE_GROUPS=(core)
+    ;;
+  wsl)
+    ACTIVE_GROUPS=(core nvim)
     ;;
   *)
     echo "Invalid profile: $PROFILE" >&2

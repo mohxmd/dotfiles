@@ -1,0 +1,6 @@
+[boot]
+systemd=true
+
+# Replace this with your actual Arch username.
+[user]
+default=your-linux-user

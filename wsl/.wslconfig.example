@@ -1,0 +1,7 @@
+# Copy to %UserProfile%\\.wslconfig only if you need these host-wide settings.
+# Keep this file conservative when using a company VPN or security software.
+
+[wsl2]
+# networkingMode=mirrored
+# dnsTunneling=true
+# autoMemoryReclaim=gradual

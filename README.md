@@ -21,6 +21,7 @@ cd ~/dotfiles
 - `gnome`: links Code + nvim + core shell setup
 - `mac`: links Code + nvim + core shell setup
 - `minimal`: links core shell setup only
+- `wsl`: links core shell setup and Neovim, without desktop/KDE configuration
 
 `core shell setup` includes:
 - `.zshrc`
@@ -73,11 +74,34 @@ cd ~/dotfiles
 ./run dotfiles auto
 ```
 
-Full bootstrap:
+Full bare-metal Linux bootstrap:
 
 ```bash
 ./arch-bootstrap
 ```
+
+`arch-bootstrap` refuses to run inside WSL because it installs desktop-oriented
+services and a local Docker daemon.
+
+WSL bootstrap:
+
+```bash
+./wsl-bootstrap
+```
+
+Run `wsl-bootstrap` inside Arch WSL as a normal user with working `sudo`. If
+the Arch image starts as `root`, create a regular user, grant it `sudo`, and
+make it the WSL default user first. It installs WSL-relevant
+packages, creates `/etc/wsl.conf` only when that file does not already exist,
+enables systemd for the current user, installs Zsh dependencies, and applies
+the `wsl` profile. Restart WSL from PowerShell with `wsl --shutdown` afterward.
+
+The files in `wsl/` are templates for distribution-level `/etc/wsl.conf` and
+host-level `%UserProfile%\.wslconfig`; they are not linked into `$HOME`.
+
+On Windows, prefer Docker Desktop's WSL integration. The desktop-oriented
+`firewall`, `bluetooth`, `dns-cloudflare`, `docker`, and `plasma` tasks are
+intentionally not part of the WSL bootstrap.
 
 Optional bootstrap extras:
 

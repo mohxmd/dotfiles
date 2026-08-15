@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+# Bootstrap: prepare an Arch Linux WSL2 developer environment.
+# Requires: WSL2, a normal user with sudo, pacman, and a writable home.
+# Scope: installs WSL essentials, enables systemd, configures Zsh, and applies
+# the wsl dotfiles profile; desktop services remain opt-in.
+
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+kernel_release="$(uname -r)"
+if [[ "$kernel_release" != *microsoft-standard* && "$kernel_release" != *WSL2* ]]; then
+  echo "This bootstrap must run inside WSL2." >&2
+  exit 1
+fi
+
+if [[ "$(uname -m)" != "x86_64" && "$(uname -m)" != "aarch64" ]]; then
+  echo "Unsupported architecture: $(uname -m)" >&2
+  exit 1
+fi
+
+for command in pacman sudo git; do
+  command -v "$command" >/dev/null 2>&1 || {
+    echo "Missing required command: $command" >&2
+    exit 1
+  }
+done
+
+if [[ "$EUID" -eq 0 ]]; then
+  echo "Run this as your normal WSL user, not root." >&2
+  exit 1
+fi
+
+echo "[wsl] Updating Arch packages"
+sudo pacman -Syu
+
+echo "[wsl] Installing WSL developer essentials"
+sudo pacman -S --needed \
+  systemd sudo git base-devel curl jq unzip rsync openssh ca-certificates
+
+wsl_user="${WSL_USER:-$(id -un)}"
+if [[ ! -f /etc/wsl.conf ]]; then
+  wsl_conf="$(mktemp)"
+  trap 'rm -f "$wsl_conf"' EXIT
+  cat > "$wsl_conf" <<EOF
+[boot]
+systemd=true
+
+[user]
+default=$wsl_user
+EOF
+  sudo install -o root -g root -m 0644 "$wsl_conf" /etc/wsl.conf
+  echo "[wsl] Created /etc/wsl.conf with systemd enabled for $wsl_user"
+elif ! sudo grep -Eiq '^systemd[[:space:]]*=[[:space:]]*true[[:space:]]*$' /etc/wsl.conf; then
+  echo "[wsl] /etc/wsl.conf already exists; add [boot] systemd=true manually if needed." >&2
+fi
+
+echo "[wsl] Installing and configuring Zsh"
+"$ROOT_DIR/run" zsh
+
+echo "[wsl] Applying WSL profile"
+"$ROOT_DIR/setup.sh" --profile wsl
+
+cat <<'EOF'
+
+WSL bootstrap complete.
+
+Restart WSL from PowerShell before using systemd:
+  wsl --shutdown
+
+Then reopen Arch and verify:
+  systemctl is-system-running
+
+Optional tools remain opt-in:
+  ./run bun
+  ./run nvm-node
+  ./run rust
+  ./run java
+  ./run postgres
+  ./run cloudflared
+
+Use Docker Desktop WSL integration instead of ./run docker when Docker Desktop is installed.
+EOF

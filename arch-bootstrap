@@ -7,6 +7,12 @@ PROFILE="${1:-auto}"
 ENABLE_BLUETOOTH="${ENABLE_BLUETOOTH:-0}"
 ENABLE_DNS_CLOUDFLARE="${ENABLE_DNS_CLOUDFLARE:-0}"
 
+if [[ "$(uname -r)" == *microsoft-standard* || "$(uname -r)" == *WSL2* ]]; then
+  echo "Arch desktop bootstrap is not intended for WSL." >&2
+  echo "Use: $ROOT_DIR/wsl-bootstrap" >&2
+  exit 1
+fi
+
 "$RUNNER" dev
 "$RUNNER" firewall
 "$RUNNER" cloudflared
