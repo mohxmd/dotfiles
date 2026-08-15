@@ -2,8 +2,9 @@
 
 # Bootstrap: prepare an Arch Linux WSL2 developer environment.
 # Requires: WSL2, a normal user with sudo, pacman, and a writable home.
-# Scope: installs WSL essentials, enables systemd, configures Zsh, and applies
-# the wsl dotfiles profile; desktop services remain opt-in.
+# Scope: installs a complete WSL developer baseline, enables systemd,
+# configures Zsh, and applies the wsl dotfiles profile; desktop services
+# remain opt-in.
 
 set -euo pipefail
 
@@ -37,7 +38,8 @@ sudo pacman -Syu
 
 echo "[wsl] Installing WSL developer essentials"
 sudo pacman -S --needed \
-  systemd sudo git base-devel curl jq unzip rsync openssh ca-certificates
+  systemd sudo git base-devel curl jq unzip rsync openssh ca-certificates \
+  neovim java-runtime-common
 
 wsl_user="${WSL_USER:-$(id -un)}"
 if [[ ! -f /etc/wsl.conf ]]; then
@@ -62,6 +64,21 @@ echo "[wsl] Installing and configuring Zsh"
 echo "[wsl] Installing Vaultlet"
 "$ROOT_DIR/run" vaultlet
 
+echo "[wsl] Installing Bun"
+"$ROOT_DIR/run" bun
+
+echo "[wsl] Installing Node through NVM"
+"$ROOT_DIR/run" nvm-node
+
+echo "[wsl] Installing Rust"
+"$ROOT_DIR/run" rust
+
+echo "[wsl] Installing Java"
+"$ROOT_DIR/run" java
+
+echo "[wsl] Installing PostgreSQL client tools"
+"$ROOT_DIR/run" postgres
+
 echo "[wsl] Applying WSL profile"
 "$ROOT_DIR/setup.sh" --profile wsl
 
@@ -75,12 +92,10 @@ Restart WSL from PowerShell before using systemd:
 Then reopen Arch and verify:
   systemctl is-system-running
 
-Optional tools remain opt-in:
-  ./run bun
-  ./run nvm-node
-  ./run rust
-  ./run java
-  ./run postgres
+Installed developer tools:
+  nvim, bun, node/nvm, rust, java, PostgreSQL client, Deno, Vaultlet
+
+Optional:
   ./run cloudflared
 
 Use Docker Desktop WSL integration instead of ./run docker when Docker Desktop is installed.
