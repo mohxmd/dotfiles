@@ -34,7 +34,7 @@ inferrinizzard.prettier-sql-vscode
 kde.breeze
 mathiasfrohlich.kotlin
 matthewpi.caddyfile-support
-mhdzhhan.buraq-dark-theme
+mohxmd.buraq-dark-theme
 ms-azuretools.vscode-containers
 ms-python.debugpy
 ms-python.python

@@ -159,7 +159,6 @@
     "https://json-schema.org/": true,
     "https://biomejs.dev": true,
   },
-  "workbench.colorTheme": "Buraq Dark",
   "window.customTitleBarVisibility": "never",
   "window.titleBarStyle": "native",
   "geminicodeassist.project": "possible-pact-fshbt",
@@ -173,4 +172,5 @@
     "**/.forgejo/workflows/*.yml",
     "**/.forgejo/workflows/*.yaml",
   ],
+  "workbench.colorTheme": "Buraq Dark",
 }

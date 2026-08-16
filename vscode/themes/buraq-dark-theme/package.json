@@ -1,0 +1,36 @@
+{
+  "name": "buraq-dark-theme",
+  "displayName": "Buraq Dark",
+  "description": "A premium dark theme with emerald green accents inspired by KDE BuraqDark and One Dark Monokai syntax",
+  "version": "1.1.1",
+  "publisher": "mohxmd",
+  "license": "SEE LICENSE IN LICENSE",
+  "icon": "icon-v2.png",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mohxmd/dotfiles.git"
+  },
+  "contributes": {
+    "themes": [
+      {
+        "label": "Buraq Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/buraq-dark-color-theme.json"
+      },
+      {
+        "label": "Buraq Dark (Atom)",
+        "uiTheme": "vs-dark",
+        "path": "./themes/buraq-dark-atom-color-theme.json"
+      }
+    ]
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.7.1"
+  }
+}
