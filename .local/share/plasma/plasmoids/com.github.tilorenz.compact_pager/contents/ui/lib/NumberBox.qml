@@ -1,5 +1,5 @@
 /*
- * Copyright 2021  Tino Lorenz <tilrnz@gmx.net>
+ * Copyright 2021-2026  Tino Lorenz <tilrnz@gmx.net>
  * Copyright 2022  Diego Miguel <hello@diegomiguel.me>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,6 @@ Rectangle {
 	property color fontColor: plasmoid.configuration.fontColorChecked ? 
 			plasmoid.configuration.fontColor : Kirigami.Theme.textColor
 	property bool showWindowIndicator: true
-	property list<var> iconSources: []
 
 	border.width: plasmoid.configuration.displayBorder ? plasmoid.configuration.borderThickness : 0
 	radius: height > width ? height * (plasmoid.configuration.borderRadius / 100) : width * (plasmoid.configuration.borderRadius / 100)
@@ -99,13 +98,14 @@ Rectangle {
 		anchors.centerIn: parent
 		visible: plasmoid.configuration.showWindowIcons
 
-		readonly property int maxIconCount: Math.floor(Math.max(numberBox.height, numberBox.width) / iconSize)
 		readonly property bool showIconsInColumn: numberBox.height > numberBox.width
-		readonly property bool showAllIcons: numberBox.iconSources.length <= maxIconCount
-		readonly property int iconSize: Math.min(numberBox.height * 0.7, numberBox.width * 0.7)
+		readonly property bool showAllIcons: iconSize > 6
+		readonly property int shorterSide: Math.min(numberBox.height, numberBox.width)
+		readonly property int longerSide: Math.max(numberBox.height, numberBox.width)
+		readonly property int iconSize: Math.min(shorterSide * 0.8, (longerSide - 4) / tasksModel.count)
 
-		columns: (showIconsInColumn || !showAllIcons) ? 1 : maxIconCount
-		rows: (showIconsInColumn && showAllIcons) ? maxIconCount : 1
+		columns: (showIconsInColumn || !showAllIcons) ? 1 : tasksModel.count
+		rows: (showIconsInColumn && showAllIcons) ? tasksModel.count : 1
 		flow: showIconsInColumn ? Grid.TopToBottom : Grid.LeftToRight
 
 		component BoxIcon: Kirigami.Icon {
@@ -115,14 +115,17 @@ Rectangle {
 		}
 
 		Repeater {
-			model: numberBox.iconSources
+			model: tasksModel
 			BoxIcon {
 				visible: iconGrid.showAllIcons
-				source: modelData
+				source: model.decoration
 			}
 		}
 
-		BoxIcon {
+		Kirigami.Icon {
+			height: iconGrid.shorterSide * 0.7
+			width: iconGrid.shorterSide * 0.7
+			roundToIconSize: false
 			visible: !iconGrid.showAllIcons
 			source: iconGrid.showIconsInColumn ? "view-more-symbolic" : "view-more-horizontal-symbolic"
 		}

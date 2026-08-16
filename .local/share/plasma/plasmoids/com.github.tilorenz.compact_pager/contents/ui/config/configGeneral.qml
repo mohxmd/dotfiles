@@ -43,16 +43,6 @@ KCM.SimpleKCM {
 	Kirigami.FormLayout {
 		id: layoutGeneral
 
-		QtControls.Label {
-			text: "Note: Functionality relating to windows, like showing app icons or hiding empty desktops, is currently broken. Sorry :("
-			font.bold: true
-			wrapMode: Text.Wrap
-			anchors.right: parent.right
-			anchors.left: parent.left
-		}
-
-		//anchors.fill: parent
-
 		QtControls.CheckBox {
 			id: stayVisible
 			text: i18n("Stay visible when there is only one virtual desktop")
@@ -62,7 +52,7 @@ KCM.SimpleKCM {
 			id: enableDnD
 			text: i18n("Enable dropping apps to move")
 			QtControls.ToolTip.visible: hovered
-			QtControls.ToolTip.text: "Enable drag-and-dropping apps from the task manager to move them to other desktops"
+			QtControls.ToolTip.text: i18n("Enable drag-and-dropping apps from the task manager to move them to other desktops")
 		}
 
 		QtControls.CheckBox {
@@ -127,16 +117,16 @@ KCM.SimpleKCM {
 			Kirigami.FormData.label: i18n("Layout:")
 			QtControls.ComboBox {
 				id: pagerLayout
-				model: ["Adaptive", "Full", "Compact"]
+				model: [i18n("Adaptive"), i18n("Full"), i18n("Compact")]
 			}
 
 			QtControls.Button {
 				id: infoButton
 				icon.name: "dialog-information"
 				QtControls.ToolTip.visible: hovered
-				QtControls.ToolTip.text: "<b>Adaptive</b>:<br>Switch the layout depending on available space.<br><br>" +
-										 "<b>Full</b>:<br>Always show full layout.<br><br>" +
-										 "<b>Compact</b>:<br>Always show compact layout."
+				QtControls.ToolTip.text: i18n(
+					"<b>Adaptive</b>:<br>Switch the layout depending on available space.<br><br><b>Full</b>:<br>Always show full layout.<br><br><b>Compact</b>:<br>Always show compact layout."
+				)
 			}
 		}
 
@@ -148,7 +138,7 @@ KCM.SimpleKCM {
 			id: currentDesktopSelectedBox
 			Kirigami.FormData.label: i18n("Selecting current virtual desktop:")
 
-			model: ["Does nothing", "Shows the desktop", "Shows overview"]
+			model: [i18n("Does nothing"), i18n("Shows the desktop"), i18n("Shows overview")]
 		}
 
 		QtControls.CheckBox {

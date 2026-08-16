@@ -190,15 +190,63 @@ PlasmoidItem {
 		id: pagerModel
 	}
 
+	ActivityInfo {
+		id: activityModel
+	}
+
+	TasksModel {
+		id: mainTasksModel
+		filterByVirtualDesktop: false
+		groupMode: TasksModel.GroupDisabled
+	}
+
+	// maps window IDs to a model index of mainTasksModel. Needed to move DnD'd windows to virtual desktops.
+	property var windowIdToModelIdx: {
+		// when using a map, IDs aren't found despite the strings being identical.
+		// seems to be a problem with the equivalence check the map uses.
+		const result = [];
+		// unfortunately, there doesn't seem to be a way to query the roles from QML, or get data by role name
+		// other than using a proxy repeater.
+		// see libtaskmanager/abstracttasksmodel.h
+		const WIN_ID_LIST_ROLE = 262
+		for (let i = 0; i < mainTasksModel.count; i++) {
+			let modelIdx = mainTasksModel.index(i, 0)
+			// this is a window id list like [{7274ba31-f9eb-437c-be86-213000be637c}]
+			var md = modelIdx.data(WIN_ID_LIST_ROLE)
+			if (md.length != 1) {
+				console.warn("Compact Pager: got != 1 mime data", md)
+				continue
+			}
+			const windowId = md[0]
+			// console.log("Window ", i, "has windowId ", windowId)
+			result.push([windowId, modelIdx])
+		}
+		return result;
+	}
+
+	function modevWindowToDesktop(windowId, desktopId) {
+		var modelIdx
+		for (const idToIdx of windowIdToModelIdx) {
+			if (idToIdx[0] == windowId) {
+				modelIdx = idToIdx[1]
+			}
+		}
+		if (modelIdx) {
+			mainTasksModel.requestVirtualDesktops(modelIdx, [desktopId])
+		} else {
+			console.warn("Compact Pager: Tried to move window with unknown ID to desktop. windowId:", windowId, "wi2mi:", windowIdToModelIdx)
+		}
+	}
+
     Plasmoid.contextualActions: [
         PlasmaCore.Action {
-            text: "Add Virtual Desktop"
+            text: i18n("Add Virtual Desktop")
             icon.name: "list-add"
             visible: KConfig.KAuthorized.authorize("kcm_kwin_virtualdesktops")
             onTriggered: action_addDesktop()
         },
         PlasmaCore.Action {
-            text: "Remove Virtual Desktop"
+            text: i18n("Remove Virtual Desktop")
             icon.name: "list-remove"
             visible: KConfig.KAuthorized.authorize("kcm_kwin_virtualdesktops")
 			enabled: Qt.binding(function() {
@@ -207,7 +255,7 @@ PlasmoidItem {
             onTriggered: action_removeDesktop()
         },
         PlasmaCore.Action {
-            text: "Configure Virtual Desktops…"
+            text: i18n("Configure Virtual Desktops…")
             visible: KConfig.KAuthorized.authorize("kcm_kwin_virtualdesktops")
             onTriggered: KCM.KCMLauncher.openSystemSettings("kcm_kwin_virtualdesktops")
         }

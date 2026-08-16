@@ -48,6 +48,11 @@ ComboBox {
         }
 
         ListElement {
+            name: "Hide from Screencast button"
+            value: "excludeFromCaptureButton"
+        }
+
+        ListElement {
             name: "Window title"
             value: "windowTitle"
         }

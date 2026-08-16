@@ -7,6 +7,7 @@ import "../"
 import Qt.labs.folderlistmodel
 import QtCore
 import QtQuick
+import org.kde.plasma.workspace.dbus
 
 Item {
     id: kWinConfig
@@ -14,15 +15,11 @@ Item {
     readonly property string auroraeThemesPath: "aurorae/themes/"
     property string setBorderlessMaximizedWindowsCommand: kwriteconfigCommandName !== "" ? kwriteconfigCommandName + " --file kwinrc --group Windows --key BorderlessMaximizedWindows " : ""
     property string getBorderlessMaximizedWindowsCommand: kreadconfigCommandName !== "" ? kreadconfigCommandName + " --file kwinrc --group Windows --key BorderlessMaximizedWindows --default false" : ""
-    property string reconfigureCommand: qdbusCommandName !== "" ? qdbusCommandName + " org.kde.KWin /KWin reconfigure" : ""
-    property string getAllKWinShortcutNamesCommand: qdbusCommandName !== "" ? qdbusCommandName + " org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.shortcutNames" : ""
-    property string invokeKWinShortcutCommand: qdbusCommandName !== "" ? qdbusCommandName + " org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut " : ""
     property var borderlessMaximizedWindows
     property var callbacksOnExited: []
     property var auroraeThemesLocations: StandardPaths.locateAll(StandardPaths.GenericDataLocation, auroraeThemesPath, StandardPaths.LocateDirectory)
     property ListModel auroraeThemes
     property var shortcutNames: []
-    property string qdbusCommandName: "qdbus"
     property string kwriteconfigCommandName: "kwriteconfig6"
     property string kreadconfigCommandName: "kreadconfig6"
     property string lastError: ""
@@ -43,11 +40,12 @@ Item {
         if (setBorderlessMaximizedWindowsCommand === "") {
             return;
         }
-        let cmd = setBorderlessMaximizedWindowsCommand + val + " && " + reconfigureCommand + " && " + getBorderlessMaximizedWindowsCommand;
+        let cmd = setBorderlessMaximizedWindowsCommand + val + " && " + getBorderlessMaximizedWindowsCommand;
         callbacksOnExited.push({
             "cmd": cmd,
             "callback": function (cmd, exitCode, exitStatus, stdout, stderr) {
                 if (exitCode == 0) {
+                    reconfigureKWin();
                     borderlessMaximizedWindows = stdout.trim() == "true";
                 } else {
                     lastError = "Unable to update set BorderlessMaximizedWindows status: '" + stderr + "'";
@@ -92,36 +90,60 @@ Item {
     }
 
     function updateKWinShortcutNames() {
-        if (getAllKWinShortcutNamesCommand === "") {
-            return;
-        }
-        let cmd = getAllKWinShortcutNamesCommand;
-        callbacksOnExited.push({
-            "cmd": cmd,
-            "callback": function (cmd, exitCode, exitStatus, stdout, stderr) {
-                if (exitCode == 0) {
-                    shortcutNames = stdout.trim().split(/\r?\n/).sort();
-                } else {
-                    lastError = "Unable to update KWin shortcuts: '" + stderr + "'";
-                }
-            }
+        const pendingReply = SessionBus.asyncCall({
+            "service": "org.kde.kglobalaccel",
+            "path": "/component/kwin",
+            "iface": "org.kde.kglobalaccel.Component",
+            "member": "shortcutNames",
+            "signature": "()",
+            "arguments": []
         });
-        executable.exec(cmd);
+        pendingReply.finished.connect(() => {
+            if (pendingReply.isError) {
+                lastError = "Unable to update KWin shortcuts: '" + pendingReply.error.message + "'";
+            } else {
+                shortcutNames = Array.from(pendingReply.value).filter(n => n).sort();
+            }
+            pendingReply.destroy();
+        });
     }
 
     function invokeKWinShortcut(shortcut) {
-        let cmd = invokeKWinShortcutCommand;
         let trimmedShortcut = shortcut.trim();
-        if (shortcutNames.length === 0 || shortcutNames.includes(trimmedShortcut))
-            executable.exec(cmd + "\"" + trimmedShortcut + "\"");
-        else
+        if (shortcutNames.length === 0 || shortcutNames.includes(trimmedShortcut)) {
+            const pendingReply = SessionBus.asyncCall({
+                "service": "org.kde.kglobalaccel",
+                "path": "/component/kwin",
+                "iface": "org.kde.kglobalaccel.Component",
+                "member": "invokeShortcut",
+                "signature": "(s)",
+                "arguments": [trimmedShortcut]
+            });
+            pendingReply.finished.connect(() => {
+                if (pendingReply.isError) {
+                    console.log("Unable to invoke KWin shortcut '" + trimmedShortcut + "': '" + pendingReply.error.message + "'");
+                }
+                pendingReply.destroy();
+            });
+        } else {
             print("Error: shortcut '" + trimmedShortcut + "' not found in the list!");
+        }
     }
 
-    function updateQdbusCommandName() {
-        updateCommandName(["/usr/lib/qt6/bin/qdbus", "qdbus", "qdbus6", "qdbus-qt6"], function (commandName) {
-            qdbusCommandName = commandName;
-            qdbusCommandNameChanged();
+    function reconfigureKWin() {
+        const pendingReply = SessionBus.asyncCall({
+            "service": "org.kde.KWin",
+            "path": "/KWin",
+            "iface": "org.kde.KWin",
+            "member": "reconfigure",
+            "signature": "()",
+            "arguments": []
+        });
+        pendingReply.finished.connect(() => {
+            if (pendingReply.isError) {
+                console.log("Unable to reconfigure KWin: '" + pendingReply.error.message + "'");
+            }
+            pendingReply.destroy();
         });
     }
 
@@ -207,13 +229,9 @@ Item {
     auroraeThemes: ListModel {}
 
     Component.onCompleted: function () {
-        updateQdbusCommandName();
+        updateKWinShortcutNames();
         updateKwriteconfigCommandName();
         updateKreadconfigCommandName();
-    }
-
-    onQdbusCommandNameChanged: function () {
-        updateKWinShortcutNames();
     }
 
     onKreadconfigCommandNameChanged: function () {

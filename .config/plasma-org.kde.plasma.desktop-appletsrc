@@ -86,7 +86,7 @@ plugin=org.kde.plasma.kickoff
 
 [Containments][325][Applets][335][Configuration]
 popupHeight=524
-popupWidth=665
+popupWidth=695
 
 [Containments][325][Applets][335][Configuration][ConfigDialog]
 DialogHeight=540
@@ -263,8 +263,53 @@ plugin=org.latgardi.darwinmenu
 [Containments][338][Applets][391][Shortcuts]
 global=Meta+Alt+Esc
 
+[Containments][338][Applets][393]
+immutability=1
+plugin=com.github.tilorenz.compact_pager
+
+[Containments][338][Applets][393][Configuration]
+popupHeight=19
+popupWidth=67
+
+[Containments][338][Applets][393][Configuration][Appearance]
+displayBorder=false
+fontFamily=OperatorMonoSSmLig Nerd Font Light
+fontSize=1
+showWindowIndicator=true
+
+[Containments][338][Applets][393][Configuration][ConfigDialog]
+DialogHeight=630
+DialogWidth=810
+
+[Containments][338][Applets][393][Configuration][General]
+forceLayout=Full
+
+[Containments][338][Applets][394]
+immutability=1
+plugin=com.softtechok.systemmonitorplasmoid
+
+[Containments][338][Applets][394][Configuration]
+popupHeight=400
+popupWidth=560
+
+[Containments][338][Applets][395]
+immutability=1
+plugin=weather.widget.plus
+
+[Containments][338][Applets][395][Configuration]
+popupHeight=400
+popupWidth=560
+
+[Containments][338][Applets][395][Configuration][Location]
+firstRun=false
+
+[Containments][338][Applets][395][Configuration][Units]
+pressureType=inHg
+temperatureType=fahrenheit
+windSpeedType=mph
+
 [Containments][338][General]
-AppletOrder=391;339;343;373;365;345;364;362;367;363
+AppletOrder=391;393;339;343;394;373;365;395;345;364;362;367;363
 
 [Containments][382]
 ItemGeometries-1745x982=
@@ -282,9 +327,9 @@ DialogHeight=642
 DialogWidth=956
 
 [Containments][382][General]
-changedPositions={"desktop:/PRESENT.md":["1745x982","5","15"],"desktop:/docker-notes.md":["1745x982","0","15"],"desktop:/dotfiles":["1745x982","0","7"],"desktop:/fast-api":["1745x982","3","15"],"desktop:/heroui-native-example":["1745x982","0","1"],"desktop:/io-types-bin":["1745x982","0","14"],"desktop:/maybe.txt":["1745x982","0","15"],"desktop:/react-native-collapsible-tab":["1745x982","2","15"],"desktop:/rodeo":["1745x982","1","14"],"desktop:/rust-programming-for-beginners":["1745x982","4","15"],"desktop:/still-not.ts":["1745x982","1","15"],"desktop:/zerath-company":["1745x982","0","8"]}
+changedPositions={"desktop:/PRESENT.md":["1745x982","5","15"],"desktop:/docker-notes.md":["1745x982","7","15"],"desktop:/dotfiles":["1745x982","1","15"],"desktop:/fast-api":["1745x982","4","15"],"desktop:/heroui-native-example":["1745x982","0","1"],"desktop:/io-types-bin":["1745x982","0","14"],"desktop:/maybe.txt":["1745x982","0","15"],"desktop:/react-native-collapsible-tab":["1745x982","3","15"],"desktop:/rodeo":["1745x982","2","15"],"desktop:/rust-programming-for-beginners":["1745x982","3","15"],"desktop:/still-not.ts":["1745x982","6","15"],"desktop:/zerath-company":["1745x982","0","15"]}
 lastResolution=1745x982
-positions={"1745x982":["6","16","desktop:/react-native-collapsible-tab","2","15","desktop:/dotfiles","0","7","desktop:/io-types-bin","0","14","desktop:/docker-notes.md","0","15","desktop:/fast-api","3","15","desktop:/still-not.ts","1","15","desktop:/maybe.txt","0","15","desktop:/zerath-company","0","8","desktop:/rust-programming-for-beginners","4","15","desktop:/rodeo","1","14","desktop:/PRESENT.md","5","15","desktop:/heroui-native-example","0","1"]}
+positions={"1745x982":["8","16","desktop:/zerath-company","0","15","desktop:/heroui-native-example","0","1","desktop:/maybe.txt","0","15","desktop:/rust-programming-for-beginners","3","15","desktop:/dotfiles","1","15","desktop:/still-not.ts","6","15","desktop:/react-native-collapsible-tab","3","15","desktop:/docker-notes.md","7","15","desktop:/PRESENT.md","5","15","desktop:/io-types-bin","0","14","desktop:/fast-api","4","15","desktop:/rodeo","2","15"]}
 sortMode=-1
 
 [Containments][382][Wallpaper][at.lehklu.plasma.vallpaper6][Settings]
@@ -324,4 +369,4 @@ Image=/home/mohammedsh/dotfiles/assets/wallpapers/20210402170628.png
 
 [ScreenMapping]
 itemsOnDisabledScreens=1,8869d3b2-e2b9-47c4-9f93-e2d44be8b5be,1,desktop:/new-project
-screenMapping=desktop:/PRESENT.md,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,file:///home/mohammedsh/Desktop/🍁,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/still-not.ts,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/dotfiles,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/need-in-inkspire.txt,0,c43aa4cd-554d-43e8-a704-0a102701ae6c,desktop:/docker-notes.md,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/io-types-bin,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,file:///home/mohammedsh/Desktop/dotfiles,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/rodeo,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/fast-api,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:🍁,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/zerath-company,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/react-native-collapsible-tab,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/rust-programming-for-beginners,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/axum-demo,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab
+screenMapping=file:///home/mohammedsh/Desktop/dotfiles,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:🍁,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/still-not.ts,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/PRESENT.md,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/dotfiles,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/docker-notes.md,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/react-native-collapsible-tab,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/zerath-company,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,file:///home/mohammedsh/Desktop/🍁,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/axum-demo,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/fast-api,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab,desktop:/need-in-inkspire.txt,0,c43aa4cd-554d-43e8-a704-0a102701ae6c,desktop:/rodeo,0,a027a068-1c1a-41c4-a7dc-b6e3325f05ab
