@@ -2,9 +2,7 @@
 Name=Antigravity IDE
 Comment=Experience liftoff
 GenericName=Text Editor
-# NOTE: '--ozone-platform=x11' enables DBus Menu export for KDE Plasma Global Menu (Top Panel).
-# To switch back to native Wayland mode in the future, change to '--ozone-platform=wayland'.
-Exec=/usr/bin/antigravity-ide --ozone-platform=x11 %F
+Exec=/usr/bin/antigravity-ide %F
 Icon=antigravity-ide
 Type=Application
 StartupNotify=false
@@ -16,5 +14,5 @@ Keywords=vscode;
 
 [Desktop Action new-empty-window]
 Name=New Empty Window
-Exec=/usr/bin/antigravity-ide --ozone-platform=x11 --new-window %F
+Exec=/usr/bin/antigravity-ide --new-window %F
 Icon=antigravity-ide

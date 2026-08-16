@@ -250,6 +250,8 @@ should_link code && link_file ".config/Code/User/keybindings.json"
 should_link code && link_file ".config/Code/User/snippets/typescript.json"
 should_link code && link_file ".local/share/applications/code.desktop"
 should_link code && link_file ".local/share/applications/antigravity-ide.desktop"
+should_link code && link_file ".config/code-flags.conf"
+should_link code && link_file ".config/antigravity-ide-flags.conf"
 
 should_link vscodium && link_file ".config/VSCodium/User/settings.json"
 should_link vscodium && link_file ".config/VSCodium/User/keybindings.json"
