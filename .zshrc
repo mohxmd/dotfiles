@@ -224,3 +224,11 @@ for script in ~/.config/zsh/modules/*.zsh(N); do
 done
 
 export QT_SCALE_FACTOR=1.3
+
+# pnpm
+export PNPM_HOME="/home/mohammedsh/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+esac
+# pnpm end
