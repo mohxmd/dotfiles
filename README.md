@@ -36,6 +36,7 @@ cd ~/dotfiles
 
 `plasma` (KDE specific setup) includes:
 - `.config/plasma-org.kde.plasma.desktop-appletsrc` (Plasma config)
+- `.config/kwinrulesrc` (KWin window rules)
 - `.local/share/plasma/plasmoids` (Plasma widgets)
 - `.local/share/color-schemes` (Global themes including BuraqDark & BuraqLight)
 - `.local/share/konsole` (Konsole profiles)

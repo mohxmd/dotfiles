@@ -5,7 +5,7 @@
 # Warning: writes into the repository; review git diff afterward.
 # Existing repository files are never deleted by this script. Remove stale
 # files manually after confirming that the live configuration is complete.
-# Scope: Plasma, Konsole, pgcli, Zsh modules, and VS Code configuration.
+# Scope: Plasma, KWin, Konsole, pgcli, Zsh modules, and VS Code configuration.
 
 set -euo pipefail
 
@@ -22,6 +22,10 @@ mkdir -p "$DOTFILES_DIR/.config/zsh/modules" \
 if [[ -f "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc" ]]; then
   cp -f "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc" \
     "$DOTFILES_DIR/.config/plasma-org.kde.plasma.desktop-appletsrc"
+fi
+
+if [[ -f "$HOME/.config/kwinrulesrc" && ! -L "$HOME/.config/kwinrulesrc" ]]; then
+  cp -f "$HOME/.config/kwinrulesrc" "$DOTFILES_DIR/.config/kwinrulesrc"
 fi
 
 if [[ -d "$HOME/.local/share/plasma/plasmoids" && ! -L "$HOME/.local/share/plasma/plasmoids" ]]; then
