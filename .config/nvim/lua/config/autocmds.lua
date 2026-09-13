@@ -1,22 +1,33 @@
-local augroup = vim.api.nvim_create_augroup
-local autocmd = vim.api.nvim_create_autocmd
+local group = vim.api.nvim_create_augroup("ConfigCore", { clear = true })
 
-local CoreGroup = augroup('CoreGroup', {})
-local yank_group = augroup('HighlightYank', {})
-
-autocmd('TextYankPost', {
-  group = yank_group,
-  pattern = '*',
+vim.api.nvim_create_autocmd("TextYankPost", {
+  group = group,
   callback = function()
-    vim.highlight.on_yank({
-      higroup = 'IncSearch',
-      timeout = 40,
-    })
+    vim.highlight.on_yank({ higroup = "IncSearch", timeout = 40 })
   end,
 })
 
-autocmd({"BufWritePre"}, {
-  group = CoreGroup,
+vim.api.nvim_create_autocmd("BufWritePre", {
+  group = group,
   pattern = "*",
-  command = [[%s/\s\+$//e]],
+  callback = function(args)
+    local buffer = args.buf
+    local filetype = vim.bo[buffer].filetype
+
+    -- Markdown and text files may intentionally use trailing spaces for hard
+    -- line breaks. Do not silently change those files on save.
+    if not vim.bo[buffer].modifiable or vim.bo[buffer].readonly or vim.tbl_contains({
+      "diff",
+      "gitcommit",
+      "mail",
+      "markdown",
+      "text",
+    }, filetype) then
+      return
+    end
+
+    local view = vim.fn.winsaveview()
+    vim.cmd("silent keepjumps keeppatterns %s/\\s\\+$//e")
+    vim.fn.winrestview(view)
+  end,
 })

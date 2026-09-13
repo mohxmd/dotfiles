@@ -1,0 +1,5 @@
+require("config.options")
+require("config.keymaps")
+require("config.autocmds")
+require("config.godot").setup()
+require("config.tools").setup()

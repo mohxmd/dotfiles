@@ -1,56 +1,49 @@
-local map = vim.keymap.set
+local keymap = vim.keymap
 
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
+keymap.set("n", "<C-u>", "<C-u>zz")
+keymap.set("n", "<C-d>", "<C-d>zz")
 
-map("n", "<leader>pv", vim.cmd.Ex, { desc = "File Explorer" })
+-- window management
+keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
+keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
+keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
+keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" })
 
--- Move lines in visual mode
-map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
-map("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
+keymap.set("n", "<C-Up>", ":resize +2<CR>", { desc = "Increase height" })
+keymap.set("n", "<C-Down>", ":resize -2<CR>", { desc = "Decrease height" })
+keymap.set("n", "<C-Left>", ":vertical resize -4<CR>", { desc = "Narrower" })
+keymap.set("n", "<C-Right>", ":vertical resize +4<CR>", { desc = "Wider" })
 
--- Join lines without moving cursor
-map("n", "J", "mzJ`z", { desc = "Join line" })
+-- tab management
+keymap.set("n", "<Tab>", "<cmd>BufferLineCycleNext<CR>", { desc = "Go to next buffer" })
+keymap.set("n", "<S-Tab>", "<cmd>BufferLineCyclePrev<CR>", { desc = "Go to previous buffer" })
+keymap.set("n", "<leader>x", "<cmd>bdelete<CR>", { desc = "Close current buffer" })
+keymap.set("n", "<leader>n", "<cmd>tabnew<CR>", { desc = "New tab" })
+keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
--- Scroll comfortably
-map("n", "<C-d>", "<C-d>zz", { desc = "Scroll down" })
-map("n", "<C-u>", "<C-u>zz", { desc = "Scroll up" })
-map("n", "n", "nzzzv", { desc = "Next search result" })
-map("n", "N", "Nzzzv", { desc = "Previous search result" })
+-- File explorer mappings live with the NvimTree plugin specification.
 
--- Greatest remap ever (paste without yanking replaced text)
-map("x", "<leader>p", [["_dP]], { desc = "Paste over selection" })
+keymap.set("n", "<leader>ci", "<cmd>Telescope lsp_incoming_calls<CR>", { desc = "Incoming calls" })
+keymap.set("n", "<leader>co", "<cmd>Telescope lsp_outgoing_calls<CR>", { desc = "Outgoing calls" })
+keymap.set("n", "<leader>ch", "<cmd>Telescope lsp_implementations<CR>", { desc = "Implementations" })
+keymap.set("n", "<leader>cu", "<cmd>Telescope lsp_references<CR>", { desc = "References" })
 
--- Yank to system clipboard
-map({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to clipboard" })
-map("n", "<leader>Y", [["+Y]], { desc = "Yank line to clipboard" })
+keymap.set("n", "<leader>ts", "<cmd>Theme<CR>", { desc = "Select theme" })
+keymap.set("n", "<leader>tn", "<cmd>ThemeNext<CR>", { desc = "Next theme" })
+keymap.set("n", "<leader>tp", "<cmd>ThemePrev<CR>", { desc = "Previous theme" })
 
--- Delete without yanking
-map({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete without yanking" })
+-- Keep useful project workflow mappings from the previous configuration.
+keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>", { desc = "Tmux sessionizer" })
+keymap.set("n", "<M-h>", "<cmd>silent !tmux-sessionizer -s 0 --vsplit<CR>", { desc = "Tmux sessionizer split" })
+keymap.set("n", "<M-H>", "<cmd>silent !tmux neww tmux-sessionizer -s 0<CR>", { desc = "Tmux sessionizer new" })
 
--- Don't hit Ex mode by accident
-map("n", "Q", "<nop>")
+keymap.set("n", "<C-k>", "<cmd>cnext<CR>zz", { desc = "Next quickfix item" })
+keymap.set("n", "<C-j>", "<cmd>cprev<CR>zz", { desc = "Previous quickfix item" })
+keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz", { desc = "Next location item" })
+keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Previous location item" })
 
--- Tmux sessionizer
-map("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>", { desc = "Tmux sessionizer" })
-map("n", "<M-h>", "<cmd>silent !tmux-sessionizer -s 0 --vsplit<CR>", { desc = "Tmux sessionizer split" })
-map("n", "<M-H>", "<cmd>silent !tmux neww tmux-sessionizer -s 0<CR>", { desc = "Tmux sessionizer new" })
+keymap.set("n", "<leader>X", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Make file executable" })
 
--- Quickfix list navigation
-map("n", "<C-k>", "<cmd>cnext<CR>zz", { desc = "Next quickfix" })
-map("n", "<C-j>", "<cmd>cprev<CR>zz", { desc = "Prev quickfix" })
-map("n", "<leader>k", "<cmd>lnext<CR>zz", { desc = "Next loclist" })
-map("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Prev loclist" })
-
--- Replace word under cursor
-map("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
-map("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Make file executable" })
-
--- Go error handling snippets
-map("n", "<leader>ee", "oif err != nil {<CR>}<Esc>Oreturn err<Esc>", { desc = "Go: return err" })
-map("n", "<leader>ea", "oassert.NoError(err, \"\")<Esc>F\";a", { desc = "Go: assert.NoError" })
-map("n", "<leader>ef", "oif err != nil {<CR>}<Esc>Olog.Fatalf(\"error: %s\\n\", err.Error())<Esc>jj", { desc = "Go: log.Fatalf" })
-map("n", "<leader>el", "oif err != nil {<CR>}<Esc>O.logger.Error(\"error\", \"error\", err)<Esc>F.;i", { desc = "Go: logger.Error" })
-
--- Source config
-map("n", "<leader><leader>", function() vim.cmd("so") end, { desc = "Source current file" })
+-- terminal related
+keymap.set("t", "<Esc>", [[<C-\><C-n>]])
