@@ -4,7 +4,7 @@ local koda = require("config.koda")
 
 local config = {
   themes = colorschemes.names(),
-  default = "koda",
+  default = "buraq",
   state_file = vim.fn.stdpath("state") .. "/theme.txt",
 }
 

@@ -1,18 +1,21 @@
 local colorschemes = require("config.colorschemes")
 
-return vim.tbl_map(function(item)
-  local spec = {
-    item.repo,
-    -- The configured default theme is applied during startup, so it must
-    -- be available before the theme state loader runs. Other themes stay
-    -- lazy and are loaded automatically when selected.
-    lazy = item.repo ~= "oskarnurm/koda.nvim",
-    priority = 1000,
-  }
+local specs = {}
 
-  if item.name then
-    spec.name = item.name
+for _, item in ipairs(colorschemes.items) do
+  if item.repo then
+    local spec = {
+      item.repo,
+      lazy = true,
+      priority = 1000,
+    }
+
+    if item.name then
+      spec.name = item.name
+    end
+
+    table.insert(specs, spec)
   end
+end
 
-  return spec
-end, colorschemes.items)
+return specs

@@ -2,6 +2,10 @@ local M = {}
 
 M.items = {
   {
+    name = "buraq",
+    schemes = { "buraq" },
+  },
+  {
     repo = "oskarnurm/koda.nvim",
     schemes = { "koda", "koda-dark", "koda-light", "koda-glade", "koda-moss" },
   },
