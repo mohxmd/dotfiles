@@ -13,6 +13,9 @@ cloudflared/config.yml
 .config/vaultlet/config.toml
 .local/share/vaultlet/
 
+# Neovim runtime logs
+nvim.log
+
 # pgcli runtime data (machine-specific)
 .config/pgcli/history
 .local/state/pgcli/history
