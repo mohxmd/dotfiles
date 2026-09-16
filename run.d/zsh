@@ -11,8 +11,8 @@ command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
 command -v pacman >/dev/null 2>&1 || { echo "pacman is required." >&2; exit 1; }
 command -v curl >/dev/null 2>&1 || { echo "curl is required." >&2; exit 1; }
 
-echo "[zsh] Installing zsh, Starship, and zsh plugins"
-sudo pacman -S --needed zsh starship zsh-autosuggestions zsh-syntax-highlighting
+echo "[zsh] Installing zsh, Starship, zsh plugins, and Meslo Nerd Font"
+sudo pacman -S --needed zsh starship zsh-autosuggestions zsh-syntax-highlighting ttf-meslo-nerd
 
 zsh_path="$(command -v zsh)"
 current_shell="${SHELL:-}"

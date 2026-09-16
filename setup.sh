@@ -20,7 +20,7 @@ usage() {
 Usage: ./setup.sh [options]
 
 Options:
-  --profile <kde|gnome|mac|minimal|wsl|auto>  Choose link profile (default: auto)
+  --profile <kde|gnome|mac|minimal|wsl|server|auto>  Choose link profile (default: auto)
   --with <group1,group2>                  Force include groups
   --without <group1,group2>               Exclude groups
   --stow-all                               Disabled (kept for compatibility)
@@ -52,6 +52,14 @@ same_target() {
   local dst="$1"
   local src="$2"
 
+  if [[ -e "$dst" && -e "$src" ]]; then
+    local r_dst r_src
+    r_dst="$(readlink -f "$dst" 2>/dev/null || true)"
+    r_src="$(readlink -f "$src" 2>/dev/null || true)"
+    if [[ -n "$r_dst" && "$r_dst" == "$r_src" ]]; then
+      return 0
+    fi
+  fi
   [[ -L "$dst" ]] || return 1
   [[ "$(readlink -f "$dst" 2>/dev/null || true)" == "$(readlink -f "$src" 2>/dev/null || true)" ]]
 }
@@ -156,6 +164,8 @@ if [[ "$PROFILE" == "auto" ]]; then
     Linux)
       if [[ "$(uname -r)" == *microsoft-standard* || "$(uname -r)" == *WSL2* ]]; then
         PROFILE="wsl"
+      elif [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" && -z "${XDG_CURRENT_DESKTOP:-}" ]]; then
+        PROFILE="server"
       elif [[ "${XDG_CURRENT_DESKTOP:-}" == *KDE* ]]; then
         PROFILE="kde"
       else
@@ -180,6 +190,9 @@ case "$PROFILE" in
     ACTIVE_GROUPS=(core)
     ;;
   wsl)
+    ACTIVE_GROUPS=(core nvim)
+    ;;
+  server)
     ACTIVE_GROUPS=(core nvim)
     ;;
   *)
@@ -233,13 +246,18 @@ echo "groups: ${ACTIVE_GROUPS[*]}"
 
 should_link core && link_file ".zshrc"
 should_link core && link_file ".config/starship.toml"
-should_link core && link_file ".config/zsh/modules/adb-device.zsh"
-if should_link core && [[ "$PROFILE" != "wsl" && "$PROFILE" != "mac" ]]; then
+
+if should_link core && [[ "$PROFILE" != "server" && "$PROFILE" != "minimal" ]]; then
+  link_file ".config/zsh/modules/adb-device.zsh"
+  link_file ".local/bin/search"
+  link_file ".local/bin/image-request"
+  link_file ".local/bin/video-to-ascii"
+fi
+
+if should_link core && [[ "$PROFILE" != "wsl" && "$PROFILE" != "mac" && "$PROFILE" != "server" && "$PROFILE" != "minimal" ]]; then
   link_file ".local/bin/fix-hdmi-audio"
 fi
-should_link core && link_file ".local/bin/search"
-should_link core && link_file ".local/bin/image-request"
-should_link core && link_file ".local/bin/video-to-ascii"
+
 should_link core && link_file ".local/bin/cfd-init"
 should_link core && link_file ".config/pgcli/config"
 

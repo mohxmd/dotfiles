@@ -2,7 +2,7 @@
 
 # Entry point: apply a dotfiles profile.
 # Usage: ./arch-apply-dotfiles [profile]
-# Profiles: auto, kde, gnome, mac, minimal, wsl.
+# Profiles: auto, kde, gnome, mac, minimal, wsl, server.
 # Requires: Bash and a writable home directory.
 
 set -euo pipefail

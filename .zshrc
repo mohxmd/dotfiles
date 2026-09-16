@@ -65,14 +65,15 @@ fi
 export LC_ALL="${LC_ALL:-$LANG}"
 
 HISTFILE="$HOME/.zsh_history"
-HISTSIZE=5000
-SAVEHIST=5000
+HISTSIZE=10000
+SAVEHIST=10000
 
 setopt AUTO_CD
 setopt INTERACTIVE_COMMENTS
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_IGNORE_SPACE
-unsetopt inc_append_history
+setopt INC_APPEND_HISTORY
+setopt SHARE_HISTORY
 unsetopt BEEP
 
 zstyle ':completion:*' menu select
@@ -107,24 +108,27 @@ if command -v starship >/dev/null 2>&1; then
 fi
 
 # -----------------------------------
-# PATH
+# PATH & Toolchains
 # -----------------------------------
 if [[ ":$FPATH:" != *":$HOME/.zsh/completions:"* ]]; then
   export FPATH="$HOME/.zsh/completions:$FPATH"
 fi
 
-export ANDROID_HOME="$HOME/Android/Sdk"
+# Android SDK (only if present)
+if [[ -d "$HOME/Android/Sdk" ]]; then
+  export ANDROID_HOME="$HOME/Android/Sdk"
+  add_to_path "$ANDROID_HOME/platform-tools"
+  add_to_path "$ANDROID_HOME/tools/bin"
+  add_to_path "$ANDROID_HOME/tools"
+  add_to_path "$ANDROID_HOME/emulator"
+fi
 
 add_to_path "$HOME/.local/bin"
 add_to_path "$HOME/.opencode/bin"
 add_to_path "$HOME/.turso"
 add_to_path "$HOME/.deno/bin"
 add_to_path "$HOME/.bun/bin"
-add_to_path "$HOME/Developer/flutter/bin"
-add_to_path "$ANDROID_HOME/platform-tools"
-add_to_path "$ANDROID_HOME/tools/bin"
-add_to_path "$ANDROID_HOME/tools"
-add_to_path "$ANDROID_HOME/emulator"
+[[ -d "$HOME/Developer/flutter/bin" ]] && add_to_path "$HOME/Developer/flutter/bin"
 
 # NVM
 export NVM_DIR="$HOME/.nvm"
@@ -143,9 +147,9 @@ fi
 # PNPM
 export PNPM_HOME="$HOME/.local/share/pnpm"
 add_to_path "$PNPM_HOME"
+add_to_path "$PNPM_HOME/bin"
 
 # Bun
-add_to_path "$HOME/.bun/bin"
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # Deno
@@ -157,7 +161,6 @@ add_to_path "$HOME/.bun/bin"
 alias c='clear'
 alias la='ls -A'
 alias lsd='ls -d */'
-alias codium='codium --enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime'
 
 # Git
 alias gs='git status --short'
@@ -223,12 +226,10 @@ for script in ~/.config/zsh/modules/*.zsh(N); do
   source "$script"
 done
 
-export QT_SCALE_FACTOR=1.3
+# -----------------------------------
+# Desktop-only Settings
+# -----------------------------------
+if [[ -n "${DISPLAY:-}" || -n "${WAYLAND_DISPLAY:-}" ]]; then
+  export QT_SCALE_FACTOR=1.3
+fi
 
-# pnpm
-export PNPM_HOME="/home/mohammedsh/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME/bin:"*) ;;
-  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
-esac
-# pnpm end

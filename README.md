@@ -22,6 +22,7 @@ cd ~/dotfiles
 - `mac`: links Code + nvim + core shell setup
 - `minimal`: links core shell setup only
 - `wsl`: links core shell setup and Neovim, without desktop/KDE configuration
+- `server`: links core shell setup (zsh + starship) and Neovim, without GUI/desktop tools
 
 `core shell setup` includes:
 - `.zshrc`
@@ -136,6 +137,16 @@ host-level `%UserProfile%\.wslconfig`; they are not linked into `$HOME`.
 On Windows, prefer Docker Desktop's WSL integration. The desktop-oriented
 `firewall`, `bluetooth`, `dns-cloudflare`, `docker`, and `plasma` tasks are
 intentionally not part of the WSL bootstrap.
+
+VPS (Netcup / Hetzner / Cloud Arch Linux) bootstrap:
+
+```bash
+./vps-bootstrap
+```
+
+Runs a lean, production-oriented provisioning for headless servers. Installs Docker,
+Docker Compose, Caddy, Nftables, Neovim, Zsh, and Starship, enables Docker and Caddy
+services, and applies the `server` dotfiles profile without desktop bloat or AUR helpers.
 
 Optional bootstrap extras:
 

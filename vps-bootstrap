@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# Zerath Labs — Arch Linux VPS Bootstrap
+# Purpose: Provision a lean, production-grade Arch Linux VPS environment.
+# Target: Netcup / Hetzner VPS (Headless Arch Linux)
+# Profile: server (Dotfiles: zsh, starship, neovim, docker aliases)
+# ==============================================================================
+
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+command -v sudo >/dev/null 2>&1 || { echo "Error: sudo is required." >&2; exit 1; }
+command -v pacman >/dev/null 2>&1 || { echo "Error: pacman is required (Arch Linux only)." >&2; exit 1; }
+
+echo "==> 1. Updating system and installing core server packages..."
+sudo pacman -Syu --needed --noconfirm \
+  base-devel \
+  git \
+  curl \
+  zsh \
+  starship \
+  zsh-autosuggestions \
+  zsh-syntax-highlighting \
+  neovim \
+  tmux \
+  htop \
+  docker \
+  docker-compose \
+  docker-buildx \
+  caddy \
+  nftables
+
+echo "==> 2. Enabling system services..."
+sudo systemctl enable --now docker.service
+sudo systemctl enable --now caddy.service
+
+if getent group docker >/dev/null 2>&1; then
+  if ! id -nG "$USER" | tr ' ' '\n' | grep -qx docker; then
+    echo "==> Adding $USER to docker group..."
+    sudo usermod -aG docker "$USER"
+  fi
+fi
+
+echo "==> 3. Setting default shell to Zsh..."
+zsh_path="$(command -v zsh)"
+if [[ "${SHELL:-}" != "$zsh_path" ]]; then
+  sudo chsh -s "$zsh_path" "$USER"
+fi
+
+if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+  echo "==> Installing Oh-My-Zsh (unattended)..."
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c \
+    "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
+# Link OMZ custom plugins from pacman packages
+plugin_dir="$HOME/.oh-my-zsh/custom/plugins"
+mkdir -p "$plugin_dir"
+
+link_system_plugin() {
+  local name="$1"
+  local package_dir="/usr/share/zsh/plugins/$name"
+  local target="$plugin_dir/$name"
+  if [[ -d "$package_dir" && ! -e "$target" ]]; then
+    ln -s "$package_dir" "$target"
+  fi
+}
+
+link_system_plugin zsh-autosuggestions
+link_system_plugin zsh-syntax-highlighting
+
+echo "==> 4. Applying dotfiles server profile..."
+"$ROOT_DIR/setup.sh" --profile server
+
+echo ""
+echo "===================================================================="
+echo "  Zerath Arch Linux VPS Bootstrap Complete!                        "
+echo "===================================================================="
+echo "Next steps:"
+echo "  1. Log out and log back in (for docker group & zsh default shell)."
+echo "  2. Configure Netcup firewall in Customer Control Panel (Allow 22, 80, 443)."
+echo "  3. Verify Docker with: docker info"
+echo "  4. Setup your apps in /opt/zerath/ as planned."
+echo "===================================================================="

@@ -1,37 +1,46 @@
 "$schema" = "https://starship.rs/config-schema.json"
 add_newline = false
-format = """$directory$character"""
 palette = "catppuccin_mocha"
+
+format = """$username$hostname$directory$character"""
 right_format = """$git_branch$git_status$cmd_duration"""
 command_timeout = 1000
 
-[character]
-vimcmd_symbol = "[N] >>>"
-success_symbol = '[➜](bold green)'
+[username]
+show_always = false
+style_user = "bold lavender"
+style_root = "bold red"
+format = "[$user]($style)"
 
-[directory.substitutions]
-'~/tests/starship-custom' = 'work-project'
+[hostname]
+ssh_only = true
+format = "[@$hostname]($style) "
+style = "bold peach"
+
+[directory]
+style = "bold mauve"
+truncation_length = 3
+truncate_to_repo = true
+format = "[$path]($style)[$read_only]($read_only_style) "
+
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[➜](bold red)"
+vimcmd_symbol = "[N] ➜(bold lavender)"
 
 [git_branch]
-format = '[$symbol$branch(:$remote_branch)]($style)'
+symbol = " "
+style = "bold flamingo"
+format = "[$symbol$branch(:$remote_branch)]($style) "
 
-[aws]
-format = '[$symbol(profile: "$profile" )(\(region: $region\) )]($style)'
-disabled = false
-style = 'bold blue'
-symbol = " "
+[git_status]
+style = "bold red"
+format = "([$all_status$ahead_behind]($style) )"
 
-[golang]
-format = '[ ](bold cyan)'
-
-[kubernetes]
-symbol = '☸ '
-disabled = true
-detect_files = ['Dockerfile']
-format = '[$symbol$context( \($namespace\))]($style) '
-contexts = [
-  { context_pattern = "arn:aws:eks:us-west-2:577926974532:cluster/zd-pvc-omer", style = "green", context_alias = "omerxx", symbol = " " },
-]
+[cmd_duration]
+min_time = 2000
+style = "bold yellow"
+format = "took [$duration]($style) "
 
 [docker_context]
 disabled = true
