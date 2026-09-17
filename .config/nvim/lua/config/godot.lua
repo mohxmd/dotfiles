@@ -1,11 +1,13 @@
 local M = {}
 
+local uv = vim.uv or vim.loop
+
 local function godot_root_for(path)
   local resolved = vim.fs.normalize(path)
   local match = vim.fs.find("project.godot", {
     path = resolved,
     upward = true,
-    stop = vim.loop.os_homedir(),
+    stop = uv.os_homedir(),
   })[1]
 
   if not match then
@@ -16,16 +18,16 @@ local function godot_root_for(path)
 end
 
 local function ensure_godot_server(path)
-  if vim.v.servername ~= nil and vim.v.servername ~= "" then
-    return
-  end
-
   local root = godot_root_for(path)
   if not root then
     return
   end
 
   local address = vim.fs.joinpath(root, "godothost")
+  if vim.tbl_contains(vim.fn.serverlist(), address) then
+    return
+  end
+
   pcall(vim.fn.serverstart, address)
 end
 
