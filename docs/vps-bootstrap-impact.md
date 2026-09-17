@@ -6,7 +6,7 @@ Specification and operational reference for headless Arch Linux server provision
 
 ## Overview
 
-- **Target**: Netcup / Hetzner cloud instances running Arch Linux (headless).
+- **Target**: Cloud / VPS instances running Arch Linux (headless).
 - **Entrypoint**: `./vps-bootstrap`
 - **Dotfiles Profile**: `server` (`./setup.sh --profile server`)
 - **Scope**: Base server packages, container runtime, reverse proxy, shell environment, and editor configuration. Excludes all graphical, desktop (KDE/Plasma), and audio components.

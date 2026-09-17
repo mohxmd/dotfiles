@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Zerath Labs — Arch Linux VPS Bootstrap
+# Arch Linux VPS Bootstrap
 # Purpose: Provision a lean, production-grade Arch Linux VPS environment.
-# Target: Netcup / Hetzner VPS (Headless Arch Linux)
+# Target: Headless Arch Linux VPS / Server
 # Profile: server (Dotfiles: zsh, starship, neovim, docker aliases)
 # ==============================================================================
 
@@ -74,11 +74,11 @@ echo "==> 4. Applying dotfiles server profile..."
 
 echo ""
 echo "===================================================================="
-echo "  Zerath Arch Linux VPS Bootstrap Complete!                        "
+echo "  Arch Linux VPS Bootstrap Complete!                                "
 echo "===================================================================="
 echo "Next steps:"
 echo "  1. Log out and log back in (for docker group & zsh default shell)."
-echo "  2. Configure Netcup firewall in Customer Control Panel (Allow 22, 80, 443)."
+echo "  2. Configure cloud firewall / security groups (Allow 22, 80, 443)."
 echo "  3. Verify Docker with: docker info"
-echo "  4. Setup your apps in /opt/zerath/ as planned."
+echo "  4. Deploy your applications as planned."
 echo "===================================================================="
