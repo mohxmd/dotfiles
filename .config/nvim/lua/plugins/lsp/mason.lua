@@ -34,9 +34,12 @@ return {
       "clangd",
       "rust_analyzer",
       "zls",
-      "jdtls",
       "bashls",
     }
+
+    if vim.fn.executable("java") == 1 then
+      table.insert(ensure_installed, "jdtls")
+    end
 
     mason_lspconfig.setup({
       -- list of servers for mason to install

@@ -28,7 +28,11 @@ sudo pacman -Syu --needed --noconfirm \
   docker-compose \
   docker-buildx \
   caddy \
-  nftables
+  nftables \
+  base-devel \
+  unzip \
+  nodejs \
+  npm
 
 echo "==> 2. Enabling system services..."
 sudo systemctl enable --now docker.service
