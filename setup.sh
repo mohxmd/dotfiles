@@ -260,7 +260,9 @@ fi
 
 should_link core && link_file ".local/bin/cfd-init"
 should_link core && link_file ".config/pgcli/config"
-should_link core && link_file ".config/paru/paru.conf"
+if should_link core && [[ "$PROFILE" != "server" ]]; then
+  link_file ".config/paru/paru.conf"
+fi
 
 should_link nvim && link_file ".config/nvim"
 

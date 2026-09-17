@@ -15,7 +15,6 @@ command -v pacman >/dev/null 2>&1 || { echo "Error: pacman is required (Arch Lin
 
 echo "==> 1. Updating system and installing core server packages..."
 sudo pacman -Syu --needed --noconfirm \
-  base-devel \
   git \
   curl \
   zsh \
@@ -31,20 +30,9 @@ sudo pacman -Syu --needed --noconfirm \
   caddy \
   nftables
 
-if ! command -v paru >/dev/null 2>&1; then
-  echo "==> Installing paru (AUR helper)..."
-  tmp_dir="$(mktemp -d)"
-  git clone --depth=1 https://aur.archlinux.org/paru-bin.git "$tmp_dir/paru-bin"
-  (
-    cd "$tmp_dir/paru-bin"
-    makepkg -si --noconfirm
-  )
-  rm -rf "$tmp_dir"
-fi
-
 echo "==> 2. Enabling system services..."
 sudo systemctl enable --now docker.service
-sudo systemctl enable --now caddy.service
+# Note: Caddy is installed but not started until production configuration is deployed.
 
 if getent group docker >/dev/null 2>&1; then
   if ! id -nG "$USER" | tr ' ' '\n' | grep -qx docker; then

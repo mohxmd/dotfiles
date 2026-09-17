@@ -32,12 +32,12 @@ Specification and operational reference for headless Arch Linux server provision
 | **Reverse Proxy** | `caddy` | Automatic TLS termination and routing |
 | **Firewall & Net** | `nftables`, `curl` | Kernel-level packet filtering and network utilities |
 | **Shell & Prompt** | `zsh`, `starship`, `zsh-autosuggestions`, `zsh-syntax-highlighting` | Interactive CLI runtime |
-| **Terminal & Editor** | `neovim`, `tmux`, `htop`, `git`, `base-devel` | Background sessions, monitoring, code inspection |
+| **Terminal & Editor** | `neovim`, `tmux`, `htop`, `git` | Background sessions, monitoring, code inspection |
 
 ### 2. Services & User Privileges
 
 - **Docker**: Enabled and started (`systemctl enable --now docker.service`).
-- **Caddy**: Enabled and started (`systemctl enable --now caddy.service`).
+- **Caddy**: Installed via pacman; service startup is deferred until production `Caddyfile` is deployed.
 - **User Group**: Current user added to the `docker` group for socket access without `sudo`.
 - **Login Shell**: User shell updated to `/usr/bin/zsh`.
 - **Oh My Zsh**: Installed in unattended mode if absent; official Arch plugin packages linked into OMZ custom directory.
@@ -53,7 +53,8 @@ Specification and operational reference for headless Arch Linux server provision
 | `.config/pgcli/config` | `~/.config/pgcli/config` | PostgreSQL CLI styling and state path redirection |
 | `.local/bin/cfd-init` | `~/.local/bin/cfd-init` | Cloudflare tunnel configuration template generator |
 
-#### Excluded Targets (Desktop Only)
+#### Excluded Targets (Desktop / Non-Server)
+- `.config/paru/paru.conf` (AUR helper configuration; server uses official repositories only)
 - `.config/plasma-org.kde.plasma.desktop-appletsrc` (KDE Plasma panels)
 - `.config/kwinrulesrc` (KWin rules)
 - `.local/share/plasma/plasmoids`, `.local/share/color-schemes`, `.local/share/konsole`

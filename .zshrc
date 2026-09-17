@@ -142,7 +142,6 @@ elif [[ -s /usr/share/nvm/nvm.sh ]]; then
   # shellcheck disable=SC1091
   source /usr/share/nvm/nvm.sh
 fi
-[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
 
 # PNPM
 export PNPM_HOME="$HOME/.local/share/pnpm"
