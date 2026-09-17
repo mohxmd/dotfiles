@@ -260,6 +260,7 @@ fi
 
 should_link core && link_file ".local/bin/cfd-init"
 should_link core && link_file ".config/pgcli/config"
+should_link core && link_file ".config/paru/paru.conf"
 
 should_link nvim && link_file ".config/nvim"
 

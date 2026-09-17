@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Task: dev
-# Purpose: Upgrade Arch, install bare-metal developer packages, and install yay.
+# Purpose: Upgrade Arch, install bare-metal developer packages, and install paru.
 # Requires: Arch Linux, sudo, pacman, systemd.
 # WSL: Do not use; run ../wsl-bootstrap instead.
 
@@ -48,20 +48,26 @@ else
   echo "[dev] Skipping git user.email (set GIT_USER_EMAIL to automate)."
 fi
 
-if command -v yay >/dev/null 2>&1; then
-  echo "[dev] yay already installed"
-  yay --version | head -n 1
+if command -v paru >/dev/null 2>&1; then
+  echo "[dev] paru already installed"
+  paru --version | head -n 1
   exit 0
 fi
 
-echo "[dev] Installing yay from AUR"
+echo "[dev] Installing paru from AUR"
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
 
-git clone https://aur.archlinux.org/yay.git "$tmp_dir/yay"
+git clone https://aur.archlinux.org/paru-bin.git "$tmp_dir/paru-bin" || \
+git clone https://aur.archlinux.org/paru.git "$tmp_dir/paru"
 (
-  cd "$tmp_dir/yay"
+  if [[ -d "$tmp_dir/paru-bin" ]]; then
+    cd "$tmp_dir/paru-bin"
+  else
+    cd "$tmp_dir/paru"
+  fi
   makepkg -si --noconfirm
 )
 
-echo "[dev] yay installed"
+echo "[dev] paru installed"
+paru --version | head -n 1

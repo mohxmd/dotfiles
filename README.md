@@ -34,6 +34,7 @@ cd ~/dotfiles
 - `.local/bin/video-to-ascii`
 - `.local/bin/cfd-init`
 - `.config/pgcli/config` (pgcli config)
+- `.config/paru/paru.conf` (paru configuration)
 
 `plasma` (KDE specific setup) includes:
 - `.config/plasma-org.kde.plasma.desktop-appletsrc` (Plasma config)
