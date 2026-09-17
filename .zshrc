@@ -155,6 +155,10 @@ add_to_path "$PNPM_HOME/bin"
 # Deno
 [ -f "$HOME/.deno/env" ] && . "$HOME/.deno/env"
 
+# Rust / Cargo
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+
 # -----------------------------------
 # Aliases
 # -----------------------------------
@@ -218,6 +222,27 @@ else
   alias dkcps='docker-compose ps'
   alias dkcb='docker-compose build'
 fi
+
+# Bun & PNPM
+alias bx='bunx'
+alias npx='bunx'
+alias bt='bun test'
+alias pn='pnpm'
+alias pnx='pnpm dlx'
+
+# Rust / Cargo
+alias cr='cargo run'
+alias crq='cargo run -q'
+alias cc='cargo check'
+alias cb='cargo build'
+alias ct='cargo test'
+alias ca='cargo add'
+alias cw='cargo watch -q -c -x run'
+
+# Tmux
+alias ta='tmux attach || tmux new-session'
+alias tls='tmux list-sessions'
+
 
 # -----------------------------------
 # Custom Modules
