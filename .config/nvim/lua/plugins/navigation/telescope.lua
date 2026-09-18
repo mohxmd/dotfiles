@@ -31,7 +31,7 @@ return {
       defaults = defaults,
     })
 
-    telescope.load_extension("fzf")
+    pcall(telescope.load_extension, "fzf")
 
     local keymap = vim.keymap
     keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Fuzzy find recent files" })

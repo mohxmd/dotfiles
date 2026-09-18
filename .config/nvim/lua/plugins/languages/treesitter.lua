@@ -42,7 +42,9 @@ return {
     }
 
     treesitter.setup({ install_dir = install_dir })
-    treesitter.install(languages)
+    if vim.fn.executable("tree-sitter") == 1 then
+      treesitter.install(languages)
+    end
 
     vim.treesitter.language.register("haskell", "lhaskell")
 

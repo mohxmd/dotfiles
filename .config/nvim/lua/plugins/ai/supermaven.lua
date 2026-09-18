@@ -1,5 +1,6 @@
 return {
   "supermaven-inc/supermaven-nvim",
+  enabled = not (vim.env.SSH_CLIENT ~= nil or vim.env.SSH_CONNECTION ~= nil or vim.env.DOTFILES_PROFILE == "server"),
   event = "InsertEnter",
   cmd = {
     "SupermavenStart",
