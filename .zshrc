@@ -52,6 +52,12 @@ ginit() {
   echo "Project initialized and pushed to GitHub!"
 }
 
+clip() {
+  local data
+  data="$(base64 | tr -d '\n')"
+  printf "\e]52;c;%s\a" "$data"
+}
+
 # -----------------------------------
 # Shell Options
 # -----------------------------------
@@ -63,6 +69,10 @@ if [[ -z "${LANG:-}" ]]; then
   fi
 fi
 export LC_ALL="${LC_ALL:-$LANG}"
+
+if [[ -n "${SSH_CLIENT:-}" || -n "${SSH_CONNECTION:-}" ]]; then
+  export NVIM_NOTTYFAST=1
+fi
 
 HISTFILE="$HOME/.zsh_history"
 HISTSIZE=10000

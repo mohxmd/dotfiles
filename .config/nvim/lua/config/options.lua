@@ -29,6 +29,9 @@ opt.signcolumn = "yes"
 opt.backspace = "indent,eol,start"
 
 opt.clipboard:append("unnamedplus")
+if vim.env.SSH_CLIENT ~= nil or vim.env.SSH_CONNECTION ~= nil or vim.env.SSH_TTY ~= nil then
+  vim.g.clipboard = "osc52"
+end
 
 -- Keep persistent undo without leaving swap or backup files in projects.
 opt.swapfile = false
