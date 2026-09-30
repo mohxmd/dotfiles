@@ -138,6 +138,7 @@ add_to_path "$HOME/.opencode/bin"
 add_to_path "$HOME/.turso"
 add_to_path "$HOME/.deno/bin"
 add_to_path "$HOME/.bun/bin"
+add_to_path "$HOME/.nub/bin"
 [[ -d "$HOME/Developer/flutter/bin" ]] && add_to_path "$HOME/Developer/flutter/bin"
 
 # NVM
@@ -266,4 +267,3 @@ done
 if [[ -n "${DISPLAY:-}" || -n "${WAYLAND_DISPLAY:-}" ]]; then
   export QT_SCALE_FACTOR=1.3
 fi
-
