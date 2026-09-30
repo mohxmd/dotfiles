@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+# Task: hyprland
+# Purpose: Install Hyprland desktop environment, Wayland tools, fonts, and apply profile.
+# Requires: Arch Linux, sudo, pacman.
+
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
+command -v pacman >/dev/null 2>&1 || { echo "pacman is required." >&2; exit 1; }
+
+echo "[hyprland] Installing Hyprland desktop packages and Wayland utilities..."
+sudo pacman -S --needed --noconfirm \
+  hyprland \
+  xdg-desktop-portal-hyprland \
+  polkit-gnome \
+  qt5-wayland \
+  qt6-wayland \
+  waybar \
+  kitty \
+  mako \
+  rofi-wayland \
+  hyprpaper \
+  firefox \
+  grim \
+  slurp \
+  wl-clipboard \
+  cliphist \
+  pamixer \
+  brightnessctl \
+  playerctl \
+  fastfetch \
+  htop \
+  cava \
+  obs-studio \
+  wofi \
+  papirus-icon-theme \
+  ttf-jetbrains-mono-nerd \
+  noto-fonts \
+  noto-fonts-emoji \
+  ttf-font-awesome
+
+echo "[hyprland] Updating font cache..."
+fc-cache -fv >/dev/null 2>&1 || true
+
+echo "[hyprland] Applying hyprland dotfiles profile..."
+"$ROOT_DIR/setup.sh" --profile hyprland
+
+echo "[hyprland] Setup completed successfully!"

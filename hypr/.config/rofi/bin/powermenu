@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# Power menu using rofi
+
+set -euo pipefail
+
+options=" Lock\n Logout\n Suspend\n Reboot\n Shutdown"
+
+chosen="$(echo -e "$options" | rofi -dmenu -i -p "Power" -theme-str 'window { width: 18%; } listview { lines: 5; }' || true)"
+
+case "$chosen" in
+  *"Lock")
+    if command -v hyprlock >/dev/null 2>&1; then
+      hyprlock
+    elif command -v swaylock >/dev/null 2>&1; then
+      swaylock
+    else
+      loginctl lock-session
+    fi
+    ;;
+  *"Logout")
+    hyprctl dispatch exit
+    ;;
+  *"Suspend")
+    systemctl suspend
+    ;;
+  *"Reboot")
+    systemctl reboot
+    ;;
+  *"Shutdown")
+    systemctl poweroff
+    ;;
+esac

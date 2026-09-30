@@ -1,48 +1,75 @@
 # Dotfiles
 
-Personal Linux dotfiles with profile-based symlinking and a lightweight WSL profile.
+Modular, profile-based Linux dotfiles designed for both desktop (KDE Plasma) and laptop (Hyprland), with GNU Stow compatibility and pure Bash symlinking.
 
 ## Structure
 
-- `./.config`, `./.local`, and `./.zshrc`: linkable config files
-- `./assets`: non-link files (wallpapers, fonts, avatars, images, ICC)
+```text
+dotfiles/
+├── shared/          # Core CLI & shell (Zsh, Neovim, Starship, Paru, scripts) — used on all machines
+├── hypr/            # Hyprland laptop setup (Hyprland, Waybar, Kitty, Mako, Rofi, Cava, Htop, Obsidian)
+├── kde/             # KDE Plasma desktop setup (Plasma, KWin, Konsole, Color schemes, Kate themes)
+├── code/            # VS Code and VSCodium configuration & desktop entries
+└── assets/          # Wallpapers, fonts, and images (non-linked)
+```
 
-## Install
+## Quick Start
+
+### On your Laptop (Arch + Hyprland):
 
 ```bash
 git clone https://github.com/mohxmd/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-./setup.sh --profile auto
+./setup.sh --profile hyprland
+```
+
+> [!NOTE]
+> If you installed Arch via `archinstall` with Hyprland and Kitty, `./setup.sh --profile hyprland` links your configurations instantly without reinstalling any system packages.
+> To install any missing companion utilities (Waybar, Mako, Rofi, fonts), run:
+> ```bash
+> ./run hyprland
+> ```
+
+### On your Main PC (Arch + KDE Plasma):
+
+```bash
+git clone https://github.com/mohxmd/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+./setup.sh --profile kde
 ```
 
 ## Profiles
 
-- `kde`: links Plasma + Code + VSCodium + nvim + core shell setup
-- `gnome`: links Code + nvim + core shell setup
-- `mac`: links Code + nvim + core shell setup
-- `minimal`: links core shell setup only
-- `wsl`: links core shell setup and Neovim, without desktop/KDE configuration
-- `server`: links core shell setup (zsh + starship) and Neovim, without GUI/desktop tools
+- `hyprland`: links `shared` + `hypr` + `code`
+- `kde`: links `shared` + `kde` + `code`
+- `gnome`: links `shared` + `code`
+- `minimal`: links `shared` only
+- `wsl`: links `shared` only
+- `server`: links `shared` without desktop tools
+- `auto`: detects environment automatically (Hyprland vs KDE vs WSL vs Mac vs Server)
 
-`core shell setup` includes:
-- `.zshrc`
+`shared` package includes:
+- `.zshrc` & `.config/zsh`
+- `.config/nvim` (Neovim LSP, Completion, Treesitter, Telescope)
 - `.config/starship.toml`
-- `.config/zsh/modules/adb-device.zsh`
-- `.local/bin/fix-hdmi-audio`
-- `.local/bin/search`
-- `.local/bin/image-request`
-- `.local/bin/video-to-ascii`
-- `.local/bin/cfd-init`
-- `.config/pgcli/config` (pgcli config)
-- `.config/paru/paru.conf` (paru configuration)
+- `.config/paru/paru.conf`
+- `.config/pgcli/config`
+- `.config/htop/` (Process viewer)
+- `.config/fastfetch/` (System summary)
+- `.config/fontconfig/` (Crisp font rendering)
+- `.config/cava/` (Audio visualizer)
+- `.config/obs-studio/` (Screen recording)
+- `.obsidian/` (Monochrome notes vault configuration)
+- `.local/bin/` (`search`, `cfd-init`, `image-request`, `video-to-ascii`)
 
-`plasma` (KDE specific setup) includes:
-- `.config/plasma-org.kde.plasma.desktop-appletsrc` (Plasma config)
-- `.config/kwinrulesrc` (KWin window rules)
-- `.local/share/plasma/plasmoids` (Plasma widgets)
-- `.local/share/color-schemes` (Global themes including BuraqDark & BuraqLight)
-- `.local/share/konsole` (Konsole profiles)
-- `.local/share/org.kde.syntax-highlighting/themes` (Kate themes)
+`hypr` package includes:
+- `.config/hypr/` (`hyprland.conf`, `hyprpaper.conf`, `hyprlock.conf`, `set-wallpaper.sh`)
+- `.config/waybar/` (Modular Waybar status bar with window rewrites)
+- `.config/kitty/` (JetBrainsMono Nerd Font, low latency, dark monochrome)
+- `.config/mako/` (Lightweight Wayland notification daemon)
+- `.config/rofi/` & `.config/wofi/` (Application launcher & power menu)
+- `.config/gtk-3.0/` & `.config/gtk-4.0/` (Consistent dark theme, cursor, and Papirus icons)
+- `.config/kolourpaintrc` & `.config/user-dirs.locale`
 
 ## Useful options
 
@@ -94,6 +121,7 @@ Keep each WSL distribution's vault inside its Linux filesystem, not under
 ```bash
 ./run --list
 ./run dev
+./run hyprland
 ./run firewall
 ./run dns-cloudflare
 ./run bluetooth

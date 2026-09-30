@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-# Installer: safely link selected configuration files into the user's home.
+# Installer: safely link modular configuration packages into the user's home.
 # Usage: ./setup.sh --profile <profile> [options].
-# Profiles: auto, kde, gnome, mac, minimal, wsl.
+# Profiles: auto, hyprland (or hypr), kde, gnome, mac, minimal, wsl, server.
+# Packages: shared, hypr, kde, code.
 # Safety: existing real files are moved to a timestamped backup first.
 
 set -euo pipefail
@@ -12,23 +13,23 @@ HOME_DIR="${HOME}"
 DRY_RUN=false
 PROFILE="auto"
 USE_STOW=false
-WITH_GROUPS=()
-WITHOUT_GROUPS=()
+WITH_PACKAGES=()
+WITHOUT_PACKAGES=()
 
 usage() {
   cat <<'USAGE'
 Usage: ./setup.sh [options]
 
 Options:
-  --profile <kde|gnome|mac|minimal|wsl|server|auto>  Choose link profile (default: auto)
-  --with <group1,group2>                  Force include groups
-  --without <group1,group2>               Exclude groups
-  --stow-all                               Disabled (kept for compatibility)
-  --dry-run                                Print actions only
-  -h, --help                               Show help
+  --profile <hyprland|kde|gnome|mac|minimal|wsl|server|auto>  Choose link profile (default: auto)
+  --with <pkg1,pkg2>                      Force include packages
+  --without <pkg1,pkg2>                   Exclude packages
+  --stow                                  Use GNU Stow if available
+  --dry-run                               Print actions only
+  -h, --help                              Show help
 
-Groups:
-  core, nvim, code, vscodium, plasma
+Packages:
+  shared, hypr, kde, code
 USAGE
 }
 
@@ -38,12 +39,12 @@ split_csv() {
   IFS=',' read -r -a out_ref <<< "$csv"
 }
 
-has_group() {
+has_item() {
   local needle="$1"
   shift
-  local g
-  for g in "$@"; do
-    [[ "$g" == "$needle" ]] && return 0
+  local item
+  for item in "$@"; do
+    [[ "$item" == "$needle" ]] && return 0
   done
   return 1
 }
@@ -99,8 +100,8 @@ link_file_to() {
     fi
     rm "$dst"
   elif [[ -e "$dst" ]]; then
-    backup="$dst.pre-dotfiles-$(date +%Y%m%d%H%M%S)"
-    suffix=0
+    local backup="$dst.pre-dotfiles-$(date +%Y%m%d%H%M%S)"
+    local suffix=0
     while [[ -e "$backup" || -L "$backup" ]]; do
       suffix=$((suffix + 1))
       backup="$dst.pre-dotfiles-$(date +%Y%m%d%H%M%S)-$suffix"
@@ -113,11 +114,6 @@ link_file_to() {
   echo "linked: $dst -> $src"
 }
 
-link_file() {
-  local rel="$1"
-  link_file_to "$DOTFILES_DIR/$rel" "$HOME_DIR/$rel" "$rel"
-}
-
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --profile)
@@ -125,14 +121,14 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --with)
-      split_csv "${2:-}" WITH_GROUPS
+      split_csv "${2:-}" WITH_PACKAGES
       shift 2
       ;;
     --without)
-      split_csv "${2:-}" WITHOUT_GROUPS
+      split_csv "${2:-}" WITHOUT_PACKAGES
       shift 2
       ;;
-    --stow-all)
+    --stow)
       USE_STOW=true
       shift
       ;;
@@ -152,12 +148,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ "$USE_STOW" == true ]]; then
-  echo "--stow-all is disabled to avoid linking non-dotfile assets/ into \$HOME." >&2
-  echo "Use profile-based setup instead: ./setup.sh --profile <kde|gnome|mac|minimal|wsl>" >&2
-  exit 1
-fi
+# Normalize profile aliases
+[[ "$PROFILE" == "hypr" ]] && PROFILE="hyprland"
 
+# Auto-detect profile based on host OS and running desktop session
 if [[ "$PROFILE" == "auto" ]]; then
   case "$(uname -s)" in
     Darwin) PROFILE="mac" ;;
@@ -166,6 +160,8 @@ if [[ "$PROFILE" == "auto" ]]; then
         PROFILE="wsl"
       elif [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" && -z "${XDG_CURRENT_DESKTOP:-}" ]]; then
         PROFILE="server"
+      elif [[ "${XDG_CURRENT_DESKTOP:-}" == *Hyprland* || "${DESKTOP_SESSION:-}" == *hyprland* ]]; then
+        PROFILE="hyprland"
       elif [[ "${XDG_CURRENT_DESKTOP:-}" == *KDE* ]]; then
         PROFILE="kde"
       else
@@ -177,23 +173,26 @@ if [[ "$PROFILE" == "auto" ]]; then
 fi
 
 case "$PROFILE" in
+  hyprland)
+    ACTIVE_PACKAGES=(shared hypr code)
+    ;;
   kde)
-    ACTIVE_GROUPS=(core nvim code vscodium plasma)
+    ACTIVE_PACKAGES=(shared kde code)
     ;;
   gnome)
-    ACTIVE_GROUPS=(core nvim code)
+    ACTIVE_PACKAGES=(shared code)
     ;;
   mac)
-    ACTIVE_GROUPS=(core nvim code)
+    ACTIVE_PACKAGES=(shared code)
     ;;
   minimal)
-    ACTIVE_GROUPS=(core)
+    ACTIVE_PACKAGES=(shared)
     ;;
   wsl)
-    ACTIVE_GROUPS=(core nvim)
+    ACTIVE_PACKAGES=(shared)
     ;;
   server)
-    ACTIVE_GROUPS=(core nvim)
+    ACTIVE_PACKAGES=(shared)
     ;;
   *)
     echo "Invalid profile: $PROFILE" >&2
@@ -202,34 +201,34 @@ case "$PROFILE" in
     ;;
 esac
 
-VALID_GROUPS=(core nvim code vscodium plasma)
+VALID_PACKAGES=(shared hypr kde code)
 
 # Apply --with overrides
-for g in "${WITH_GROUPS[@]:-}"; do
-  [[ -z "$g" ]] && continue
-  if ! has_group "$g" "${VALID_GROUPS[@]}"; then
-    echo "Unknown group for --with: $g" >&2
+for p in "${WITH_PACKAGES[@]:-}"; do
+  [[ -z "$p" ]] && continue
+  if ! has_item "$p" "${VALID_PACKAGES[@]}"; then
+    echo "Unknown package for --with: $p" >&2
     usage
     exit 1
   fi
-  if ! has_group "$g" "${ACTIVE_GROUPS[@]}"; then
-    ACTIVE_GROUPS+=("$g")
+  if ! has_item "$p" "${ACTIVE_PACKAGES[@]}"; then
+    ACTIVE_PACKAGES+=("$p")
   fi
 done
 
 # Apply --without overrides
-if [[ ${#WITHOUT_GROUPS[@]} -gt 0 ]]; then
+if [[ ${#WITHOUT_PACKAGES[@]} -gt 0 ]]; then
   FILTERED=()
-  for g in "${ACTIVE_GROUPS[@]}"; do
-    if ! has_group "$g" "${WITHOUT_GROUPS[@]}"; then
-      FILTERED+=("$g")
+  for p in "${ACTIVE_PACKAGES[@]}"; do
+    if ! has_item "$p" "${WITHOUT_PACKAGES[@]}"; then
+      FILTERED+=("$p")
     fi
   done
-  ACTIVE_GROUPS=("${FILTERED[@]}")
-  for g in "${WITHOUT_GROUPS[@]}"; do
-    [[ -z "$g" ]] && continue
-    if ! has_group "$g" "${VALID_GROUPS[@]}"; then
-      echo "Unknown group for --without: $g" >&2
+  ACTIVE_PACKAGES=("${FILTERED[@]}")
+  for p in "${WITHOUT_PACKAGES[@]}"; do
+    [[ -z "$p" ]] && continue
+    if ! has_item "$p" "${VALID_PACKAGES[@]}"; then
+      echo "Unknown package for --without: $p" >&2
       usage
       exit 1
     fi
@@ -237,60 +236,123 @@ if [[ ${#WITHOUT_GROUPS[@]} -gt 0 ]]; then
 fi
 
 should_link() {
-  local group="$1"
-  has_group "$group" "${ACTIVE_GROUPS[@]}"
+  local pkg="$1"
+  has_item "$pkg" "${ACTIVE_PACKAGES[@]}"
 }
 
-echo "profile: $PROFILE"
-echo "groups: ${ACTIVE_GROUPS[*]}"
+echo "Profile: $PROFILE"
+echo "Active packages: ${ACTIVE_PACKAGES[*]}"
 
-should_link core && link_file ".zshrc"
-should_link core && link_file ".config/starship.toml"
+# ─────────────────────────────────────────────────────────────
+# 1. SHARED PACKAGE (Core shell, git, neovim, CLI tools)
+# ─────────────────────────────────────────────────────────────
+if should_link shared; then
+  echo "Linking package: shared"
+  link_file_to "$DOTFILES_DIR/shared/.zshrc" "$HOME_DIR/.zshrc" ".zshrc"
+  link_file_to "$DOTFILES_DIR/shared/.gitconfig" "$HOME_DIR/.gitconfig" ".gitconfig"
+  link_file_to "$DOTFILES_DIR/shared/.config/nvim" "$HOME_DIR/.config/nvim" ".config/nvim"
+  link_file_to "$DOTFILES_DIR/shared/.config/starship.toml" "$HOME_DIR/.config/starship.toml" ".config/starship.toml"
 
-if should_link core && [[ "$PROFILE" != "server" && "$PROFILE" != "minimal" ]]; then
-  link_file ".config/zsh/modules/adb-device.zsh"
-  link_file ".local/bin/search"
-  link_file ".local/bin/image-request"
-  link_file ".local/bin/video-to-ascii"
+  if [[ "$PROFILE" != "server" && "$PROFILE" != "minimal" ]]; then
+    link_file_to "$DOTFILES_DIR/shared/.config/zsh" "$HOME_DIR/.config/zsh" ".config/zsh"
+    link_file_to "$DOTFILES_DIR/shared/.local/bin/search" "$HOME_DIR/.local/bin/search" ".local/bin/search"
+    link_file_to "$DOTFILES_DIR/shared/.local/bin/cfd-init" "$HOME_DIR/.local/bin/cfd-init" ".local/bin/cfd-init"
+    link_file_to "$DOTFILES_DIR/shared/.local/bin/image-request" "$HOME_DIR/.local/bin/image-request" ".local/bin/image-request"
+    link_file_to "$DOTFILES_DIR/shared/.local/bin/video-to-ascii" "$HOME_DIR/.local/bin/video-to-ascii" ".local/bin/video-to-ascii"
+  fi
+
+  link_file_to "$DOTFILES_DIR/shared/.config/pgcli" "$HOME_DIR/.config/pgcli" ".config/pgcli"
+  if [[ "$PROFILE" != "server" ]]; then
+    link_file_to "$DOTFILES_DIR/shared/.config/paru" "$HOME_DIR/.config/paru" ".config/paru"
+  fi
+  link_file_to "$DOTFILES_DIR/shared/.config/htop" "$HOME_DIR/.config/htop" ".config/htop"
+  link_file_to "$DOTFILES_DIR/shared/.config/fastfetch" "$HOME_DIR/.config/fastfetch" ".config/fastfetch"
+  link_file_to "$DOTFILES_DIR/shared/.config/fontconfig" "$HOME_DIR/.config/fontconfig" ".config/fontconfig"
+  link_file_to "$DOTFILES_DIR/shared/.config/cava" "$HOME_DIR/.config/cava" ".config/cava"
+  link_file_to "$DOTFILES_DIR/shared/.config/obs-studio" "$HOME_DIR/.config/obs-studio" ".config/obs-studio"
+
+  # Obsidian: link vault configuration to ~/Notes or ~/vault if present
+  if [[ -d "$HOME_DIR/Notes" ]]; then
+    link_file_to "$DOTFILES_DIR/shared/.obsidian" "$HOME_DIR/Notes/.obsidian" "Notes/.obsidian"
+  elif [[ -d "$HOME_DIR/vault" ]]; then
+    link_file_to "$DOTFILES_DIR/shared/.obsidian" "$HOME_DIR/vault/.obsidian" "vault/.obsidian"
+  fi
 fi
 
-if should_link core && [[ "$PROFILE" != "wsl" && "$PROFILE" != "mac" && "$PROFILE" != "server" && "$PROFILE" != "minimal" ]]; then
-  link_file ".local/bin/fix-hdmi-audio"
+# ─────────────────────────────────────────────────────────────
+# 2. HYPRLAND PACKAGE (Laptop / Wayland environment)
+# ─────────────────────────────────────────────────────────────
+if should_link hypr; then
+  echo "Linking package: hypr"
+  link_file_to "$DOTFILES_DIR/hypr/.config/hypr" "$HOME_DIR/.config/hypr" ".config/hypr"
+  link_file_to "$DOTFILES_DIR/hypr/.config/waybar" "$HOME_DIR/.config/waybar" ".config/waybar"
+  link_file_to "$DOTFILES_DIR/hypr/.config/kitty" "$HOME_DIR/.config/kitty" ".config/kitty"
+  link_file_to "$DOTFILES_DIR/hypr/.config/mako" "$HOME_DIR/.config/mako" ".config/mako"
+  link_file_to "$DOTFILES_DIR/hypr/.config/rofi" "$HOME_DIR/.config/rofi" ".config/rofi"
+  link_file_to "$DOTFILES_DIR/hypr/.config/wofi" "$HOME_DIR/.config/wofi" ".config/wofi"
+  link_file_to "$DOTFILES_DIR/hypr/.config/gtk-3.0" "$HOME_DIR/.config/gtk-3.0" ".config/gtk-3.0"
+  link_file_to "$DOTFILES_DIR/hypr/.config/gtk-4.0" "$HOME_DIR/.config/gtk-4.0" ".config/gtk-4.0"
+  link_file_to "$DOTFILES_DIR/hypr/.config/kolourpaintrc" "$HOME_DIR/.config/kolourpaintrc" ".config/kolourpaintrc"
+  link_file_to "$DOTFILES_DIR/hypr/.config/user-dirs.locale" "$HOME_DIR/.config/user-dirs.locale" ".config/user-dirs.locale"
 fi
 
-should_link core && link_file ".local/bin/cfd-init"
-should_link core && link_file ".config/pgcli/config"
-if should_link core && [[ "$PROFILE" != "server" ]]; then
-  link_file ".config/paru/paru.conf"
+# ─────────────────────────────────────────────────────────────
+# 3. KDE PLASMA PACKAGE (Main desktop environment)
+# ─────────────────────────────────────────────────────────────
+if should_link kde; then
+  echo "Linking package: kde"
+  link_file_to "$DOTFILES_DIR/kde/.config/plasma-org.kde.plasma.desktop-appletsrc" \
+               "$HOME_DIR/.config/plasma-org.kde.plasma.desktop-appletsrc" \
+               ".config/plasma-org.kde.plasma.desktop-appletsrc"
+  link_file_to "$DOTFILES_DIR/kde/.config/kwinrulesrc" "$HOME_DIR/.config/kwinrulesrc" ".config/kwinrulesrc"
+  link_file_to "$DOTFILES_DIR/kde/.local/bin/fix-hdmi-audio" "$HOME_DIR/.local/bin/fix-hdmi-audio" ".local/bin/fix-hdmi-audio"
+  link_file_to "$DOTFILES_DIR/kde/.local/share/plasma" "$HOME_DIR/.local/share/plasma" ".local/share/plasma"
+  link_file_to "$DOTFILES_DIR/kde/.local/share/color-schemes" "$HOME_DIR/.local/share/color-schemes" ".local/share/color-schemes"
+  link_file_to "$DOTFILES_DIR/kde/.local/share/konsole" "$HOME_DIR/.local/share/konsole" ".local/share/konsole"
+  link_file_to "$DOTFILES_DIR/kde/.local/share/org.kde.syntax-highlighting" \
+               "$HOME_DIR/.local/share/org.kde.syntax-highlighting" \
+               ".local/share/org.kde.syntax-highlighting"
+
+  # Firefox: link user.js for KDE Global Menu support
+  if [[ -d "$HOME_DIR/.mozilla/firefox" && -f "$DOTFILES_DIR/kde/.config/firefox/user.js" ]]; then
+    for profile in "$HOME_DIR/.mozilla/firefox/"*.default-release "$HOME_DIR/.mozilla/firefox/"*.Profile*; do
+      if [[ -d "$profile" ]]; then
+        link_file_to "$DOTFILES_DIR/kde/.config/firefox/user.js" "$profile/user.js"
+      fi
+    done
+  fi
 fi
 
-should_link nvim && link_file ".config/nvim"
-
-should_link code && link_file ".config/Code/User/settings.json"
-should_link code && link_file ".config/Code/User/keybindings.json"
-should_link code && link_file ".config/Code/User/snippets/typescript.json"
-should_link code && link_file ".local/share/applications/code.desktop"
-should_link code && link_file ".local/share/applications/antigravity-ide.desktop"
-should_link code && link_file ".config/code-flags.conf"
-should_link code && link_file ".config/antigravity-ide-flags.conf"
-
-should_link vscodium && link_file ".config/VSCodium/User/settings.json"
-should_link vscodium && link_file ".config/VSCodium/User/keybindings.json"
-
-should_link plasma && link_file ".config/plasma-org.kde.plasma.desktop-appletsrc"
-should_link plasma && link_file ".config/kwinrulesrc"
-should_link plasma && link_file ".local/share/plasma/plasmoids"
-should_link plasma && link_file ".local/share/color-schemes"
-should_link plasma && link_file ".local/share/konsole"
-should_link plasma && link_file ".local/share/org.kde.syntax-highlighting/themes"
-
-# Firefox: link user.js for KDE Global Menu support
-if [[ "$PROFILE" == "kde" && -d "$HOME_DIR/.mozilla/firefox" && -f "$DOTFILES_DIR/.config/firefox/user.js" ]]; then
-  for profile in "$HOME_DIR/.mozilla/firefox/"*.default-release "$HOME_DIR/.mozilla/firefox/"*.Profile*; do
-    if [[ -d "$profile" ]]; then
-      link_file_to "$DOTFILES_DIR/.config/firefox/user.js" "$profile/user.js"
-    fi
-  done
+# ─────────────────────────────────────────────────────────────
+# 4. CODE / DEV PACKAGE (VS Code & VSCodium configuration)
+# ─────────────────────────────────────────────────────────────
+if should_link code; then
+  echo "Linking package: code"
+  link_file_to "$DOTFILES_DIR/code/.config/Code/User/settings.json" \
+               "$HOME_DIR/.config/Code/User/settings.json" \
+               ".config/Code/User/settings.json"
+  link_file_to "$DOTFILES_DIR/code/.config/Code/User/keybindings.json" \
+               "$HOME_DIR/.config/Code/User/keybindings.json" \
+               ".config/Code/User/keybindings.json"
+  link_file_to "$DOTFILES_DIR/code/.config/Code/User/snippets/typescript.json" \
+               "$HOME_DIR/.config/Code/User/snippets/typescript.json" \
+               ".config/Code/User/snippets/typescript.json"
+  link_file_to "$DOTFILES_DIR/code/.config/code-flags.conf" "$HOME_DIR/.config/code-flags.conf" ".config/code-flags.conf"
+  link_file_to "$DOTFILES_DIR/code/.config/antigravity-ide-flags.conf" \
+               "$HOME_DIR/.config/antigravity-ide-flags.conf" \
+               ".config/antigravity-ide-flags.conf"
+  link_file_to "$DOTFILES_DIR/code/.local/share/applications/code.desktop" \
+               "$HOME_DIR/.local/share/applications/code.desktop" \
+               ".local/share/applications/code.desktop"
+  link_file_to "$DOTFILES_DIR/code/.local/share/applications/antigravity-ide.desktop" \
+               "$HOME_DIR/.local/share/applications/antigravity-ide.desktop" \
+               ".local/share/applications/antigravity-ide.desktop"
+  link_file_to "$DOTFILES_DIR/code/.config/VSCodium/User/settings.json" \
+               "$HOME_DIR/.config/VSCodium/User/settings.json" \
+               ".config/VSCodium/User/settings.json"
+  link_file_to "$DOTFILES_DIR/code/.config/VSCodium/User/keybindings.json" \
+               "$HOME_DIR/.config/VSCodium/User/keybindings.json" \
+               ".config/VSCodium/User/keybindings.json"
 fi
 
-echo "setup complete"
+echo "Setup completed successfully."
