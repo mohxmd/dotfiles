@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-WALLPAPER="${1:-$HOME/dotfiles/assets/wallpapers/arch-linux.png}"
+WALLPAPER="${1:-$HOME/dotfiles/assets/wallpapers/a_woman_sitting_in_a_chair_under_a_tent.png}"
 
 if [[ ! -f "$WALLPAPER" ]]; then
   echo "Wallpaper not found: $WALLPAPER" >&2

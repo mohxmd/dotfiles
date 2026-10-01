@@ -268,8 +268,10 @@ if should_link shared; then
   link_file_to "$DOTFILES_DIR/shared/.config/htop" "$HOME_DIR/.config/htop" ".config/htop"
   link_file_to "$DOTFILES_DIR/shared/.config/fastfetch" "$HOME_DIR/.config/fastfetch" ".config/fastfetch"
   link_file_to "$DOTFILES_DIR/shared/.config/fontconfig" "$HOME_DIR/.config/fontconfig" ".config/fontconfig"
-  link_file_to "$DOTFILES_DIR/shared/.config/cava" "$HOME_DIR/.config/cava" ".config/cava"
-  link_file_to "$DOTFILES_DIR/shared/.config/obs-studio" "$HOME_DIR/.config/obs-studio" ".config/obs-studio"
+  if [[ "$PROFILE" != "server" && "$PROFILE" != "minimal" ]]; then
+    link_file_to "$DOTFILES_DIR/shared/.config/cava" "$HOME_DIR/.config/cava" ".config/cava"
+    link_file_to "$DOTFILES_DIR/shared/.config/obs-studio" "$HOME_DIR/.config/obs-studio" ".config/obs-studio"
+  fi
 
   # Obsidian: link vault configuration to ~/Notes or ~/vault if present
   if [[ -d "$HOME_DIR/Notes" ]]; then
