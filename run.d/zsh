@@ -19,7 +19,7 @@ current_shell="${SHELL:-}"
 
 if [[ "$current_shell" != "$zsh_path" ]]; then
   echo "[zsh] Setting default shell to $zsh_path"
-  chsh -s "$zsh_path"
+  sudo chsh -s "$zsh_path" "$USER"
 fi
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then

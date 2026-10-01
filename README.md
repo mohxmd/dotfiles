@@ -1,40 +1,44 @@
 # Dotfiles
 
-Modular, profile-based Linux dotfiles designed for both desktop (KDE Plasma) and laptop (Hyprland), with GNU Stow compatibility and pure Bash symlinking.
+My personal modular dotfiles for Arch Linux across my machines (KDE Plasma, Hyprland, WSL2, and personal VPS/servers), built with pure Bash symlinking.
+
+Designed to keep my daily developer environment identical everywhere while keeping secrets and machine-specific setups isolated. Feel free to explore, fork, or adapt anything here for your own setup.
 
 ## Structure
 
-```text
+```bash
 dotfiles/
 ├── shared/          # Core CLI & shell (Zsh, Neovim, Starship, Paru, scripts) — used on all machines
-├── hypr/            # Hyprland laptop setup (Hyprland, Waybar, Kitty, Mako, Rofi, Cava, Htop, Obsidian)
-├── kde/             # KDE Plasma desktop setup (Plasma, KWin, Konsole, Color schemes, Kate themes)
+├── hypr/            # Hyprland setup (Hyprland, Waybar, Kitty, Mako, Rofi, Cava, Htop, Obsidian)
+├── kde/             # KDE Plasma setup (Plasma, KWin, Konsole, Color schemes, Kate themes)
 ├── code/            # VS Code and VSCodium configuration & desktop entries
 └── assets/          # Wallpapers, fonts, and images (non-linked)
 ```
 
-## Quick Start
+## Setup & Profiles
 
-### On your Laptop (Arch + Hyprland):
+How I link my configurations depending on the environment:
 
 ```bash
 git clone https://github.com/mohxmd/dotfiles.git ~/dotfiles
 cd ~/dotfiles
+```
+
+### On Hyprland:
+
+```bash
 ./setup.sh --profile hyprland
 ```
 
-> [!NOTE]
-> If you installed Arch via `archinstall` with Hyprland and Kitty, `./setup.sh --profile hyprland` links your configurations instantly without reinstalling any system packages.
-> To install any missing companion utilities (Waybar, Mako, Rofi, fonts), run:
+> [!TIP]
+> On a clean Arch install (e.g. via `archinstall` with Hyprland and Kitty), `./setup.sh --profile hyprland` links configs immediately. To pull in all companion utilities (Waybar, Mako, Rofi, fonts), I run:
 > ```bash
 > ./run hyprland
 > ```
 
-### On your Main PC (Arch + KDE Plasma):
+### On KDE Plasma:
 
 ```bash
-git clone https://github.com/mohxmd/dotfiles.git ~/dotfiles
-cd ~/dotfiles
 ./setup.sh --profile kde
 ```
 
@@ -67,11 +71,13 @@ cd ~/dotfiles
 - `.config/waybar/` (Modular Waybar status bar with window rewrites)
 - `.config/kitty/` (JetBrainsMono Nerd Font, low latency, dark monochrome)
 - `.config/mako/` (Lightweight Wayland notification daemon)
-- `.config/rofi/` & `.config/wofi/` (Application launcher & power menu)
+- `.config/rofi/` (Application launcher & power menu)
 - `.config/gtk-3.0/` & `.config/gtk-4.0/` (Consistent dark theme, cursor, and Papirus icons)
 - `.config/kolourpaintrc` & `.config/user-dirs.locale`
 
-## Useful options
+## Setup Flags
+
+Custom profile adjustments when needed:
 
 ```bash
 ./setup.sh --profile gnome --without code
@@ -79,22 +85,21 @@ cd ~/dotfiles
 ./setup.sh --dry-run --profile kde
 ```
 
-## Refresh repo from current machine
+## Syncing Changes Back
+
+When I make live adjustments to my desktop, Plasma, or shell configs that I want to commit back to the repo:
 
 ```bash
 ./scripts/sync-current-config.sh
 ```
 
-The `ginit` Zsh helper creates private GitHub repositories by default. Use
-`GITHUB_VISIBILITY=public ginit` only when a repository is intentionally public.
+My `ginit` Zsh helper creates private GitHub repositories by default (`GITHUB_VISIBILITY=public ginit` when creating an intentionally public repo).
 
-## Local secrets with Vaultlet
+## Local Secrets with Vaultlet
 
-Vaultlet stores encrypted secrets outside this repository. The vault file and
-Vaultlet configuration are intentionally never linked or synced by the
-dotfiles setup.
+I keep encrypted secrets completely outside this repository using Vaultlet. Vault files and configurations are intentionally never committed or symlinked.
 
-Install it on Arch Linux or Arch WSL:
+How I set up and store secrets on a fresh machine:
 
 ```bash
 ./run vaultlet
@@ -103,7 +108,7 @@ vaultlet set github_token
 vaultlet set openai_api_key
 ```
 
-Retrieve a value only when needed:
+Retrieving values on demand:
 
 ```bash
 vaultget github_token
@@ -111,12 +116,11 @@ vaultlet get openai_api_key --copy
 ghv repo view
 ```
 
-Secrets are not exported automatically. `ginit` uses `github_token` only for
-the `gh` command, and `image-request` reads `openai_api_key` only when it runs.
-Keep each WSL distribution's vault inside its Linux filesystem, not under
-`/mnt/c`.
+Secrets are never auto-exported globally. `ginit` uses `github_token` only when running `gh`, and `image-request` reads `openai_api_key` only during execution. On WSL, I store the vault in the Linux filesystem rather than `/mnt/c`.
 
 ## Arch Run Tasks
+
+Modular tasks in `run.d/` for installing toolchains and services on Arch:
 
 ```bash
 ./run --list
@@ -138,69 +142,58 @@ Keep each WSL distribution's vault inside its Linux filesystem, not under
 ./run dotfiles auto
 ```
 
-Full bare-metal Linux bootstrap:
+### System Bootstraps
 
+Entrypoints for provisioning fresh machines:
+
+#### 1. Bare-metal Arch Linux
 ```bash
 ./arch-bootstrap
 ```
-
-`arch-bootstrap` refuses to run inside WSL because it installs desktop-oriented
-services and a local Docker daemon.
-
-WSL bootstrap:
-
-```bash
-./wsl-bootstrap
-```
-
-Run `wsl-bootstrap` inside Arch WSL as a normal user with working `sudo`. If
-the Arch image starts as `root`, create a regular user, grant it `sudo`, and
-make it the WSL default user first. It installs WSL-relevant
-packages, creates `/etc/wsl.conf` only when that file does not already exist,
-enables systemd for the current user, installs Zsh dependencies, and applies
-the `wsl` profile. Restart WSL from PowerShell with `wsl --shutdown` afterward.
-
-The files in `wsl/` are templates for distribution-level `/etc/wsl.conf` and
-host-level `%UserProfile%\.wslconfig`; they are not linked into `$HOME`.
-
-On Windows, prefer Docker Desktop's WSL integration. The desktop-oriented
-`firewall`, `bluetooth`, `dns-cloudflare`, `docker`, and `plasma` tasks are
-intentionally not part of the WSL bootstrap.
-
-VPS (Netcup / Hetzner / Cloud Arch Linux) bootstrap:
-
-```bash
-./vps-bootstrap
-```
-
-Runs a lean, production-oriented provisioning for headless servers. Installs Docker,
-Docker Compose, Caddy, Nftables, Neovim, Zsh, and Starship, enables Docker and Caddy
-services, and applies the `server` dotfiles profile without desktop bloat or AUR helpers.
-
-Optional bootstrap extras:
-
+Installs core dev packages, UFW firewall, Docker, Java, Zsh, and Vaultlet, then applies dotfiles. Optional flags:
 ```bash
 ENABLE_DNS_CLOUDFLARE=1 ENABLE_BLUETOOTH=1 ./arch-bootstrap
 ```
 
-Cloudflared multi-project templates:
+#### 2. Arch WSL2 (Windows dev environment)
+```bash
+./wsl-bootstrap
+```
+How I bootstrap Arch inside WSL2. Installs CLI development tools, configures `/etc/wsl.conf` with systemd enabled, sets up Zsh, and applies the `wsl` profile. Desktop services (`firewall`, `bluetooth`, `docker`) are skipped because Windows handles them (e.g. Docker Desktop WSL integration).
+
+The `wsl/` folder contains reference templates for `/etc/wsl.conf` and host `%UserProfile%\.wslconfig`.
+
+#### 3. Arch Linux VPS (Headless servers)
+```bash
+./vps-bootstrap
+```
+Provisions headless servers (Netcup / Hetzner): Docker, Docker Compose, Caddy, Nftables, Neovim, Zsh, and Starship, and applies the `server` profile without desktop packages or AUR helpers.
+
+### Cloudflare Tunnels
+
+How I set up and run multi-project tunnels:
 
 ```bash
 cfd-init my-tunnel api.example.com http://localhost:8080
 CLOUDFLARED_CONFIG=./cloudflared/configs/my-tunnel.yml ./run cloudflared
 ```
 
-Java notes:
+### Java Environment
+
+I keep OpenJDK 17 as default for React Native and Android builds, and override when needed:
 
 ```bash
 ./run java
-# default env is java-17-openjdk for React Native/Android compatibility
-# override when needed:
+# override:
 JAVA_DEFAULT_ENV=java-24-openjdk ./run java
 ```
 
 ## Credits
 
+- Wallpapers in `assets/wallpapers/` are sourced from:
+  - [dharmx/walls](https://github.com/dharmx/walls)
+  - [Alpha Coders](https://alphacoders.com)
+  - Various community sources (Reddit, Pinterest, Wallpaper Flare)
 - ICC profiles in `assets/icc/` are sourced from:
   https://github.com/ien646/gamma-icc
 - See `assets/icc/LICENSE` and `assets/icc/README.md` for attribution and licensing.

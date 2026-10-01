@@ -23,24 +23,22 @@ sudo pacman -S --needed --noconfirm \
   mako \
   rofi-wayland \
   hyprpaper \
+  hyprlock \
   firefox \
   grim \
   slurp \
   wl-clipboard \
   cliphist \
-  pamixer \
   brightnessctl \
   playerctl \
   fastfetch \
   htop \
   cava \
   obs-studio \
-  wofi \
   papirus-icon-theme \
   ttf-jetbrains-mono-nerd \
   noto-fonts \
-  noto-fonts-emoji \
-  ttf-font-awesome
+  noto-fonts-emoji
 
 echo "[hyprland] Updating font cache..."
 fc-cache -fv >/dev/null 2>&1 || true

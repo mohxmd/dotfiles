@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Installer: safely link modular configuration packages into the user's home.
+# Safely link modular configuration packages into $HOME.
 # Usage: ./setup.sh --profile <profile> [options].
 # Profiles: auto, hyprland (or hypr), kde, gnome, mac, minimal, wsl, server.
 # Packages: shared, hypr, kde, code.
@@ -12,7 +12,6 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HOME_DIR="${HOME}"
 DRY_RUN=false
 PROFILE="auto"
-USE_STOW=false
 WITH_PACKAGES=()
 WITHOUT_PACKAGES=()
 
@@ -24,7 +23,6 @@ Options:
   --profile <hyprland|kde|gnome|mac|minimal|wsl|server|auto>  Choose link profile (default: auto)
   --with <pkg1,pkg2>                      Force include packages
   --without <pkg1,pkg2>                   Exclude packages
-  --stow                                  Use GNU Stow if available
   --dry-run                               Print actions only
   -h, --help                              Show help
 
@@ -127,10 +125,6 @@ while [[ $# -gt 0 ]]; do
     --without)
       split_csv "${2:-}" WITHOUT_PACKAGES
       shift 2
-      ;;
-    --stow)
-      USE_STOW=true
-      shift
       ;;
     --dry-run)
       DRY_RUN=true
@@ -282,7 +276,7 @@ if should_link shared; then
 fi
 
 # ─────────────────────────────────────────────────────────────
-# 2. HYPRLAND PACKAGE (Laptop / Wayland environment)
+# 2. HYPRLAND PACKAGE (Wayland environment)
 # ─────────────────────────────────────────────────────────────
 if should_link hypr; then
   echo "Linking package: hypr"
@@ -291,7 +285,6 @@ if should_link hypr; then
   link_file_to "$DOTFILES_DIR/hypr/.config/kitty" "$HOME_DIR/.config/kitty" ".config/kitty"
   link_file_to "$DOTFILES_DIR/hypr/.config/mako" "$HOME_DIR/.config/mako" ".config/mako"
   link_file_to "$DOTFILES_DIR/hypr/.config/rofi" "$HOME_DIR/.config/rofi" ".config/rofi"
-  link_file_to "$DOTFILES_DIR/hypr/.config/wofi" "$HOME_DIR/.config/wofi" ".config/wofi"
   link_file_to "$DOTFILES_DIR/hypr/.config/gtk-3.0" "$HOME_DIR/.config/gtk-3.0" ".config/gtk-3.0"
   link_file_to "$DOTFILES_DIR/hypr/.config/gtk-4.0" "$HOME_DIR/.config/gtk-4.0" ".config/gtk-4.0"
   link_file_to "$DOTFILES_DIR/hypr/.config/kolourpaintrc" "$HOME_DIR/.config/kolourpaintrc" ".config/kolourpaintrc"
@@ -299,7 +292,7 @@ if should_link hypr; then
 fi
 
 # ─────────────────────────────────────────────────────────────
-# 3. KDE PLASMA PACKAGE (Main desktop environment)
+# 3. KDE PLASMA PACKAGE
 # ─────────────────────────────────────────────────────────────
 if should_link kde; then
   echo "Linking package: kde"

@@ -255,7 +255,12 @@ alias cw='cargo watch -q -c -x run'
 
 # Tmux
 alias ta='tmux attach || tmux new-session'
-alias tls='tmux list-sessions'
+alias tmls='tmux list-sessions'
+
+# Editor
+if command -v nvim >/dev/null 2>&1; then
+  alias vim='nvim'
+fi
 
 
 # -----------------------------------
@@ -264,10 +269,3 @@ alias tls='tmux list-sessions'
 for script in ~/.config/zsh/modules/*.zsh(N); do
   source "$script"
 done
-
-# -----------------------------------
-# Desktop-only Settings
-# -----------------------------------
-if [[ -n "${DISPLAY:-}" || -n "${WAYLAND_DISPLAY:-}" ]]; then
-  export QT_SCALE_FACTOR=1.3
-fi

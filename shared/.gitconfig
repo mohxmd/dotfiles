@@ -1,5 +1,6 @@
 [user]
 	name = Mohammed
+	# Set your email: git config --global user.email "you@example.com"
 	email =
 [core]
 	editor = nvim
