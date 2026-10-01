@@ -175,6 +175,10 @@ add_to_path "$PNPM_HOME/bin"
 alias c='clear'
 alias la='ls -A'
 alias lsd='ls -d */'
+# Package Manager
+if command -v paru >/dev/null 2>&1; then
+  alias yay='paru'
+fi
 
 # Git
 alias gs='git status --short'
