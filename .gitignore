@@ -20,6 +20,11 @@ nvim.log
 .config/pgcli/history
 .local/state/pgcli/history
 
+# Obsidian local state & workspaces
+shared/.obsidian/workspace.json
+shared/.obsidian/workspace-mobile.json
+shared/.obsidian/file-recovery/
+
 # Misc
 *.tgz
 assets/wallpapers/live/*.mp4
