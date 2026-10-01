@@ -16,10 +16,29 @@ if [[ ! -f "$WALLPAPER" ]]; then
   exit 1
 fi
 
+# Ensure hyprpaper daemon is running
 if ! pgrep -x hyprpaper >/dev/null 2>&1; then
   hyprpaper &
-  sleep 0.4
+  # Wait up to 2 seconds for hyprpaper socket
+  for _ in {1..20}; do
+    if hyprctl hyprpaper listloaded >/dev/null 2>&1; then
+      break
+    fi
+    sleep 0.1
+  done
 fi
 
+# Preload and set wallpaper on all monitors
 hyprctl hyprpaper preload "$WALLPAPER" 2>/dev/null || true
 hyprctl hyprpaper wallpaper ",$WALLPAPER" 2>/dev/null || true
+
+# Update hyprpaper.conf so future cold boots load it immediately
+CONF_FILE="$SCRIPT_DIR/hyprpaper.conf"
+if [[ -w "$CONF_FILE" ]]; then
+  cat <<EOF > "$CONF_FILE"
+preload = $WALLPAPER
+wallpaper = ,$WALLPAPER
+splash = false
+ipc = on
+EOF
+fi

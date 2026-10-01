@@ -1,7 +1,0 @@
-{
-  "custom/notification": {
-    "tooltip": false,
-    "format": "󰂚",
-    "on-click": "makoctl dismiss -a"
-  }
-}

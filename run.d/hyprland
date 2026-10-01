@@ -31,6 +31,8 @@ sudo pacman -S --needed --noconfirm \
   cliphist \
   brightnessctl \
   playerctl \
+  pavucontrol \
+  network-manager-applet \
   fastfetch \
   htop \
   cava \
@@ -42,6 +44,9 @@ sudo pacman -S --needed --noconfirm \
 
 echo "[hyprland] Updating font cache..."
 fc-cache -fv >/dev/null 2>&1 || true
+
+echo "[hyprland] Ensuring Zsh, Oh My Zsh, and Starship are installed..."
+"$ROOT_DIR/run" zsh
 
 echo "[hyprland] Applying hyprland dotfiles profile..."
 "$ROOT_DIR/setup.sh" --profile hyprland

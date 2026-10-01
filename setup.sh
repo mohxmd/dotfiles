@@ -289,6 +289,19 @@ if should_link hypr; then
   link_file_to "$DOTFILES_DIR/hypr/.config/gtk-4.0" "$HOME_DIR/.config/gtk-4.0" ".config/gtk-4.0"
   link_file_to "$DOTFILES_DIR/hypr/.config/kolourpaintrc" "$HOME_DIR/.config/kolourpaintrc" ".config/kolourpaintrc"
   link_file_to "$DOTFILES_DIR/hypr/.config/user-dirs.locale" "$HOME_DIR/.config/user-dirs.locale" ".config/user-dirs.locale"
+
+  # Ensure hyprpaper.conf contains absolute wallpaper path for current host
+  wp_target="$DOTFILES_DIR/assets/wallpapers/a_woman_sitting_in_a_chair_under_a_tent.png"
+  if [[ -f "$wp_target" && -f "$DOTFILES_DIR/hypr/.config/hypr/hyprpaper.conf" && "$DRY_RUN" != "true" ]]; then
+    cat <<EOF > "$DOTFILES_DIR/hypr/.config/hypr/hyprpaper.conf"
+preload = $wp_target
+wallpaper = ,$wp_target
+splash = false
+ipc = on
+EOF
+  fi
+  chmod +x "$DOTFILES_DIR/hypr/.config/hypr/set-wallpaper.sh" 2>/dev/null || true
+  chmod +x "$DOTFILES_DIR/hypr/.config/rofi/bin/powermenu" 2>/dev/null || true
 fi
 
 # ─────────────────────────────────────────────────────────────
