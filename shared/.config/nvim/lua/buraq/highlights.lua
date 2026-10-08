@@ -23,7 +23,7 @@ function M.get(c)
     Visual = { bg = c.bg_visual },
     VisualNOS = { bg = c.bg_visual },
 
-    Search = { fg = c.fg_bright, bg = "#145e3a" },
+    Search = { fg = c.fg_bright, bg = c.bg_search },
     IncSearch = { fg = c.bg, bg = c.green, bold = true },
     CurSearch = { fg = c.bg, bg = c.accent, bold = true },
 
