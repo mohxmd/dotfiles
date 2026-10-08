@@ -1,8 +1,50 @@
+# ==============================================================================
+# KWin Window Rules (KDE Plasma)
+#
+# Rules are registered by ID in the [General] section and evaluated in order.
+# The UUIDs are internal IDs used by KWin to identify and order each rule.
+# ==============================================================================
+
+# Global: Remove window decorations / titlebars from all applications
 [77cf2465-dfe9-4abf-9c7c-3b9f7a8e4019]
 Description=No titlebars
 noborder=true
 noborderrule=2
 
+# System Settings: subtle translucent background
+[4dd9326f-a99a-4954-80fd-3f97564a24ac]
+Description=Settings for systemsettings
+opacityactive=82
+opacityactiverule=2
+opacityinactive=73
+opacityinactiverule=2
+wmclass=systemsettings systemsettings
+wmclasscomplete=true
+wmclassmatch=1
+
+# VS Code: semi-transparent workspace
+[f7c2763b-b983-4e4d-a6b9-0c73b658bd2a]
+Description=Settings for code
+opacityactive=91
+opacityactiverule=2
+opacityinactive=83
+opacityinactiverule=2
+wmclass=code Code
+wmclasscomplete=true
+wmclassmatch=1
+
+# Vesktop (Discord): translucent chat window
+[fe857b55-ccaa-42bd-a88c-70eed3429c2b]
+Description=Settings for vesktop
+opacityactive=92
+opacityactiverule=2
+opacityinactive=87
+opacityinactiverule=2
+wmclass=vesktop
+wmclasscomplete=true
+wmclassmatch=1
+
+# Rule Registry: defines rule count and evaluation order
 [General]
-count=1
-rules=77cf2465-dfe9-4abf-9c7c-3b9f7a8e4019
+count=4
+rules=77cf2465-dfe9-4abf-9c7c-3b9f7a8e4019,4dd9326f-a99a-4954-80fd-3f97564a24ac,f7c2763b-b983-4e4d-a6b9-0c73b658bd2a,fe857b55-ccaa-42bd-a88c-70eed3429c2b

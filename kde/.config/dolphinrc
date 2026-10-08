@@ -1,0 +1,32 @@
+# ==============================================================================
+# Dolphin File Manager Configuration
+# ==============================================================================
+
+[CompactMode]
+IconSize=16
+
+[DetailsMode]
+IconSize=16
+PreviewSize=22
+
+[IconsMode]
+IconSize=48
+PreviewSize=64
+
+[General]
+ShowToolTips=true
+ShowFullPath=true
+Version=202
+ViewPropsTimestamp=2026,10,7,12,0,0
+
+# Places sidebar icon sizing
+[KFileDialog Settings]
+Places Icons Auto-resize=false
+Places Icons Static Size=22
+
+# Minimalist layout: hide legacy top menu bar
+[MainWindow]
+MenuBar=Disabled
+
+[Toolbar]
+ToolButtonStyle=IconOnly

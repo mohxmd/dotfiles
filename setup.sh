@@ -366,10 +366,18 @@ fi
 # ─────────────────────────────────────────────────────────────
 if should_link kde; then
   echo "Linking package: kde"
+  link_file_to "$DOTFILES_DIR/kde/.config/kwinrc" "$HOME_DIR/.config/kwinrc" ".config/kwinrc"
+  link_file_to "$DOTFILES_DIR/kde/.config/kwinrulesrc" "$HOME_DIR/.config/kwinrulesrc" ".config/kwinrulesrc"
+  link_file_to "$DOTFILES_DIR/kde/.config/krunnerrc" "$HOME_DIR/.config/krunnerrc" ".config/krunnerrc"
+  link_file_to "$DOTFILES_DIR/kde/.config/dolphinrc" "$HOME_DIR/.config/dolphinrc" ".config/dolphinrc"
+  link_file_to "$DOTFILES_DIR/kde/.config/kdeglobals" "$HOME_DIR/.config/kdeglobals" ".config/kdeglobals"
+  link_file_to "$DOTFILES_DIR/kde/.config/baloofileinformationrc" \
+               "$HOME_DIR/.config/baloofileinformationrc" \
+               ".config/baloofileinformationrc"
+
   link_file_to "$DOTFILES_DIR/kde/.config/plasma-org.kde.plasma.desktop-appletsrc" \
                "$HOME_DIR/.config/plasma-org.kde.plasma.desktop-appletsrc" \
                ".config/plasma-org.kde.plasma.desktop-appletsrc"
-  link_file_to "$DOTFILES_DIR/kde/.config/kwinrulesrc" "$HOME_DIR/.config/kwinrulesrc" ".config/kwinrulesrc"
   link_file_to "$DOTFILES_DIR/kde/.local/bin/fix-hdmi-audio" "$HOME_DIR/.local/bin/fix-hdmi-audio" ".local/bin/fix-hdmi-audio"
   link_file_to "$DOTFILES_DIR/kde/.local/share/plasma" "$HOME_DIR/.local/share/plasma" ".local/share/plasma"
   link_file_to "$DOTFILES_DIR/kde/.local/share/color-schemes" "$HOME_DIR/.local/share/color-schemes" ".local/share/color-schemes"

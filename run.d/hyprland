@@ -60,6 +60,9 @@ sudo pacman -S --needed --noconfirm \
   qt6ct \
   xsettingsd \
   imagemagick \
+  ttf-fira-sans \
+  ttf-fira-code \
+  ttf-firacode-nerd \
   otf-font-awesome \
   noto-fonts \
   noto-fonts-emoji \

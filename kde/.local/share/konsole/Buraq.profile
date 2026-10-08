@@ -1,6 +1,6 @@
 [Appearance]
 ColorScheme=BuraqDark
-Font=MesloLGS NF,14,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+Font=FiraCode Nerd Font,12,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
 AntiAlias=true
 Opacity=0.85
 Blur=true

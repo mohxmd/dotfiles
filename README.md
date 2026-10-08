@@ -42,6 +42,12 @@ cd ~/dotfiles
 ./setup.sh --profile kde
 ```
 
+> [!TIP]
+> To install KDE Plasma packages, global menu support (`appmenu-gtk-module`), Fira fonts, and companion tools on Arch:
+> ```bash
+> ./run kde
+> ```
+
 ## Profiles
 
 - `hyprland`: links `shared` + `hypr` + `code`
@@ -85,14 +91,6 @@ Custom profile adjustments when needed:
 ./setup.sh --dry-run --profile kde
 ```
 
-## Syncing Changes Back
-
-When I make live adjustments to my desktop, Plasma, or shell configs that I want to commit back to the repo:
-
-```bash
-./scripts/sync-current-config.sh
-```
-
 My `ginit` Zsh helper creates private GitHub repositories by default (`GITHUB_VISIBILITY=public ginit` when creating an intentionally public repo).
 
 ## Local Secrets with Vaultlet
@@ -126,6 +124,7 @@ Modular tasks in `run.d/` for installing toolchains and services on Arch:
 ./run --list
 ./run dev
 ./run hyprland
+./run kde
 ./run firewall
 ./run dns-cloudflare
 ./run bluetooth
