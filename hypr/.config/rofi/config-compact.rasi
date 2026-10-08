@@ -3,10 +3,11 @@ configuration {
     modi:                       "drun,filebrowser,window,run";
     font:                       "Fira Code 11";
     show-icons:                 true;
-    display-drun:                " ";
+    icon-theme:                 "kora";
+    display-drun:                " ";
     display-run:                 " ";
-    display-filebrowser:         "";
-    display-window:              "";
+    display-filebrowser:         " ";
+    display-window:              " ";
 	drun-display-format:        "{name}";
     hover-select:               false;
     scroll-method:              1;
@@ -33,18 +34,23 @@ configuration {
 
 // Main //
 window {
-    height:                      35em;
-    width:                       56em;
-    transparency:                "real";
-    fullscreen:                  false;
-    enabled:                     true;
-    cursor:                      "default";
-    spacing:                     0em;
-    padding:                     0em;
-    border:                      @border-width;
-    border-color:                @primary;
-    border-radius:               @border-radius;
-    background-color:            @background;
+    width:                        30em;
+    x-offset:                     0em;
+    y-offset:                     2em;
+    spacing:                      0em;
+    padding:                      0em;
+    margin:                       0em; 
+    color:                      #FFFFFF;
+    border:                       @border-width;
+    border-color:                 @primary;
+    cursor:                       "default";
+    transparency:                 "real";
+    location:                     north;
+    anchor:                       north;
+    fullscreen:                   false;
+    enabled:                      true;
+    border-radius:                @border-radius;
+    background-color:             transparent;
 }
 
 mainbox {
@@ -52,54 +58,25 @@ mainbox {
     spacing:                     0em;
     padding:                     0em;
     orientation:                 horizontal;
-    children:                    [ "imagebox" , "listbox" ];
+    children:                    [ "listbox" ];
     background-color:            transparent;
     background-image:            @current-image;
 }
 
+/* ---- Imagebox ---- */
 imagebox {
-    padding:                     20px;
-    background-color:            transparent;
-    orientation:                 vertical;
-    children:                    [ "inputbar", "dummy", "mode-switcher" ];
-}
-
-dummy {
-    background-color:            transparent;
-}
-
-// Modes //
-mode-switcher {
-    orientation:                 horizontal;
-    width:                       6.6em;
-    enabled:                     true;
-    padding:                     1.5em;
-    spacing:                     1.5em;
-    background-color:            transparent;
-}
-
-button {
-    padding:                     15px;
-    border-radius:               2em;
-    border:                      0;    
-    cursor:                      pointer;
-    background-color:            @background;
-    text-color:                  @on-surface;
-}
-
-button selected {
-    padding:                     15px;
-    border-radius:               2em;    
-    background-color:            @surface;
-    text-color:                  @on-surface;
+    padding:                      1em;
+    background-color:             transparent;
+    orientation:                  horizontal;
+    children:                     [ "inputbar" ];
 }
 
 // Inputs //
 inputbar {
     enabled:                     true;
-    margin: 1em;
+    spacing:                     0em;
+    padding:                     1em;
     children:                    [ "textbox-prompt-colon", "entry" ];
-    border-radius:               2em;
     background-color:            @surface;
 }
 
@@ -107,19 +84,20 @@ textbox-prompt-colon {
     enabled:                     true;
     expand:                      false;
     str:                         "  ";
-    padding:                     1em 0.3em 0 0;
+    padding:                     0.5em 0.2em 0em 0em;
     text-color:                  @on-surface;
+    border-radius:               2em 0em 0em 2em;
     background-color:            transparent;
 }
 
 entry {
     enabled:                     true;
     spacing:                     1em;
-    padding:                     1em;
+    padding:                     0.5em;
+    background-color:            @surface;
     text-color:                  @on-surface;
     cursor:                      text;
     placeholder:                 "Search";
-    background-color:            transparent;
     placeholder-color:           inherit;
 }
 
@@ -127,17 +105,18 @@ entry {
 listbox {
     padding:                     0em;
     spacing:                     0em;
-    orientation:                 horizontal;
-    children:                    [ "listview" ];
+    orientation:                 vertical;
+    children:                    [ "inputbar", "listview" , "message" ];
     background-color:            @background;
 }
 
 listview {
-    padding:                     1.5em;
-    spacing:                     0.5em;
+    padding:                     1em;
+    spacing:                     0em;
+    margin:                      0em;
     enabled:                     true;
     columns:                     1;
-    lines:                       1;
+    lines:                       8;
     cycle:                       true;
     dynamic:                     true;
     scrollbar:                   false;
@@ -150,15 +129,15 @@ listview {
     text-color:                  @on-surface;
 }
 
-
 // Elements //
 element {
     enabled:                     true;
-    spacing:                     10px;
-    padding:                     0.5em;
+    padding:                     1em;
+    margin:                      0em;
     cursor:                      pointer;
     background-color:            transparent;
     text-color:                  @on-surface;
+    border-radius:               1.1em;
 }
 
 element selected.normal {
@@ -208,11 +187,11 @@ element alternate.active {
 }
 
 element-icon {
-    size:                        3em;
+    size:                        0em;
     cursor:                      inherit;
     background-color:            transparent;
     text-color:                  inherit;
-    border-radius:               0em;
+    content:                     "";
 }
 
 element-text {
@@ -221,20 +200,5 @@ element-text {
     cursor:                      inherit;
     background-color:            transparent;
     text-color:                  inherit;
-}
-
-// Error message //
-error-message {
-    text-color:                  @on-surface;
-    background-color:            @background;
-    text-transform:              capitalize;
-    children:                    [ "textbox" ];
-}
-
-textbox {
-    text-color:                  inherit;
-    background-color:            inherit;
-    vertical-align:              0.5;
-    horizontal-align:            0.5;
 }
 

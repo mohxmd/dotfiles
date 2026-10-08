@@ -1,0 +1,4 @@
+* {
+    current-image: url("~/.cache/dotfiles/wallpaper/blurred_wallpaper.png", height);
+}
+

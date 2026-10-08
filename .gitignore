@@ -33,3 +33,16 @@ assets/fonts-local/
 tmp
 temp
 .bun-tmp
+
+# Dynamic matugen-generated color outputs & machine symlinks
+hypr/.config/hypr/colors.conf
+hypr/.config/hypr/host.conf
+hypr/.config/kitty/colors-matugen.conf
+hypr/.config/gtk-3.0/colors.css
+hypr/.config/gtk-4.0/colors.css
+hypr/.config/waybar/colors.css
+hypr/.config/swaync/colors.css
+hypr/.config/wlogout/colors.css
+hypr/.config/rofi/colors.rasi
+hypr/.config/qt6ct/colors/
+shared/.config/btop/themes/matugen.theme
