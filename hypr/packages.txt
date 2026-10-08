@@ -59,6 +59,7 @@ hyprpicker [unverified]
 grimblast-git [unverified] [AUR]
 
 # [CLI Utilities]
+curl [unverified]
 jq [unverified]
 htop [unverified]
 btop [unverified]

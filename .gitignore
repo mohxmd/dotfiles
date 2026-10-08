@@ -41,6 +41,7 @@ hypr/.config/kitty/colors-matugen.conf
 hypr/.config/gtk-3.0/colors.css
 hypr/.config/gtk-4.0/colors.css
 hypr/.config/waybar/colors.css
+hypr/.config/waybar/current_theme
 hypr/.config/swaync/colors.css
 hypr/.config/wlogout/colors.css
 hypr/.config/rofi/colors.rasi

@@ -21,10 +21,20 @@ if [[ -f "$HOME/.config/waybar/.disabled" ]]; then
     exit 0
 fi
 
-config_file="$HOME/.config/waybar/themes/modern/config"
-style_file="$HOME/.config/waybar/themes/modern/style.css"
+# Determine active theme (default: modern)
+theme="modern"
+theme_state="$HOME/.config/waybar/current_theme"
+if [[ -f "$theme_state" ]]; then
+    saved_theme="$(tr -d '[:space:]' < "$theme_state")"
+    if [[ -d "$HOME/.config/waybar/themes/$saved_theme" ]]; then
+        theme="$saved_theme"
+    fi
+fi
 
-echo "Launching Waybar..."
+config_file="$HOME/.config/waybar/themes/$theme/config"
+style_file="$HOME/.config/waybar/themes/$theme/style.css"
+
+echo "Launching Waybar (theme: $theme)..."
 waybar -c "$config_file" -s "$style_file" &
 
 flock -u 200

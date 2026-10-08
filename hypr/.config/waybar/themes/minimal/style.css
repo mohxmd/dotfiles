@@ -1,0 +1,53 @@
+* {
+  font-size: 12pt;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  text-shadow: none;
+  transition-duration: 0s;
+}
+
+#waybar,
+#workspaces {
+  background: #1b182c;
+  color: #ffffff;
+}
+
+window#waybar {
+  opacity: 0.85;
+}
+
+#window,
+#battery,
+#memory,
+#disk,
+#pulseaudio,
+#custom-weather,
+#cpu,
+#clock,
+#tray {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+#workspaces {
+  font-family: "Fira Code", "Fira Sans", sans-serif;
+}
+
+#workspaces button {
+  color: #ffffff;
+  background: transparent;
+  padding: 0 8px;
+  border-radius: 0;
+}
+
+#workspaces button.active,
+#workspaces button.focused {
+  background: #cccccc;
+  color: #000000;
+}
+
+#workspaces button.urgent {
+  background: #e74c3c;
+  color: #ffffff;
+}

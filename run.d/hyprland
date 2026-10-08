@@ -52,6 +52,7 @@ sudo pacman -S --needed --noconfirm \
   htop \
   btop \
   jq \
+  curl \
   cava \
   obs-studio \
   breeze-icons \
