@@ -34,6 +34,13 @@ fi
 config_file="$HOME/.config/waybar/themes/$theme/config"
 style_file="$HOME/.config/waybar/themes/$theme/style.css"
 
+if [[ ! -f "$config_file" || ! -f "$style_file" ]]; then
+    echo "Warning: Theme $theme missing config or style.css, falling back to modern..." >&2
+    theme="modern"
+    config_file="$HOME/.config/waybar/themes/modern/config"
+    style_file="$HOME/.config/waybar/themes/modern/style.css"
+fi
+
 echo "Launching Waybar (theme: $theme)..."
 waybar -c "$config_file" -s "$style_file" &
 

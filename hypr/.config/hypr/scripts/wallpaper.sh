@@ -119,7 +119,10 @@ if [[ "$SKIP_WALLPAPER" != true ]]; then
     fi
 
     echo "Setting wallpaper: $IMAGE_PATH"
-    awww img "$IMAGE_PATH" --transition-type "$TRANSITION_EFFECT" 2>/dev/null || true
+    if ! awww img "$IMAGE_PATH" --transition-type "$TRANSITION_EFFECT"; then
+        echo "Error: Failed to set wallpaper with awww" >&2
+        exit 1
+    fi
 fi
 
 # 2. Run Matugen Color Generation

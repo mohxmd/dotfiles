@@ -40,8 +40,10 @@ sudo pacman -S --needed --noconfirm \
   wl-clipboard \
   cliphist \
   brightnessctl \
+  power-profiles-daemon \
   playerctl \
   pavucontrol \
+  qalculate-gtk \
   wireplumber \
   libnotify \
   network-manager-applet \

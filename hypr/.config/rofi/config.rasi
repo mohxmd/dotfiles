@@ -3,6 +3,7 @@ configuration {
     modi:                       "drun,filebrowser,window,run";
     font:                       "Fira Code 11";
     show-icons:                 true;
+    icon-theme:                 "kora";
     display-drun:                " ";
     display-run:                 " ";
     display-filebrowser:         "";

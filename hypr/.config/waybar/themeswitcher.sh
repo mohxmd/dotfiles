@@ -15,7 +15,7 @@ if [[ $# -gt 0 ]]; then
 else
     options="$(find "$THEME_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; 2>/dev/null | sort)"
     [[ -z "$options" ]] && options="modern"$'\n'"minimal"
-    chosen="$(echo "$options" | rofi -dmenu -i -p "Waybar Theme" -config "$HOME/.config/rofi/config-compact.rasi")"
+    chosen="$(echo "$options" | rofi -dmenu -i -p "Waybar Theme" -config "$HOME/.config/rofi/config-compact.rasi" || true)"
 fi
 
 [[ -z "$chosen" ]] && exit 0
