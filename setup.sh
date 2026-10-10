@@ -260,8 +260,12 @@ if should_link shared; then
     link_file_to "$DOTFILES_DIR/shared/.config/paru" "$HOME_DIR/.config/paru" ".config/paru"
   fi
   link_file_to "$DOTFILES_DIR/shared/.config/htop" "$HOME_DIR/.config/htop" ".config/htop"
+  link_file_to "$DOTFILES_DIR/shared/.config/btop" "$HOME_DIR/.config/btop" ".config/btop"
   link_file_to "$DOTFILES_DIR/shared/.config/fastfetch" "$HOME_DIR/.config/fastfetch" ".config/fastfetch"
   link_file_to "$DOTFILES_DIR/shared/.config/fontconfig" "$HOME_DIR/.config/fontconfig" ".config/fontconfig"
+  if [[ -d "$DOTFILES_DIR/assets/fonts" ]]; then
+    link_file_to "$DOTFILES_DIR/assets/fonts" "$HOME_DIR/.local/share/fonts/dotfiles-fonts" ".local/share/fonts/dotfiles-fonts"
+  fi
   if [[ "$PROFILE" != "server" && "$PROFILE" != "minimal" ]]; then
     link_file_to "$DOTFILES_DIR/shared/.config/cava" "$HOME_DIR/.config/cava" ".config/cava"
     link_file_to "$DOTFILES_DIR/shared/.config/obs-studio" "$HOME_DIR/.config/obs-studio" ".config/obs-studio"
@@ -283,25 +287,78 @@ if should_link hypr; then
   link_file_to "$DOTFILES_DIR/hypr/.config/hypr" "$HOME_DIR/.config/hypr" ".config/hypr"
   link_file_to "$DOTFILES_DIR/hypr/.config/waybar" "$HOME_DIR/.config/waybar" ".config/waybar"
   link_file_to "$DOTFILES_DIR/hypr/.config/kitty" "$HOME_DIR/.config/kitty" ".config/kitty"
-  link_file_to "$DOTFILES_DIR/hypr/.config/mako" "$HOME_DIR/.config/mako" ".config/mako"
+  link_file_to "$DOTFILES_DIR/hypr/.config/swaync" "$HOME_DIR/.config/swaync" ".config/swaync"
   link_file_to "$DOTFILES_DIR/hypr/.config/rofi" "$HOME_DIR/.config/rofi" ".config/rofi"
+  link_file_to "$DOTFILES_DIR/hypr/.config/matugen" "$HOME_DIR/.config/matugen" ".config/matugen"
+  link_file_to "$DOTFILES_DIR/hypr/.config/wlogout" "$HOME_DIR/.config/wlogout" ".config/wlogout"
+  link_file_to "$DOTFILES_DIR/hypr/.config/qt6ct" "$HOME_DIR/.config/qt6ct" ".config/qt6ct"
+  link_file_to "$DOTFILES_DIR/hypr/.config/xsettingsd" "$HOME_DIR/.config/xsettingsd" ".config/xsettingsd"
   link_file_to "$DOTFILES_DIR/hypr/.config/gtk-3.0" "$HOME_DIR/.config/gtk-3.0" ".config/gtk-3.0"
   link_file_to "$DOTFILES_DIR/hypr/.config/gtk-4.0" "$HOME_DIR/.config/gtk-4.0" ".config/gtk-4.0"
+  link_file_to "$DOTFILES_DIR/hypr/.config/dolphinrc" "$HOME_DIR/.config/dolphinrc" ".config/dolphinrc"
+  link_file_to "$DOTFILES_DIR/hypr/.config/xdg-desktop-portal/portals.conf" \
+               "$HOME_DIR/.config/xdg-desktop-portal/portals.conf" \
+               ".config/xdg-desktop-portal/portals.conf"
   link_file_to "$DOTFILES_DIR/hypr/.config/kolourpaintrc" "$HOME_DIR/.config/kolourpaintrc" ".config/kolourpaintrc"
   link_file_to "$DOTFILES_DIR/hypr/.config/user-dirs.locale" "$HOME_DIR/.config/user-dirs.locale" ".config/user-dirs.locale"
 
-  # Ensure hyprpaper.conf contains absolute wallpaper path for current host
-  wp_target="$DOTFILES_DIR/assets/wallpapers/a_woman_sitting_in_a_chair_under_a_tent.png"
-  if [[ -f "$wp_target" && -f "$DOTFILES_DIR/hypr/.config/hypr/hyprpaper.conf" && "$DRY_RUN" != "true" ]]; then
-    cat <<EOF > "$DOTFILES_DIR/hypr/.config/hypr/hyprpaper.conf"
-preload = $wp_target
-wallpaper = ,$wp_target
-splash = false
-ipc = on
-EOF
+  # Matugen verification (fail loudly if not installed)
+  if [[ "$DRY_RUN" != "true" ]]; then
+    if ! command -v matugen >/dev/null 2>&1; then
+      echo "ERROR: 'matugen' is not installed! It is required to generate dynamic color themes." >&2
+      echo "Please install matugen (e.g., 'paru -S matugen' or run ./hypr/install-packages.sh) and re-run setup.sh." >&2
+      exit 1
+    fi
   fi
-  chmod +x "$DOTFILES_DIR/hypr/.config/hypr/set-wallpaper.sh" 2>/dev/null || true
-  chmod +x "$DOTFILES_DIR/hypr/.config/rofi/bin/powermenu" 2>/dev/null || true
+
+  # Link per-machine host configuration with default fallback
+  host_name="$(uname -n 2>/dev/null || hostname 2>/dev/null || echo "default")"
+  host_file="$DOTFILES_DIR/hypr/.config/hypr/hosts/${host_name}.conf"
+  if [[ ! -f "$host_file" ]]; then
+    host_file="$DOTFILES_DIR/hypr/.config/hypr/hosts/default.conf"
+  fi
+  link_file_to "$host_file" "$HOME_DIR/.config/hypr/host.conf" ".config/hypr/host.conf"
+
+  # Initialize wallpaper cache & generate matugen colors once on fresh install
+  wp_default="$DOTFILES_DIR/assets/wallpapers/a_woman_sitting_in_a_chair_under_a_tent.png"
+  wp_cache_dir="$HOME_DIR/.cache/dotfiles/wallpaper"
+  if [[ "$DRY_RUN" != "true" ]]; then
+    mkdir -p "$wp_cache_dir"
+    mkdir -p "$HOME_DIR/.config/qt6ct/colors"
+    mkdir -p "$HOME_DIR/.config/btop/themes"
+
+    if [[ ! -f "$wp_cache_dir/current_wallpaper" && -f "$wp_default" ]]; then
+      echo "$wp_default" > "$wp_cache_dir/current_wallpaper"
+      if command -v magick >/dev/null 2>&1; then
+        magick "$wp_default" -resize 75% -blur 0x12 "$wp_cache_dir/blurred_wallpaper.png" 2>/dev/null || true
+        magick "$wp_default" -gravity Center -extent 1:1 "$wp_cache_dir/square_wallpaper.png" 2>/dev/null || true
+      elif command -v convert >/dev/null 2>&1; then
+        convert "$wp_default" -resize 75% -blur 0x12 "$wp_cache_dir/blurred_wallpaper.png" 2>/dev/null || true
+        convert "$wp_default" -gravity Center -extent 1:1 "$wp_cache_dir/square_wallpaper.png" 2>/dev/null || true
+      else
+        cp "$wp_default" "$wp_cache_dir/blurred_wallpaper.png" 2>/dev/null || true
+        cp "$wp_default" "$wp_cache_dir/square_wallpaper.png" 2>/dev/null || true
+      fi
+      echo "* { current-image: url(\"$wp_cache_dir/blurred_wallpaper.png\", height); }" > "$wp_cache_dir/current_wallpaper.rasi"
+    fi
+
+    # Generate initial matugen colors once if missing
+    if [[ ! -f "$HOME_DIR/.config/hypr/colors.conf" || ! -f "$HOME_DIR/.config/waybar/colors.css" ]]; then
+      echo "Generating initial color theme from default wallpaper via matugen..."
+      if [[ -f "$wp_default" ]]; then
+        matugen image "$wp_default" --config "$DOTFILES_DIR/hypr/.config/matugen/config.toml" || {
+          echo "WARNING: Initial matugen color generation encountered an issue." >&2
+        }
+      else
+        echo "WARNING: Default wallpaper not found at $wp_default" >&2
+      fi
+    fi
+  fi
+
+  # Set executable permissions on scripts
+  chmod +x "$DOTFILES_DIR"/hypr/.config/hypr/scripts/*.sh 2>/dev/null || true
+  chmod +x "$DOTFILES_DIR"/hypr/.config/matugen/scripts/*.sh 2>/dev/null || true
+  chmod +x "$DOTFILES_DIR"/hypr/.config/waybar/*.sh 2>/dev/null || true
 fi
 
 # ─────────────────────────────────────────────────────────────
@@ -309,10 +366,18 @@ fi
 # ─────────────────────────────────────────────────────────────
 if should_link kde; then
   echo "Linking package: kde"
+  link_file_to "$DOTFILES_DIR/kde/.config/kwinrc" "$HOME_DIR/.config/kwinrc" ".config/kwinrc"
+  link_file_to "$DOTFILES_DIR/kde/.config/kwinrulesrc" "$HOME_DIR/.config/kwinrulesrc" ".config/kwinrulesrc"
+  link_file_to "$DOTFILES_DIR/kde/.config/krunnerrc" "$HOME_DIR/.config/krunnerrc" ".config/krunnerrc"
+  link_file_to "$DOTFILES_DIR/kde/.config/dolphinrc" "$HOME_DIR/.config/dolphinrc" ".config/dolphinrc"
+  link_file_to "$DOTFILES_DIR/kde/.config/kdeglobals" "$HOME_DIR/.config/kdeglobals" ".config/kdeglobals"
+  link_file_to "$DOTFILES_DIR/kde/.config/baloofileinformationrc" \
+               "$HOME_DIR/.config/baloofileinformationrc" \
+               ".config/baloofileinformationrc"
+
   link_file_to "$DOTFILES_DIR/kde/.config/plasma-org.kde.plasma.desktop-appletsrc" \
                "$HOME_DIR/.config/plasma-org.kde.plasma.desktop-appletsrc" \
                ".config/plasma-org.kde.plasma.desktop-appletsrc"
-  link_file_to "$DOTFILES_DIR/kde/.config/kwinrulesrc" "$HOME_DIR/.config/kwinrulesrc" ".config/kwinrulesrc"
   link_file_to "$DOTFILES_DIR/kde/.local/bin/fix-hdmi-audio" "$HOME_DIR/.local/bin/fix-hdmi-audio" ".local/bin/fix-hdmi-audio"
   link_file_to "$DOTFILES_DIR/kde/.local/share/plasma" "$HOME_DIR/.local/share/plasma" ".local/share/plasma"
   link_file_to "$DOTFILES_DIR/kde/.local/share/color-schemes" "$HOME_DIR/.local/share/color-schemes" ".local/share/color-schemes"
@@ -363,4 +428,50 @@ if should_link code; then
                ".config/VSCodium/User/keybindings.json"
 fi
 
+# ─────────────────────────────────────────────────────────────
+# 5. BROKEN SYMLINK AUDIT
+# ─────────────────────────────────────────────────────────────
+check_broken_symlinks() {
+  local dirs=("$HOME_DIR/.config" "$HOME_DIR/.local/bin")
+  local broken=()
+  for d in "${dirs[@]}"; do
+    [[ -d "$d" ]] || continue
+    while IFS= read -r link; do
+      if [[ -L "$link" && ! -e "$link" ]]; then
+        local target
+        target="$(readlink "$link" 2>/dev/null || true)"
+        if [[ "$target" == "$DOTFILES_DIR"* ]]; then
+          broken+=("$link")
+        fi
+      fi
+    done < <(find "$d" -maxdepth 3 -type l 2>/dev/null || true)
+  done
+
+  if [[ ${#broken[@]} -gt 0 ]]; then
+    echo ""
+    echo "Found ${#broken[@]} broken symlink(s) pointing into this repository:"
+    for bl in "${broken[@]}"; do
+      local target
+      target="$(readlink "$bl" 2>/dev/null || true)"
+      echo "  • $bl -> $target"
+    done
+    if [[ "$DRY_RUN" == true ]]; then
+      echo "(Dry-run: skipping prompt to delete broken symlinks)"
+    elif [[ -t 0 ]]; then
+      read -rp "Would you like to remove these broken symlinks? [y/N]: " confirm_bl
+      if [[ "$confirm_bl" =~ ^[Yy]$ ]]; then
+        for bl in "${broken[@]}"; do
+          rm -f "$bl"
+          echo "Deleted: $bl"
+        done
+      fi
+    else
+      echo "Run with an interactive terminal or use hypr/remove-obsolete.sh to clean them."
+    fi
+  fi
+}
+
+check_broken_symlinks
+
 echo "Setup completed successfully."
+

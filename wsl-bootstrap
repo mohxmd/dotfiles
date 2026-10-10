@@ -34,10 +34,10 @@ if [[ "$EUID" -eq 0 ]]; then
 fi
 
 echo "[wsl] Updating Arch packages"
-sudo pacman -Syu
+sudo pacman -Syu --noconfirm
 
 echo "[wsl] Installing WSL developer essentials"
-sudo pacman -S --needed \
+sudo pacman -S --needed --noconfirm \
   systemd sudo git base-devel curl jq unzip rsync openssh ca-certificates \
   neovim java-runtime-common
 
@@ -78,6 +78,9 @@ echo "[wsl] Installing Java"
 
 echo "[wsl] Installing PostgreSQL client tools"
 "$ROOT_DIR/run" postgres
+
+echo "[wsl] Installing Deno"
+"$ROOT_DIR/run" deno
 
 echo "[wsl] Applying WSL profile"
 "$ROOT_DIR/setup.sh" --profile wsl

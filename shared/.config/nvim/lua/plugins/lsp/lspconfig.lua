@@ -100,10 +100,13 @@ return {
       "graphql",
       "emmet_ls",
       "pyright",
-      "jdtls",
       "bashls",
     }) do
       enable(server)
+    end
+
+    if vim.fn.executable("java") == 1 then
+      enable("jdtls")
     end
 
     enable("tailwindcss", {

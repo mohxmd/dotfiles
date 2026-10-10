@@ -1,11 +1,12 @@
 [main]
 smart_completion = True
-wider_completion_menu = False
-multi_line = False
+wider_completion_menu = True
+generate_aliases = True
+multi_line = True
 multi_line_mode = psql
 destructive_warning = drop, shutdown, delete, truncate, alter, update, unconditional_update
 destructive_warning_restarts_connection = False
-destructive_statements_require_transaction = False
+destructive_statements_require_transaction = True
 expand = False
 auto_expand = True
 auto_retry_closed_connection = True

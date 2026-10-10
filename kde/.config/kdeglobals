@@ -1,0 +1,19 @@
+# ==============================================================================
+# KDE Plasma Global Configuration (Typography & General Desktop Settings)
+# Official Plasma 6 KConfig format (QFont::toString serialization)
+# Unified with the Hyprland design system (Fira Sans for UI, Fira Code for fixed)
+# ==============================================================================
+
+[General]
+font=Fira Sans,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+fixed=Fira Code,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+smallestReadableFont=Fira Sans,8,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+toolBarFont=Fira Sans,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+menuFont=Fira Sans,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+
+[KDE]
+ShowDeleteCommand=true
+SingleClick=true
+
+[Icons]
+Theme=breeze-dark

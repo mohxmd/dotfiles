@@ -15,35 +15,75 @@ echo "[hyprland] Installing Hyprland desktop packages and Wayland utilities..."
 sudo pacman -S --needed --noconfirm \
   hyprland \
   xdg-desktop-portal-hyprland \
-  polkit-gnome \
+  xdg-desktop-portal-kde \
+  hyprpolkitagent \
   qt5-wayland \
   qt6-wayland \
   waybar \
   kitty \
-  mako \
-  rofi-wayland \
-  hyprpaper \
+  swaync \
+  rofi \
+  hypridle \
   hyprlock \
+  awww \
+  matugen \
   firefox \
+  dolphin \
+  kio-extras \
+  kde-cli-tools \
+  archlinux-xdg-menu \
+  xdg-utils \
+  gnome-keyring \
   grim \
   slurp \
+  hyprpicker \
   wl-clipboard \
   cliphist \
   brightnessctl \
+  power-profiles-daemon \
   playerctl \
   pavucontrol \
+  qalculate-gtk \
+  wireplumber \
+  libnotify \
   network-manager-applet \
+  blueman \
+  bluez \
+  bluez-utils \
   fastfetch \
   htop \
+  btop \
+  jq \
+  curl \
   cava \
   obs-studio \
-  papirus-icon-theme \
-  ttf-jetbrains-mono-nerd \
+  breeze-icons \
+  nwg-look \
+  qt6ct \
+  xsettingsd \
+  imagemagick \
+  ttf-fira-sans \
+  ttf-fira-code \
+  ttf-firacode-nerd \
+  otf-font-awesome \
   noto-fonts \
-  noto-fonts-emoji
+  noto-fonts-emoji \
+  pacman-contrib
+
+# Install AUR companion packages if paru/yay is available
+if command -v paru >/dev/null 2>&1; then
+  echo "[hyprland] Installing AUR companion tools via paru..."
+  paru -S --needed --noconfirm wlogout kora-icon-theme bibata-cursor-theme grimblast-git 2>/dev/null || true
+elif command -v yay >/dev/null 2>&1; then
+  echo "[hyprland] Installing AUR companion tools via yay..."
+  yay -S --needed --noconfirm wlogout kora-icon-theme bibata-cursor-theme grimblast-git 2>/dev/null || true
+fi
 
 echo "[hyprland] Updating font cache..."
 fc-cache -fv >/dev/null 2>&1 || true
+
+echo "[hyprland] Initializing KDE sycoca menu cache for Dolphin..."
+kbuildsycoca6 >/dev/null 2>&1 || true
 
 echo "[hyprland] Ensuring Zsh, Oh My Zsh, and Starship are installed..."
 "$ROOT_DIR/run" zsh

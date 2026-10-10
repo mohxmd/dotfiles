@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+# Task: kde
+# Purpose: Install KDE Plasma desktop environment, companion tools, fonts, and apply profile.
+# Requires: Arch Linux, sudo, pacman.
+
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+command -v sudo >/dev/null 2>&1 || { echo "sudo is required." >&2; exit 1; }
+command -v pacman >/dev/null 2>&1 || { echo "pacman is required." >&2; exit 1; }
+
+echo "[kde] Installing KDE Plasma desktop packages, fonts, and companion utilities..."
+sudo pacman -S --needed --noconfirm \
+  plasma-meta \
+  konsole \
+  dolphin \
+  kio-extras \
+  archlinux-xdg-menu \
+  xdg-utils \
+  appmenu-gtk-module \
+  libdbusmenu-glib \
+  libdbusmenu-gtk3 \
+  kdegraphics-thumbnailers \
+  ffmpegthumbs \
+  firefox \
+  fastfetch \
+  htop \
+  btop \
+  jq \
+  curl \
+  cava \
+  obs-studio \
+  ttf-fira-sans \
+  ttf-fira-code \
+  ttf-firacode-nerd \
+  otf-font-awesome \
+  noto-fonts \
+  noto-fonts-emoji \
+  pacman-contrib
+
+# Install AUR companion packages if paru/yay is available
+# Note: BlurPlus effect is installed via KDE Store (System Settings -> Desktop Effects -> Get New Plugins)
+if command -v paru >/dev/null 2>&1; then
+  echo "[kde] Installing AUR companion tools via paru..."
+  paru -S --needed --noconfirm \
+    kwin-polonium-git \
+    plasma6-applets-catwalk 2>/dev/null || true
+elif command -v yay >/dev/null 2>&1; then
+  echo "[kde] Installing AUR companion tools via yay..."
+  yay -S --needed --noconfirm \
+    kwin-polonium-git \
+    plasma6-applets-catwalk 2>/dev/null || true
+fi
+
+echo "[kde] Applying KDE dotfiles profile..."
+"$ROOT_DIR/setup.sh" --profile kde
+
+echo "[kde] Initializing KDE sycoca menu cache for Dolphin..."
+kbuildsycoca6 2>/dev/null || kbuildsycoca5 2>/dev/null || true
+
+echo "[kde] KDE Plasma setup complete."

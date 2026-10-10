@@ -1,0 +1,23 @@
+# Force Unix LF line endings across repository
+* text=auto eol=lf
+*.sh text eol=lf
+run text eol=lf
+vps-bootstrap text eol=lf
+wsl-bootstrap text eol=lf
+run.d/* text eol=lf
+**/bin/* text eol=lf
+*.conf text eol=lf
+*.rasi text eol=lf
+*.css text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+
+# Explicit binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ttf binary
+*.otf binary
+*.mp4 binary

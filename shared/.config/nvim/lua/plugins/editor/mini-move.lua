@@ -1,1 +1,1 @@
-return { "echasnovski/mini.move", version = false }
+return { "echasnovski/mini.move", version = false, opts = {} }
