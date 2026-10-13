@@ -29,3 +29,7 @@ MenuBar=Disabled
 
 [Toolbar]
 ToolButtonStyle=IconOnly
+
+# Rich thumbnail preview generation for media, fonts, SVGs, and documents
+[PreviewSettings]
+Plugins=audiothumbnail,comicbookthumbnail,cursorthumbnail,directorythumbnail,djvuthumbnail,ebookthumbnail,exrthumbnail,ffmpegthumbs,fontthumbnail,imagethumbnail,jpegthumbnail,kraorathumbnail,opendocumentthumbnail,svgthumbnail
