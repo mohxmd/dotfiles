@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2015  Martin Kotelnik <clearmartin@seznam.cz>
  *
  * This program is free software; you can redistribute it and/or
