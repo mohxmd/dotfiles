@@ -1,0 +1,18 @@
+# ─────────────────────────────────────────────────────────────
+# BREEZE WINDOW DECORATION CONFIGURATION
+# Titlebar-less tiled window borders (Hyprland style)
+# ─────────────────────────────────────────────────────────────
+
+[Common]
+OutlineCloseButton=false
+
+[Windeco]
+BorderSize=Normal
+
+[Windeco Exception 0]
+BorderSize=Normal
+Enabled=true
+ExceptionPattern=.*
+ExceptionType=0
+HideTitleBar=true
+Mask=17

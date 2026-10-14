@@ -17,3 +17,12 @@ SingleClick=true
 
 [Icons]
 Theme=breeze-dark
+
+[WM]
+activeBlend=122,162,247
+activeForeground=255,255,255
+frame=122,162,247
+inactiveBackground=30,30,46
+inactiveBlend=36,40,59
+inactiveForeground=166,173,200
+inactiveFrame=36,40,59
