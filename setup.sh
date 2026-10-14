@@ -320,7 +320,7 @@ if should_link hypr; then
   link_file_to "$host_file" "$HOME_DIR/.config/hypr/host.conf" ".config/hypr/host.conf"
 
   # Initialize wallpaper cache & generate matugen colors once on fresh install
-  wp_default="$DOTFILES_DIR/assets/wallpapers/a_woman_sitting_in_a_chair_under_a_tent.png"
+  wp_default="$DOTFILES_DIR/assets/wallpapers/autumn_camping_lakeside_car.png"
   wp_cache_dir="$HOME_DIR/.cache/dotfiles/wallpaper"
   if [[ "$DRY_RUN" != "true" ]]; then
     mkdir -p "$wp_cache_dir"

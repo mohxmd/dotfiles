@@ -25,7 +25,7 @@ if [[ ! -d "$DOTFILES_WALLPAPERS" ]]; then
         fi
     done
 fi
-DEFAULT_WALLPAPER="$DOTFILES_WALLPAPERS/a_woman_sitting_in_a_chair_under_a_tent.png"
+DEFAULT_WALLPAPER="$DOTFILES_WALLPAPERS/autumn_camping_lakeside_car.png"
 TRANSITION_EFFECT="fade"
 
 IMAGE_PATH=""
