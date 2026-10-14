@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# AI image generation via OpenAI API with terminal ASCII preview / image viewer.
+# Requires: OPENAI_API_KEY (environment or stored in Vaultlet).
+# Usage: image-request [prompt]
+
 if ! command -v curl >/dev/null 2>&1; then
   echo "curl is required." >&2
   exit 1

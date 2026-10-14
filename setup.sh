@@ -253,6 +253,12 @@ if should_link shared; then
     link_file_to "$DOTFILES_DIR/shared/.local/bin/cfd-init" "$HOME_DIR/.local/bin/cfd-init" ".local/bin/cfd-init"
     link_file_to "$DOTFILES_DIR/shared/.local/bin/image-request" "$HOME_DIR/.local/bin/image-request" ".local/bin/image-request"
     link_file_to "$DOTFILES_DIR/shared/.local/bin/video-to-ascii" "$HOME_DIR/.local/bin/video-to-ascii" ".local/bin/video-to-ascii"
+    link_file_to "$DOTFILES_DIR/shared/.local/bin/sync-browser-profiles" "$HOME_DIR/.local/bin/sync-browser-profiles" ".local/bin/sync-browser-profiles"
+    chmod +x "$DOTFILES_DIR"/shared/.local/bin/* 2>/dev/null || true
+    if [[ "$DRY_RUN" != "true" && -x "$DOTFILES_DIR/shared/.local/bin/sync-browser-profiles" ]]; then
+      echo "Discovering installed browsers & syncing profiles..."
+      "$DOTFILES_DIR/shared/.local/bin/sync-browser-profiles" 2>/dev/null || true
+    fi
   fi
 
   link_file_to "$DOTFILES_DIR/shared/.config/pgcli" "$HOME_DIR/.config/pgcli" ".config/pgcli"
@@ -263,12 +269,15 @@ if should_link shared; then
   link_file_to "$DOTFILES_DIR/shared/.config/btop" "$HOME_DIR/.config/btop" ".config/btop"
   link_file_to "$DOTFILES_DIR/shared/.config/fastfetch" "$HOME_DIR/.config/fastfetch" ".config/fastfetch"
   link_file_to "$DOTFILES_DIR/shared/.config/fontconfig" "$HOME_DIR/.config/fontconfig" ".config/fontconfig"
+  link_file_to "$DOTFILES_DIR/shared/.config/lazygit" "$HOME_DIR/.config/lazygit" ".config/lazygit"
+  link_file_to "$DOTFILES_DIR/shared/.config/tmux" "$HOME_DIR/.config/tmux" ".config/tmux"
   if [[ -d "$DOTFILES_DIR/assets/fonts" ]]; then
     link_file_to "$DOTFILES_DIR/assets/fonts" "$HOME_DIR/.local/share/fonts/dotfiles-fonts" ".local/share/fonts/dotfiles-fonts"
   fi
   if [[ "$PROFILE" != "server" && "$PROFILE" != "minimal" ]]; then
     link_file_to "$DOTFILES_DIR/shared/.config/cava" "$HOME_DIR/.config/cava" ".config/cava"
     link_file_to "$DOTFILES_DIR/shared/.config/obs-studio" "$HOME_DIR/.config/obs-studio" ".config/obs-studio"
+    link_file_to "$DOTFILES_DIR/shared/.config/vesktop" "$HOME_DIR/.config/vesktop" ".config/vesktop"
   fi
 
   # Obsidian: link vault configuration to ~/Notes or ~/vault if present
@@ -371,6 +380,7 @@ if should_link kde; then
   link_file_to "$DOTFILES_DIR/kde/.config/krunnerrc" "$HOME_DIR/.config/krunnerrc" ".config/krunnerrc"
   link_file_to "$DOTFILES_DIR/kde/.config/dolphinrc" "$HOME_DIR/.config/dolphinrc" ".config/dolphinrc"
   link_file_to "$DOTFILES_DIR/kde/.config/kdeglobals" "$HOME_DIR/.config/kdeglobals" ".config/kdeglobals"
+  link_file_to "$DOTFILES_DIR/kde/.config/breezerc" "$HOME_DIR/.config/breezerc" ".config/breezerc"
   link_file_to "$DOTFILES_DIR/kde/.config/baloofileinformationrc" \
                "$HOME_DIR/.config/baloofileinformationrc" \
                ".config/baloofileinformationrc"

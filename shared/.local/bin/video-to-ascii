@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Convert video files into colored ASCII animation frame sequences.
+# Requires: ffmpeg, jp2a.
+# Usage: video-to-ascii <video_file> [output_dir] [fps]
+
 if [[ $# -lt 1 || $# -gt 3 ]]; then
   echo "Usage: $0 <video_file> [output_dir] [fps]" >&2
   exit 1

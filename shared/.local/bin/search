@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Quick web search utility via Rofi or CLI arguments.
+# Usage: search [query]
+
 search_engine="${SEARCH_ENGINE:-https://google.com/search?q=}"
 
 if [[ $# -gt 0 ]]; then

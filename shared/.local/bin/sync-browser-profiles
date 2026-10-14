@@ -1,0 +1,153 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ─────────────────────────────────────────────────────────────
+# SYNC BROWSER PROFILES
+# Discovers installed browsers and their profiles dynamically,
+# creating XDG desktop launchers only for what exists locally.
+# ─────────────────────────────────────────────────────────────
+
+APPS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+mkdir -p "$APPS_DIR"
+
+sanitize_name() {
+  echo "$1" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9_-]+/-/g' | sed -E 's/^-+|-+$//g'
+}
+
+created_launchers=()
+
+# ─────────────────────────────────────────────────────────────
+# Gecko / Firefox Family Parser
+# ─────────────────────────────────────────────────────────────
+sync_gecko_browser() {
+  local id="$1"
+  local bin_name="$2"
+  local display_name="$3"
+  local ini_file="$4"
+  local icon="$5"
+
+  local bin_path
+  if ! bin_path="$(command -v "$bin_name" 2>/dev/null)"; then
+    return 0
+  fi
+
+  [[ -f "$ini_file" ]] || return 0
+
+  while IFS= read -r profile_name; do
+    [[ -z "$profile_name" ]] && continue
+    local slug
+    slug="$(sanitize_name "$profile_name")"
+    local desktop_file="$APPS_DIR/profile-${id}-${slug}.desktop"
+
+    cat > "$desktop_file" <<EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=${display_name} (${profile_name})
+GenericName=Web Browser
+Comment=Launch ${display_name} with profile ${profile_name}
+Exec=${bin_path} -P "${profile_name}" --no-remote %u
+Icon=${icon}
+Terminal=false
+StartupNotify=true
+Categories=Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml+xml;application/vnd.mozilla.xul+xml;text/mml;x-scheme-handler/http;x-scheme-handler/https;
+StartupWMClass=${bin_name}
+EOF
+
+    created_launchers+=("$(basename "$desktop_file")")
+    echo "[sync-browser-profiles] Created: ${display_name} (${profile_name}) -> $(basename "$desktop_file")"
+  done < <(grep -E '^Name=' "$ini_file" | cut -d '=' -f 2- | tr -d '\r')
+}
+
+# ─────────────────────────────────────────────────────────────
+# Chromium Family Parser
+# ─────────────────────────────────────────────────────────────
+sync_chromium_browser() {
+  local id="$1"
+  local bin_name="$2"
+  local display_name="$3"
+  local state_file="$4"
+  local icon="$5"
+
+  local bin_path
+  if ! bin_path="$(command -v "$bin_name" 2>/dev/null)"; then
+    return 0
+  fi
+
+  [[ -f "$state_file" ]] || return 0
+
+  if ! command -v jq >/dev/null 2>&1; then
+    echo "[sync-browser-profiles] Warning: 'jq' not found; skipping $display_name profile discovery." >&2
+    return 0
+  fi
+
+  while IFS=$'\t' read -r dir_name profile_name; do
+    [[ -z "$dir_name" || -z "$profile_name" ]] && continue
+    local slug
+    slug="$(sanitize_name "$profile_name")"
+    local desktop_file="$APPS_DIR/profile-${id}-${slug}.desktop"
+
+    cat > "$desktop_file" <<EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=${display_name} (${profile_name})
+GenericName=Web Browser
+Comment=Launch ${display_name} with profile ${profile_name}
+Exec=${bin_path} --profile-directory="${dir_name}" %u
+Icon=${icon}
+Terminal=false
+StartupNotify=true
+Categories=Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;
+StartupWMClass=${bin_name}
+EOF
+
+    created_launchers+=("$(basename "$desktop_file")")
+    echo "[sync-browser-profiles] Created: ${display_name} (${profile_name}) -> $(basename "$desktop_file")"
+  done < <(jq -r '.profile.info_cache | to_entries[] | "\(.key)\t\(.value.name)"' "$state_file" 2>/dev/null || true)
+}
+
+# ─────────────────────────────────────────────────────────────
+# Probe Known Browsers
+# ─────────────────────────────────────────────────────────────
+
+# Gecko family
+sync_gecko_browser "firefox" "firefox" "Firefox" "$HOME/.mozilla/firefox/profiles.ini" "firefox"
+sync_gecko_browser "librewolf" "librewolf" "LibreWolf" "$HOME/.librewolf/profiles.ini" "librewolf"
+sync_gecko_browser "zen" "zen-browser" "Zen Browser" "$HOME/.zen/profiles.ini" "zen-browser"
+
+# Chromium family
+sync_chromium_browser "helium" "helium" "Helium" "$HOME/.config/helium/Local State" "helium-browser"
+sync_chromium_browser "helium" "helium-browser" "Helium" "$HOME/.config/helium-browser/Local State" "helium-browser"
+sync_chromium_browser "chromium" "chromium" "Chromium" "$HOME/.config/chromium/Local State" "chromium"
+sync_chromium_browser "chrome" "google-chrome-stable" "Google Chrome" "$HOME/.config/google-chrome/Local State" "google-chrome"
+sync_chromium_browser "chrome" "google-chrome" "Google Chrome" "$HOME/.config/google-chrome/Local State" "google-chrome"
+sync_chromium_browser "brave" "brave" "Brave" "$HOME/.config/BraveSoftware/Brave-Browser/Local State" "brave-browser"
+sync_chromium_browser "brave" "brave-browser" "Brave" "$HOME/.config/BraveSoftware/Brave-Browser/Local State" "brave-browser"
+
+# ─────────────────────────────────────────────────────────────
+# Cleanup Stale / Uninstalled Launchers
+# ─────────────────────────────────────────────────────────────
+for existing in "$APPS_DIR"/profile-*.desktop; do
+  [[ -f "$existing" ]] || continue
+  base_name="$(basename "$existing")"
+  keep=0
+  for active in "${created_launchers[@]:-}"; do
+    if [[ "$base_name" == "$active" ]]; then
+      keep=1
+      break
+    fi
+  done
+  if [[ "$keep" -eq 0 ]]; then
+    echo "[sync-browser-profiles] Removing stale launcher: $base_name"
+    rm -f "$existing"
+  fi
+done
+
+if command -v update-desktop-database >/dev/null 2>&1; then
+  update-desktop-database "$APPS_DIR" >/dev/null 2>&1 || true
+fi
+
+echo "[sync-browser-profiles] Done. Found ${#created_launchers[@]} active profile launcher(s)."
