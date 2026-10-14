@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/jesseduffield/lazygit/master/schema/config.json
+os:
+  editPreset: "nvim"
+
+gui:
+  nerdFontsVersion: "3"
+  timeFormat: "02 Jan 06"
+  shortTimeFormat: "3:04PM"
+  border: "rounded"
+  mouseEvents: true
+  showFileTree: true
+  showListFooter: false
+  showRandomTip: false
+  showBottomLine: false
+  showCommandLog: true
+  theme:
+    activeBorderColor:
+      - bold
+      - cyan
+    inactiveBorderColor:
+      - white
+    optionsTextColor:
+      - cyan
+    selectedLineBgColor:
+      - default
+    selectedRangeBgColor:
+      - default
+    cherryPickedCommitBgColor:
+      - magenta
+    cherryPickedCommitFgColor:
+      - cyan
+    unstagedChangesColor:
+      - red

@@ -198,6 +198,7 @@ alias gfa='git fetch --all'
 alias gr='git remote -v'
 alias gm='git merge'
 alias grb='git rebase'
+alias lg='lazygit'
 
 # Turso
 alias t='turso'

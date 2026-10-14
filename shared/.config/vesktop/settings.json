@@ -1,0 +1,9 @@
+{
+  "discordBranch": "stable",
+  "firstLaunch": false,
+  "arRPC": true,
+  "splashTheming": true,
+  "hardwareAcceleration": true,
+  "minimizeToTray": true,
+  "checkUpdates": true
+}
