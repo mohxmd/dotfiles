@@ -70,7 +70,10 @@ cd ~/dotfiles
 - `.config/cava/` (Audio visualizer)
 - `.config/obs-studio/` (Screen recording)
 - `.obsidian/` (Monochrome notes vault configuration)
-- `.local/bin/` (`search`, `cfd-init`, `image-request`, `video-to-ascii`)
+- `.config/lazygit/` (Git terminal UI)
+- `.config/tmux/` (Terminal multiplexer with vim-tmux-navigator)
+- `.config/vesktop/` (Discord Wayland client & Vencord configuration)
+- `.local/bin/` (CLI & desktop utilities: `search`, `cfd-init`, `image-request`, `video-to-ascii`, `sync-browser-profiles`)
 
 `hypr` package includes:
 - `.config/hypr/` (`hyprland.conf`, `hyprpaper.conf`, `hyprlock.conf`, `set-wallpaper.sh`)
@@ -190,9 +193,10 @@ JAVA_DEFAULT_ENV=java-24-openjdk ./run java
 ## Credits
 
 - Wallpapers in `assets/wallpapers/` are sourced from:
-  - [dharmx/walls](https://github.com/dharmx/walls)
+  - [Wallpaper Flare](https://www.wallpaperflare.com/)
   - [Alpha Coders](https://alphacoders.com)
-  - Various community sources (Reddit, Pinterest, Wallpaper Flare)
+  - [dharmx/walls](https://github.com/dharmx/walls)
+  - Community sources (Reddit, Pinterest)
 - ICC profiles in `assets/icc/` are sourced from:
   https://github.com/ien646/gamma-icc
 - See `assets/icc/LICENSE` and `assets/icc/README.md` for attribution and licensing.
